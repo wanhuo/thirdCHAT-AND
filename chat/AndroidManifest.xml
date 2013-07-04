@@ -116,10 +116,7 @@
         
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="qixin" />
-        <meta-data
-            android:name="EASEMOB_APPSECRET"
-            android:value="Your AppSecret" />
+            android:value="chatdemo" />
         <meta-data
             android:name="EASEMOB_SERVER_ADDRESS"
             android:value="117.135.138.202" />

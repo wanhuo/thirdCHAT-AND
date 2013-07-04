@@ -22,8 +22,6 @@ public class Login extends Activity {
 	}
 
 	public void login(View view) {
-	    DemoApp.setCompanyName("金生丽水");
-        DemoApp.setCompanyKey("10000");
         DemoApp.setUserName(usernameEditText.getText().toString());
         DemoApp.setPassword(passwordEditText.getText().toString());
         finish();

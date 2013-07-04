@@ -111,19 +111,16 @@ public class MainActivity extends FragmentActivity {
 
 		
 		/************************************ EaseMob SDK Start ******************************************/
-		/***** Use EaseMob SDK. Step 1: EaseMob.init() and EaseMob.login.login() *************************/
-		EaseMob.applicationContext = this.getApplicationContext();
+		
+		/***** Use EaseMob SDK. Step 1: Call EaseMob.init() and EaseMob.login ***************************/
 		UserUtil.initDirs("com.easemob.qixin");
-		UserUtil.getCurrentUserId();
-        String companyName = DemoApp.getCompanyName();
         String userName = DemoApp.getUserName();
         String password = DemoApp.getPassword();
         
-		EaseMob.init(this.getApplicationContext(), companyName, userName, password);
+		EaseMob.init(this.getApplicationContext(), userName, password);
 		EaseMob.login();
 		
 		/***** Use EaseMob SDK. Step 2: Register receivers to receive chat message and push message *****/
-        // Register receiver on EaseMobService for receiving chat message
         IntentFilter chatIntentFilter = new IntentFilter(EaseMobService.BROADCAST_CHAT_ACTION);
         chatIntentFilter.setPriority(3);
         registerReceiver(chatBroadcastReceiver, chatIntentFilter);
@@ -135,7 +132,7 @@ public class MainActivity extends FragmentActivity {
         // Register receiver for connection status event.
        	EaseMob.addConnectionListener(remoteConnectionListener);
        	
-		/********************************** EaseMob SDK End    ******************************************/
+		/********************************** EaseMob SDK End    *******************************************/
         
        	
 		// Load all available users from local DB. This also load users' chat history
