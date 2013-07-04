@@ -114,8 +114,8 @@ public class MainActivity extends FragmentActivity {
 		
 		/***** Use EaseMob SDK. Step 1: Call EaseMob.init() and EaseMob.login ***************************/
 		UserUtil.initDirs("com.easemob.qixin");
-        String userName = DemoApp.getUserName();
-        String password = DemoApp.getPassword();
+        String userName = ChatDemoApp.getUserName();
+        String password = ChatDemoApp.getPassword();
         
 		EaseMob.init(this.getApplicationContext(), userName, password);
 		EaseMob.login();
@@ -395,7 +395,6 @@ public class MainActivity extends FragmentActivity {
             public void onFailure(EaseMobException cause) {
                 Log.e(TAG, "Error updating contact on remote server", cause);
                 Log.d("###", "update failed");
-                DemoApp.isUpdateFail = true;
                 if(cause instanceof EMNetworkUnconnectedException) {
                 }
             }
@@ -417,7 +416,7 @@ public class MainActivity extends FragmentActivity {
 			processMsgNotification();
 
 			// initialize the whole contact list only once
-			if (!DemoApp.getInited()) {
+			if (!ChatDemoApp.getInited()) {
 			    GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
 	            callback.addUserMode = true;	
 	            callback.setInitializedAfterSuccess = true;
@@ -438,10 +437,6 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onReConnected() {
-			if(DemoApp.isUpdateFail){
-				updateUserinfo();
-				DemoApp.isUpdateFail = false;
-			}
 			runOnUiThread(new Runnable() {
 				public void run() {
 					ChatHistoryFragment fragment1 = (ChatHistoryFragment) fragments[0]; 
@@ -540,7 +535,7 @@ public class MainActivity extends FragmentActivity {
 					}
 					
 					if(setInitializedAfterSuccess) {
-		                DemoApp.setInited(true);
+		                ChatDemoApp.setInited(true);
 					}
 				}
 			});

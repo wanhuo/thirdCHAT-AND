@@ -1,4 +1,4 @@
-package com.easemob.demo;
+package com.easemob.demo.db;
 
 
 import android.provider.BaseColumns;

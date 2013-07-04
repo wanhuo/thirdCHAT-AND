@@ -1,7 +1,6 @@
 package com.easemob.demo;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,13 +19,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.easemob.chat.EaseMob;
 import com.easemob.chat.UserUtil;
 import com.easemob.chat.db.EaseMobMsgDB;
 import com.easemob.chat.domain.EMUserBase;
-import com.easemob.chat.domain.Group;
 import com.easemob.chat.domain.Message;
 import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
+import com.easemob.demo.db.Contract;
+import com.easemob.demo.db.DBOpenHelper;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.util.AppendObjectOutputStream;
 import com.easemob.util.HanziToPinyin;
@@ -83,17 +84,13 @@ public class ChatUtil {
                 user.setNick(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_NICK)));
                 user.setHeader(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_HEADER)));
                 user.setSex(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SEX)));
-                //user.setNote(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_NOTE)));
                 user.setEmail(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_EMAIL)));
-                user.setDepartment(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ORGAINIZATION)));
                 user.setMobile(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_MOBILE)));
                 user.setWorkPhone(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_WORKPHONE)));
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
-                //user.setFavorite(cursor.getInt(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_FAVORITE)) > 0);
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
-                
-                
+                                
                 //Load chat history
                 if(EaseMobMsgDB.isTableExists(db, user.getUsername())){
                 	List<Message> chatHistory= EaseMobMsgDB.findAllMessages(ctx, user.getUsername());
@@ -138,22 +135,18 @@ public class ChatUtil {
                         null, null, null);
         
         if (cursor != null) {
-            if(cursor.moveToFirst()) {
-        
+            if(cursor.moveToFirst()) {        
                 user = new DemoUser();
                 user.setUsername(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ID)));
                 user.setJid(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_JID)));
                 user.setNick(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_NICK)));
                 user.setHeader(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_HEADER)));
                 user.setSex(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SEX)));
-                user.setNote(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_NOTE)));
                 user.setEmail(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_EMAIL)));
-                user.setDepartment(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ORGAINIZATION)));
                 user.setMobile(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_MOBILE)));
                 user.setWorkPhone(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_WORKPHONE)));
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
-                //user.setFavorite(cursor.getInt(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_FAVORITE)) > 0);
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
             //Load chat history
 /*            List<Message> chatHistory = loadChatHistory(user.getId());            
@@ -208,162 +201,6 @@ public class ChatUtil {
             }
             
         } );
-        return resultList;
-    }
-    
-    /**
-    * Load all users whose favorite attribute is true
-    * @param allUsers
-    * @return List<User>
-    */
-    public static List<DemoUser> loadUsersWithFavorite(List<DemoUser> allUsers) {
-        List<DemoUser> resultList = new ArrayList<DemoUser>();
-        for(DemoUser user : allUsers) {
-/*            if(user.isFavorite()) {
-                resultList.add(user);
-            }*/
-        }
-        
-        return resultList;
-    }
-    
-    /**
-    * Search users based on department path
-    * @param allUsers
-    * @param path: department path. example: /department1/department2/department3
-    * @return List<User> 
-    */
-    
-    public static String getDepartmentName(String path){
-    	return path.substring(path.lastIndexOf("/") + 1, path.length());
-    }
-    public static List<EMUserBase> loadUsersWithDepartment(List<EMUserBase> allUsers, String path) {
-        List<EMUserBase> resultList = new ArrayList<EMUserBase>();
-        
-        //mock data. 组织结构返回空
-        if("/".equals(path)) {
-            return resultList;
-        }
-        
-        //mock data. /组织结构/研发部 返回user列表的第1个到第2员工
-        if("/集团总公司/研发设计中心".equals(path)) {
-            for(int i = 0; i< allUsers.size(); i++) {
-                EMUserBase u = allUsers.get(i);
-                if(0 <= i && i < 2) {
-                    resultList.add(u);
-                }
-            }
-            return resultList;
-        }
-        
-        if("/集团总公司/研发设计中心/开发部/移动开发部/ios".equals(path)) {
-            for(int i = 0; i< allUsers.size(); i++) {
-                EMUserBase u = allUsers.get(i);
-                if( 2 <= i) {
-                    resultList.add(u);
-                }
-            }
-            return resultList;
-        }
-
-        return resultList;
-    }
-    
-    /**
-    * Get child departments 
-    * @param path: parent department. Use "/" as the root path
-    * @return List<String> child departments
-    */
-    public static List<String> getChildDepartments(String path) {
-        List<String> resultList = new ArrayList<String>();
-        
-      //Mock data        
-        if("/".equals(path)) {
-            resultList.add("/集团总公司");
-            return resultList;
-        }
-        
-        if("/集团总公司".equals(path)) {
-            resultList.add("/集团总公司/财务管理中心");
-            resultList.add("/集团总公司/总经理办公室");
-            resultList.add("/集团总公司/运营中心");
-            resultList.add("/集团总公司/营销中心");
-            resultList.add("/集团总公司/研发设计中心");
-            resultList.add("/集团总公司/生产管理中心");
-            return resultList;
-        }
-        
-        if("/集团总公司/财务管理中心".equals(path)) {
-            resultList.add("/集团总公司/财务管理中心/财务部");
-            resultList.add("/集团总公司/财务管理中心/直营监察部");
-            return resultList;
-        }
-        
-        if("/集团总公司/总经理办公室".equals(path)) {
-            resultList.add("/集团总公司/总经理办公室/人力资源部");
-            resultList.add("/集团总公司/总经理办公室/综合管理部");
-            resultList.add("/集团总公司/总经理办公室/物业管理部");
-            return resultList;
-        }
-        
-        if("/集团总公司/运营中心".equals(path)) {
-            resultList.add("/集团总公司/运营中心/信息部");
-            resultList.add("/集团总公司/运营中心/工程部");
-            resultList.add("/集团总公司/运营中心/物流部");
-            return resultList;
-        }
-
-        if("/集团总公司/营销中心".equals(path)) {
-            resultList.add("/集团总公司/营销中心/加盟部");
-            resultList.add("/集团总公司/营销中心/直营部");
-            resultList.add("/集团总公司/营销中心/市场部");
-            resultList.add("/集团总公司/营销中心/渠道拓展部");
-            resultList.add("/集团总公司/营销中心/零售支持部");
-            resultList.add("/集团总公司/营销中心/商品部");
-            resultList.add("/集团总公司/营销中心/多元化部");
-            resultList.add("/集团总公司/营销中心/北京销售部");
-            return resultList;
-        }
-
-        if("/集团总公司/营销中心/北京销售部".equals(path)) {
-            resultList.add("/集团总公司/营销中心/北京销售部/东城销售部");
-            resultList.add("/集团总公司/营销中心/北京销售部/西城销售部");
-            resultList.add("/集团总公司/营销中心/北京销售部/海淀销售部");
-            resultList.add("/集团总公司/营销中心/北京销售部/朝阳销售部");
-            resultList.add("/集团总公司/营销中心/北京销售部/石景山销售部");
-            resultList.add("/集团总公司/营销中心/北京销售部/通州销售部");
-            resultList.add("/集团总公司/营销中心/北京销售部/昌平销售部");
-            resultList.add("/集团总公司/营销中心/北京销售部/顺义销售部");
-            return resultList;
-        }
-
-        if("/集团总公司/研发设计中心".equals(path)) {
-            resultList.add("/集团总公司/研发设计中心/设计部");
-            resultList.add("/集团总公司/研发设计中心/开发部");
-            resultList.add("/集团总公司/研发设计中心/技术部");
-            resultList.add("/集团总公司/研发设计中心/核价部");
-            return resultList;
-        }
-        
-        if("/集团总公司/研发设计中心/开发部".equals(path)) {
-            resultList.add("/集团总公司/研发设计中心/开发部/移动开发部");
-            resultList.add("/集团总公司/研发设计中心/开发部/ERP");
-            return resultList;
-        }
-        
-        if("/集团总公司/研发设计中心/开发部/移动开发部".equals(path)) {
-            resultList.add("/集团总公司/研发设计中心/开发部/移动开发部/ios");
-            resultList.add("/集团总公司/研发设计中心/开发部/移动开发部/android");
-            return resultList;
-        }
-
-        if("/集团总公司/生产管理中心".equals(path)) {
-            resultList.add("/集团总公司/生产管理中心/服装部");
-            resultList.add("/集团总公司/生产管理中心/鞋品部");
-            resultList.add("/集团总公司/生产管理中心/装备部");
-            return resultList;
-        }
-        
         return resultList;
     }
     
@@ -606,21 +443,6 @@ public class ChatUtil {
             }
         }
     }
-
-    /**
-    * If the user has been set as favorite by the current logged in user (myself). 
-    * @param Context
-    * @param userId 
-    * @param isFavoriate 
-    */
-    public static void setFavorite(Context ctx, String userId, boolean isFavoriate) {
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();        
-        ContentValues values = new ContentValues();
-        values.put(Contract.UserTable.COLUMN_NAME_FAVORITE, isFavoriate?1:0);
-        db.update(Contract.UserTable.TABLE_NAME, values, Contract.UserTable.COLUMN_NAME_ID + " = ?",
-                new String[] { String.valueOf(userId) });
-    }
-    
     
     //add user if doesn't exists
     public static void addOrUpdateUsers(Context ctx, List<EMUserBase> remoteContactList) {
@@ -653,7 +475,7 @@ public class ChatUtil {
                     @Override
                     public void run() {
                         final String localFilePath = UserUtil.getAvatorPath(username).getAbsolutePath();
-                        hfm.downloadFile(picture, localFilePath, DemoApp.appId, null, new CloudOperationCallback() {
+                        hfm.downloadFile(picture, localFilePath, EaseMob.appkey, null, new CloudOperationCallback() {
 
                             @Override
                             public void onProgress(int progress) {
@@ -693,7 +515,7 @@ public class ChatUtil {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						hfm.downloadFile(picture, localFilePath, DemoApp.appId, null, new CloudOperationCallback() {
+						hfm.downloadFile(picture, localFilePath, EaseMob.appkey, null, new CloudOperationCallback() {
 							@Override
 							public void onProgress(int progress) {
 								Log.d("ease", "download progress: " + progress);
@@ -800,10 +622,6 @@ public class ChatUtil {
             values.put(Contract.UserTable.COLUMN_NAME_EMAIL, contact.getEmail());
             updateDb =true;
         }
-        if(contact.getDepartment() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_ORGAINIZATION, contact.getDepartment());
-            updateDb =true;
-        }
         if(contact.getAddress() != null) {
             values.put(Contract.UserTable.COLUMN_NAME_ADDRESS, contact.getAddress());
             updateDb =true;
@@ -873,18 +691,11 @@ public class ChatUtil {
         }
         values.put(Contract.UserTable.COLUMN_NAME_SEX, contact.getSex());
         values.put(Contract.UserTable.COLUMN_NAME_EMAIL, contact.getEmail());
-        values.put(Contract.UserTable.COLUMN_NAME_ORGAINIZATION, contact.getDepartment());
         values.put(Contract.UserTable.COLUMN_NAME_MOBILE, contact.getMobile());
         values.put(Contract.UserTable.COLUMN_NAME_WORKPHONE, contact.getWorkPhone());
         values.put(Contract.UserTable.COLUMN_NAME_SIGNATURE, contact.getSignature());
         values.put(Contract.UserTable.COLUMN_NAME_ADDRESS, contact.getAddress());
         values.put(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH, contact.getPicture());
-        
-        //values.put(Contract.UserTable.COLUMN_NAME_NOTE, "");  
-        //TODO:Save avator
-/*        if(contact.getAvatar() != null && contact.getAvatar().length != 0) {
-            saveAvator(contact.getJID(), contact.getAvatar());    
-        }*/
         
         try {
             db.insert(Contract.UserTable.TABLE_NAME, null, values);
@@ -905,108 +716,6 @@ public class ChatUtil {
         
         db.delete(Contract.UserTable.TABLE_NAME, Contract.UserTable.COLUMN_NAME_ID + " = ?",
                 new String[] { String.valueOf(userId) });
-    }
-    
-    private static void saveAvator(String userId, byte[] avator) {
-        String state = Environment.getExternalStorageState();
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {   
-            Log.e(TAG, "MEDIA is not MOUNTED, saveAvator failed");
-            return;
-        }
-        
-        File filepath = UserUtil.getAvatorPath(userId);
-        filepath.getParentFile().mkdirs();
-
-        OutputStream os = null;
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(filepath));
-            os.write(avator);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }  
-     
-    }
-    
-    
-    public static void saveGroups(List<Group> groups) {
-        File filepath = new File(UserUtil.getHistoryPath() + "/group.dat");
-        ObjectOutputStream output = null;
-        try {
-            filepath.getParentFile().mkdirs();
-            OutputStream file = new FileOutputStream(filepath, false);
-            output = new ObjectOutputStream(file);
-            output.writeObject(groups);
-            output.flush();
-        } catch (IOException e) {
-            Log.e(TAG, "Error writing chat history", e);
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (Exception e) {
-                }
-            }
-        }
-    }
-    
-    public static List<Group> loadGroups(Context context,List<EMUserBase> users) {
-//    	List<Group> groups = null;
-//    	SQLiteDatabase db = DBOpenHelper.getInstance(context).getReadableDatabase();
-//    	if(db.isOpen()){
-//    		Cursor cursor = db.rawQuery("select * from " + Contract.GroupsTable.TABLE_NAME,null);
-//    		if(cursor.moveToFirst()){
-//    			groups = new ArrayList<Group>();
-//    			do{
-//    				Group group = new Group(context);
-//    				group.setName(cursor.getString(cursor.getColumnIndex(Contract.GroupsTable.COLUMN_NAME_GROUP_NAME)));
-//    				group.setId(cursor.getInt(cursor.getColumnIndex(Contract.GroupsTable.COLUMN_NAME_ID))+"");
-//    				for(User user : users){
-//    					if(group.getId().equals(user.getGroupId())){
-//    						group.getUsers().add(user);
-//    					}
-//    				}
-//    				List<Message> msgs = findAllMessages(context, group.getName());
-//    				group.setMessages(msgs);
-//    				groups.add(group);
-//    			}while(cursor.moveToNext());
-//    		}
-//    	}
-    	
-    	File filepath = new File(UserUtil.getHistoryPath() + "/group.dat");
-        ObjectInputStream input = null;
-        ArrayList<Group> groups = new ArrayList<Group>();
-        if (!filepath.exists()) {
-        	return groups;
-        }
-        try {
-        	FileInputStream fis = new FileInputStream(filepath);
-        	input = new ObjectInputStream(fis);
-        	groups = (ArrayList<Group>)input.readObject();
-        	//Load chat history, need to refactor to only load limited num of record during init
-        	for (Group group : groups) {
-                List<Message> chatHistory = loadMessageHistory(group.getName(), false);            
-                group.setMessages(chatHistory);
-        	}
-        } catch (Exception e) {
-        	e.printStackTrace();
-        } finally {
-        	try {
-        	    input.close();
-        	} catch (Exception e) {
-        		e.printStackTrace();
-        	}
-        }
-    	return groups;
     }
 
     public static byte[] getFileBytes(File file) throws IOException {
