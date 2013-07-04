@@ -64,7 +64,12 @@
         <activity
             android:name="com.easemob.ui.activity.AlertDialog"
             android:screenOrientation="portrait"
-            android:theme="@style/MyDialogStyle" />                       
+            android:theme="@style/MyDialogStyle" />       
+        <activity
+            android:name="com.easemob.demo.AddContact"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide" />
+                                    
         <activity
             android:name="com.easemob.demo.MainActivity"
             android:theme="@style/horizontal_slide"
@@ -80,11 +85,6 @@
             android:name="com.easemob.ui.activity.ActionSheet"
             android:screenOrientation="portrait"
             android:theme="@style/MyDialogStyleBottom" />
-        
-        <activity
-            android:name="com.easemob.qixin.activity.AddContact"
-            android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" />
         
         <activity
             android:name="com.easemob.ui.activity.BaiduMapActivity"

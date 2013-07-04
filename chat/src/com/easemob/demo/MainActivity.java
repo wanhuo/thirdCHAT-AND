@@ -312,12 +312,10 @@ public class MainActivity extends FragmentActivity {
 		currentTabIndex = index;
 	}
 
-	//we may need to add contact in demo
-	/*
 	public void onAddContact(View view) {
 		startActivity(new Intent(this, AddContact.class));
 	}
-	*/
+	
 	
 	private boolean isChatBroadcastReceiverRegistered = false;
 	private BroadcastReceiver chatBroadcastReceiver = new BroadcastReceiver() {
