@@ -10,7 +10,6 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,15 +34,16 @@ public class AddContact extends Activity {
 	private Button saveBtn;
 	private TextView textVName;
 	private DemoUser contact;
-	private String userID;
+	private String userName;
 	private InputMethodManager inputMethodManager;
 	
 	private Handler handler = new Handler(){
 
 		@Override
 		public void handleMessage(Message msg) {
-			if(progressDialog != null)
+			if (progressDialog != null) {
 				progressDialog.dismiss();
+			}
 			inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 			switch (msg.what) {
 			case 1: //found user successfully
@@ -93,7 +93,7 @@ public class AddContact extends Activity {
 		String name = editText.getText().toString();
 		String saveText = saveBtn.getText().toString();
 		if (getString(R.string.button_search).equals(saveText)) {
-			userID = name;
+			userName = name;
 			if (TextUtils.isEmpty(name)) {
 				startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "请输入联系人ID"));
 				return;
@@ -106,7 +106,7 @@ public class AddContact extends Activity {
 			progressDialog.show();
 			
 			// check if user exists
-			EMUser.getContactInBackground(userID, new GetContactCallback() {
+			EMUser.getContactInBackground(userName, new GetContactCallback() {
 				@Override
 				public void onSuccess(EMUserBase contact) {
 					progressDialog.dismiss();
@@ -147,13 +147,13 @@ public class AddContact extends Activity {
 		}
 		progressDialog.setMessage(getString(R.string.adding_contact));
 		progressDialog.show();
-		if (MainActivity.allUsers.containsKey(userID)) {
+		if (MainActivity.allUsers.containsKey(userName)) {
 			startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "用户已在联系人列表"));
 			progressDialog.dismiss();
 			return;
 		}
 
-        EMUser.addContactInBackground(userID, new AddContactCallback() {
+        EMUser.addContactInBackground(userName, new AddContactCallback() {
             @Override
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
@@ -180,21 +180,6 @@ public class AddContact extends Activity {
                  progressDialog.dismiss();
             }
         });
-/*        
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					EaseMobChatManager easeMobChatManager = EMUser.getEaseMobChatManager();
-					easeMobChatManager.addContactToRoster(userID);
-					msg.what = 4;
-				} catch (EaseMobException e) {
-					msg.what = 3;
-				}
-				handler.sendMessage(msg);
-				
-			}
-		}).start();*/
-		
 	}
 
 	public void cancel(View v) {
