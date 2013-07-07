@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
-import com.easemob.chat.EaseMob;
-
 
 public final class ChatDemoApp extends Application {
 
@@ -60,13 +58,11 @@ public final class ChatDemoApp extends Application {
 		return sContext;
 	}
     
+	
     //login user name
     public static final String PREF_USERNAME = "username";
     private static String userName = null;
     
-    /**
-     * @param userName
-     */
     public static void setUserName(String user){
         System.err.println("set user name:" + user);
         if (user != null && !user.equals(userName)) {
@@ -77,9 +73,6 @@ public final class ChatDemoApp extends Application {
         }
     }
     
-    /**
-     * @return
-     */
     public static String getUserName(){
         if (userName == null) {
             userName = sDefaultSharedPreferences.getString(PREF_USERNAME, null); 
@@ -92,9 +85,6 @@ public final class ChatDemoApp extends Application {
     public static final String PREF_PWD = "pwd";
     private static String password = null;
     
-    /**
-     * @param password
-     */
     public static void setPassword(String pwd){
         SharedPreferences.Editor editor = sDefaultSharedPreferences.edit();
         if (editor.putString(PREF_PWD, pwd).commit()) {
@@ -102,9 +92,6 @@ public final class ChatDemoApp extends Application {
         }
     }
     
-    /**
-     * @return
-     */
     public static String getPassword(){
         if (password == null) {
             password = sDefaultSharedPreferences.getString(PREF_PWD, null); 

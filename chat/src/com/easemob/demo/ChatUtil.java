@@ -475,7 +475,7 @@ public class ChatUtil {
                     @Override
                     public void run() {
                         final String localFilePath = UserUtil.getAvatorPath(username).getAbsolutePath();
-                        hfm.downloadFile(picture, localFilePath, EaseMob.appkey, null, new CloudOperationCallback() {
+                        hfm.downloadFile(picture, localFilePath, EaseMob.APPKEY, null, new CloudOperationCallback() {
 
                             @Override
                             public void onProgress(int progress) {
@@ -515,7 +515,7 @@ public class ChatUtil {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						hfm.downloadFile(picture, localFilePath, EaseMob.appkey, null, new CloudOperationCallback() {
+						hfm.downloadFile(picture, localFilePath, EaseMob.APPKEY, null, new CloudOperationCallback() {
 							@Override
 							public void onProgress(int progress) {
 								Log.d("ease", "download progress: " + progress);

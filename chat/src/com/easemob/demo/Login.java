@@ -26,10 +26,14 @@ public class Login extends Activity {
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-			setContentView(R.layout.activity_login);
-	        usernameEditText = (EditText) findViewById(R.id.username);
-	        passwordEditText = (EditText) findViewById(R.id.password);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        usernameEditText = (EditText) findViewById(R.id.username);
+        passwordEditText = (EditText) findViewById(R.id.password);
+        String userName = ChatDemoApp.getUserName();
+        if (userName != null) {
+            usernameEditText.setText(userName);
+        }
 	}
 
 	public void login(View view) {    
@@ -51,6 +55,9 @@ public class Login extends Activity {
                     finish();
                     
                     DemoUser demoUser = user.toType(DemoUser.class);
+                    ChatDemoApp.setUserName(userName);
+                    ChatDemoApp.setPassword(password);
+                    
                     ChatUtil.addUser(Login.this, demoUser);
                     startActivity(new Intent(Login.this, MainActivity.class));
                 }
@@ -67,15 +74,10 @@ public class Login extends Activity {
                             } else if(cause instanceof EMNetworkUnconnectedException) {
                                 startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" + getString(R.string.login_failuer_network_unconnected)));        
                             } else if(cause instanceof EMResourceNotExistException) {
-                                if(cause.getMessage().startsWith("getCompanySync with companyName [")) {
-                                    startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" + getString(R.string.login_failuer_company_not_exist)));        
-                                 } else {
-                                    startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" +cause.getMessage()));        
-                                }
+                                startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" +cause.getMessage()));        
                             } else {
                                 startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" + getString(R.string.login_failuer_toast)));        
-                            }
-                            
+                            }                            
                         }
                    });
                 }
@@ -101,9 +103,10 @@ public class Login extends Activity {
     protected void onResume() {
         super.onResume();
         
-/*        if (Gl.getUserName() != null) {
-        	usernameEditText.setText(Gl.getUserName());
-        }*/
+        //may back from register activity. refresh username if necessary
+        if (ChatDemoApp.getUserName() != null) {
+            usernameEditText.setText(ChatDemoApp.getUserName());
+        }
 	}
        
 	protected void showLoginDialog() {

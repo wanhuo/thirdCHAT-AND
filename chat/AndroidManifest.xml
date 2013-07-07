@@ -123,6 +123,9 @@
             android:process=":remote" />
         
         <meta-data
+            android:name="EASEMOB_ORGKEY"
+            android:value="easemob" />
+        <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="chatdemo" />
         <meta-data

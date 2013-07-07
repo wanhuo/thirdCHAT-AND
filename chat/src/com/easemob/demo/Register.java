@@ -13,6 +13,7 @@ import android.widget.EditText;
 import com.easemob.chat.EMDuplicateResourceException;
 import com.easemob.chat.EMNetworkUnconnectedException;
 import com.easemob.chat.EMUser;
+import com.easemob.chat.EaseMob;
 import com.easemob.chat.EaseMobException;
 import com.easemob.chat.callbacks.CreateAccountCallBack;
 import com.easemob.chat.domain.EMUserBase;
@@ -51,16 +52,17 @@ public class Register extends Activity {
             startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "两次填写的密码不一致"));
         } else {
         	progressDialog.show();       	
-        	
-        	//TODO:
-        	String appkey = "chatdemo";
-		    EMUser.createAppUserInBackground(appkey, username, password, new CreateAccountCallBack() {
+
+            EaseMob.init(this.getApplicationContext());
+		    EMUser.createAppUserInBackground(username, password, new CreateAccountCallBack() {
                 @Override
                 public void onSuccess(EMUserBase user) {
                     if (progressDialog != null) {
                         progressDialog.dismiss();
                     }
 
+                    ChatDemoApp.setUserName(username);
+                    
                     Log.d("register", "create user successful: " + user.getName());                    
                     startActivityForResult(new Intent(getContext(), AlertDialog.class).putExtra("msg", getString(R.string.register_success)), REQUEST_CODE_REG_CONFIRM);
                 }
