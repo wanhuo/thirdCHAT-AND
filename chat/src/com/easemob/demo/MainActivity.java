@@ -113,7 +113,6 @@ public class MainActivity extends FragmentActivity {
 		/************************************ EaseMob SDK Start ******************************************/
 		
 		/***** Use EaseMob SDK. Step 1: Call EaseMob.init() and EaseMob.login ***************************/
-		UserUtil.initDirs("com.easemob.qixin");
         String userName = ChatDemoApp.getUserName();
         String password = ChatDemoApp.getPassword();
         
