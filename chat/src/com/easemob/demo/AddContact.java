@@ -48,7 +48,7 @@ public class AddContact extends Activity {
 			switch (msg.what) {
 			case 1: //found user successfully
 				if(msg.obj == null){
-					startActivity(new Intent(AddContact.this,AlertDialog.class).putExtra("msg", "查找用户失败"));
+					startActivity(new Intent(AddContact.this,AlertDialog.class).putExtra("msg", getString(R.string.addcontact_find_user_failed)));
 				} else {
 					DemoUser user = (DemoUser) msg.obj;
 					searchedUser.setVisibility(View.VISIBLE);
@@ -56,10 +56,10 @@ public class AddContact extends Activity {
 				}
 				break;
 			case 0:
-				startActivity(new Intent(AddContact.this,AlertDialog.class).putExtra("msg", "查找用户失败"));
+				startActivity(new Intent(AddContact.this,AlertDialog.class).putExtra("msg", getString(R.string.addcontact_find_user_failed)));
 				break;
 			case 3:
-				startActivity(new Intent(AddContact.this,AlertDialog.class).putExtra("msg", "添加用户失败"));
+				startActivity(new Intent(AddContact.this,AlertDialog.class).putExtra("msg", getString(R.string.addcontact_add_user_failed)));
 				
 				break;
 			case 4: //added user successfully
@@ -95,7 +95,7 @@ public class AddContact extends Activity {
 		if (getString(R.string.button_search).equals(saveText)) {
 			userName = name;
 			if (TextUtils.isEmpty(name)) {
-				startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "请输入联系人ID"));
+				startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.addcontact_input_contact_id)));
 				return;
 			}
 
@@ -111,7 +111,7 @@ public class AddContact extends Activity {
 				public void onSuccess(EMUserBase contact) {
 					progressDialog.dismiss();
 					if (contact == null) {
-						startActivity(new Intent(instance, AlertDialog.class).putExtra("msg", "用户不存在"));
+						startActivity(new Intent(instance, AlertDialog.class).putExtra("msg", getString(R.string.addcontact_user_not_exist)));
 						return;
 					}
 					
@@ -132,7 +132,7 @@ public class AddContact extends Activity {
 	                    return;
 	                }
 	                
-					startActivity(new Intent(instance, AlertDialog.class).putExtra("msg", "用户不存在"));
+					startActivity(new Intent(instance, AlertDialog.class).putExtra("msg", getString(R.string.addcontact_user_not_exist)));
 					progressDialog.dismiss();
 				}
 			});
@@ -148,7 +148,7 @@ public class AddContact extends Activity {
 		progressDialog.setMessage(getString(R.string.adding_contact));
 		progressDialog.show();
 		if (MainActivity.allUsers.containsKey(userName)) {
-			startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "用户已在联系人列表"));
+			startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.addcontact_user_exist_in_contacts)));
 			progressDialog.dismiss();
 			return;
 		}

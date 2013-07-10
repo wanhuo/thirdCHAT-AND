@@ -41,9 +41,9 @@ public class Login extends Activity {
 	    final String password = passwordEditText.getText().toString();
 	    
         if(userName.isEmpty()){
-            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "请输入用户名"));
+            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.login_input_username)));
         } else if (password.isEmpty()){
-            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "请输入密码"));
+            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.login_input_pwd)));
         } else {
         	showLoginDialog();
             

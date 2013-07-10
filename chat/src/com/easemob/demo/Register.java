@@ -45,11 +45,11 @@ public class Register extends Activity {
 	    final String password = passwordEditText.getText().toString();
 	    final String confirmpassword = confirmPasswordEditText.getText().toString();
         if(username.isEmpty()){
-            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "请输入个人账号/手机/邮箱"));
+            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.regist_input_account)));
         } else if (password.isEmpty() && confirmpassword.isEmpty()){
-            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "请输入密码"));
+            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.login_input_pwd)));
         } else if (!password.equals(confirmpassword)){
-            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "两次填写的密码不一致"));
+            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.regist_pwd_twice_error)));
         } else {
         	progressDialog.show();       	
 
