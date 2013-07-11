@@ -19,6 +19,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
+import android.util.Log;
+
 import com.easemob.chat.EaseMob;
 import com.easemob.chat.UserUtil;
 import com.easemob.chat.db.EaseMobMsgDB;
@@ -31,13 +38,6 @@ import com.easemob.demo.db.DBOpenHelper;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.util.AppendObjectOutputStream;
 import com.easemob.util.HanziToPinyin;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
-import android.util.Log;
 
 
 public class ChatUtil {
@@ -503,11 +503,11 @@ public class ChatUtil {
                 updateDB(myUser, db);
                 
                 final String picture = remoteContact.getPicture();
-                if(picture == null || picture.equals(localUser.getPicture())){
+                final String localFilePath = UserUtil.getAvatorPath(username).getAbsolutePath();
+                if(picture == null || picture.equals(localUser.getPicture()) && new File(localFilePath).exists()){
                     //No need to download avatar for this user
                     continue;
                 }
-                final String localFilePath = UserUtil.getAvatorPath(username).getAbsolutePath();
                 if (new File(localFilePath).exists()) {
                     //already have this avator on phone
                     continue;
