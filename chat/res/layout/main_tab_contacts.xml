@@ -42,7 +42,23 @@
                         style="@style/contact_title_devide_style"
                         android:layout_alignParentRight="true" />
                 </RelativeLayout>
+                
+                <RelativeLayout
+                    android:id="@+id/title_layout3"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/contact_tab_bg" >
 
+                    <!-- android:background="@drawable/list_item_background" -->
+
+                    <TextView
+                        android:id="@+id/title3"
+                        style="@style/contact_title_text_style"
+                        android:text="@string/work_group" />
+
+                </RelativeLayout>
+                
             </LinearLayout>
 
             <LinearLayout

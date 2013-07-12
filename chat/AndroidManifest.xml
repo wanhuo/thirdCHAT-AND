@@ -116,6 +116,20 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyDialogStyleBottom" >
         </activity>
+        <activity
+            android:name="com.easemob.ui.activity.AddGroup"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide" />
+        <activity
+            android:name="com.easemob.ui.activity.PickContacts"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.easemob.ui.activity.GroupDetails"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide" />
+        
         <service android:name="com.easemob.chat.EaseMobService" />
         <service
             android:name="com.baidu.location.f"

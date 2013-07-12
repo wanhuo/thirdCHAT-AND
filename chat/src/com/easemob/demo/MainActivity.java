@@ -51,6 +51,7 @@ import com.easemob.chat.domain.MessageFactory;
 import com.easemob.demo.R;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.activity.ChatHistoryFragment;
+import com.easemob.ui.activity.ContactGroupListFragment;
 import com.easemob.ui.activity.ContactListFragment;
 import com.easemob.ui.adapter.ContactAdapter;
 import com.easemob.ui.adapter.ContactPagerAdapter;
@@ -106,7 +107,7 @@ public class MainActivity extends FragmentActivity {
 		currentTabIndex = 0;
 		fragments = new Fragment[] { 
 				new ChatHistoryFragment(),
-				new TabFragment2()};
+				new ContactGroupListFragment()};
 		getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragments[0]).commit();
 
 		
@@ -182,106 +183,6 @@ public class MainActivity extends FragmentActivity {
 		}
 
 	}
-
-	public static class TabFragment2 extends ContactListFragment {
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-			return inflater.inflate(R.layout.main_tab_contacts, container, false);
-		}
-
-		@Override
-		public void onActivityResult(int requestCode, int resultCode, Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
-		}
-
-		@Override
-		public void onActivityCreated(Bundle savedInstanceState) {
-			super.onActivityCreated(savedInstanceState);
-			
-			manager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			list = new ArrayList<EMUserBase>(allUsers.values());
-			Collections.sort(list, new Comparator<EMUserBase>() {
-				@Override
-				public int compare(EMUserBase lhs, EMUserBase rhs) {
-					return ((DemoUser)lhs).getHeader().compareTo(((DemoUser)rhs).getHeader());
-
-				}
-			});
-			layoutInflater = LayoutInflater.from(getActivity());
-			titleLayout1 = (RelativeLayout) getView().findViewById(R.id.title_layout1);
-			titleText1 = (TextView) getView().findViewById(R.id.title1);
-			titleLine1 = (ImageView) getView().findViewById(R.id.iv_line1);
-
-			contactListViews = new ArrayList<View>();
-			
-			contactListViews.add(layoutInflater.inflate(R.layout.contacts_list2, null));
-			for (int i = 0; i < 2; i++) {
-				View v = layoutInflater.inflate(R.layout.contact_list, null);
-				contactListViews.add(v);
-			}
-			sidebar2 = (Sidebar) contactListViews.get(0).findViewById(R.id.sidebar);
-			contactAdapter = new ContactAdapter(getActivity(), R.layout.row_contact, list,sidebar2);
-			contactListView = (ListView) contactListViews.get(0).findViewById(R.id.list);
-			contactListView.setOnTouchListener(new ContactTouchListener());
-			contactListView.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-				    //start chat activity
-					getActivity().startActivity(
-					        new Intent(getActivity(), ChatActivity.class).putExtra("userId", contactAdapter.getItem(position).getUsername()));
-				}
-			});
-			registerForContextMenu(contactListView);
-
-			vPager = (ViewPager) getView().findViewById(R.id.vPager);
-			vPager.setAdapter(new ContactPagerAdapter(contactListViews, getActivity(),contactAdapter));
-			vPager.setOffscreenPageLimit(2);
-			vPager.setOnPageChangeListener(new OnPageChangeListener() {
-
-
-                @Override
-				public void onPageSelected(int arg0) {
-					switch (arg0) {
-					case 0:
-						 if (currentPagerIndex == 1) {
-						 } else if (currentPagerIndex == 2) {
-						 }
-						 setToSelectedColor(titleText1);
-						 titleLine1.setVisibility(View.VISIBLE);
-
-						break;
-					case 1:
-						if (currentPagerIndex == 0) {
-							 setToNormalColor(titleText1);
-							 titleLine1.setVisibility(View.INVISIBLE);
-						 } else if (currentPagerIndex == 2) {
-						 }
-						break;
-                    }
-					currentPagerIndex = arg0;
-				}
-
-				@Override
-				public void onPageScrolled(int arg0, float arg1, int arg2) {
-					if(getActivity().getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN){
-						if(getActivity().getCurrentFocus() != null)
-							manager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-					}
-
-				}
-
-				@Override
-				public void onPageScrollStateChanged(int arg0) {
-				}
-			});
-			vPager.setCurrentItem(0);
-			
-			titleLayout1.setOnClickListener(new ContactTitleClickListener(0));
-		}		
-	}
-
 
 
 	public void onTabClicked(View view) {
@@ -509,7 +410,7 @@ public class MainActivity extends FragmentActivity {
 						((ChatHistoryFragment) fragments[0]).rowAdapter.notifyDataSetChanged();
 						break;
 					case 1:
-						TabFragment2 tmp = ((TabFragment2) fragments[1]);
+						ContactGroupListFragment tmp = ((ContactGroupListFragment) fragments[1]);
 						List<EMUserBase> list = new ArrayList<EMUserBase>(allUsers.values());
 						
 						Collections.sort(list, new Comparator<EMUserBase>() {
