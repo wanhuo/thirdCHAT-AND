@@ -30,7 +30,7 @@ public class Login extends Activity {
         setContentView(R.layout.activity_login);
         usernameEditText = (EditText) findViewById(R.id.username);
         passwordEditText = (EditText) findViewById(R.id.password);
-        String userName = ChatDemoApp.getUserName();
+        String userName = ChatDemoApplication.getUserName();
         if (userName != null) {
             usernameEditText.setText(userName);
         }
@@ -55,8 +55,8 @@ public class Login extends Activity {
                     finish();
                     
                     DemoUser demoUser = user.toType(DemoUser.class);
-                    ChatDemoApp.setUserName(userName);
-                    ChatDemoApp.setPassword(password);
+                    ChatDemoApplication.setUserName(userName);
+                    ChatDemoApplication.setPassword(password);
                     
                     ChatUtil.addUser(Login.this, demoUser);
                     startActivity(new Intent(Login.this, MainActivity.class));
@@ -104,8 +104,8 @@ public class Login extends Activity {
         super.onResume();
         
         //may back from register activity. refresh username if necessary
-        if (ChatDemoApp.getUserName() != null) {
-            usernameEditText.setText(ChatDemoApp.getUserName());
+        if (ChatDemoApplication.getUserName() != null) {
+            usernameEditText.setText(ChatDemoApplication.getUserName());
         }
 	}
        

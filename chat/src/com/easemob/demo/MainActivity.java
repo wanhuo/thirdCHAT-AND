@@ -114,8 +114,8 @@ public class MainActivity extends FragmentActivity {
 		/************************************ EaseMob SDK Start ******************************************/
 		
 		/***** Use EaseMob SDK. Step 1: Call EaseMob.init() and EaseMob.login ***************************/
-        String userName = ChatDemoApp.getUserName();
-        String password = ChatDemoApp.getPassword();
+        String userName = ChatDemoApplication.getUserName();
+        String password = ChatDemoApplication.getPassword();
         
 		EaseMob.init(this.getApplicationContext(), userName, password);
 		EaseMob.login();
@@ -314,7 +314,7 @@ public class MainActivity extends FragmentActivity {
 			processMsgNotification();
 
 			// initialize the whole contact list only once
-			if (!ChatDemoApp.getInited()) {
+			if (!ChatDemoApplication.getInited()) {
 			    GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
 	            callback.addUserMode = true;	
 	            callback.setInitializedAfterSuccess = true;
@@ -433,7 +433,7 @@ public class MainActivity extends FragmentActivity {
 					}
 					
 					if(setInitializedAfterSuccess) {
-		                ChatDemoApp.setInited(true);
+		                ChatDemoApplication.setInited(true);
 					}
 				}
 			});

@@ -7,7 +7,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 
 
-public final class ChatDemoApp extends Application {
+public final class ChatDemoApplication extends Application {
 
 	private static final String VERSION = "20004";
 	private static final String PREF_FILE_NAME = "EaseMob";
@@ -16,7 +16,8 @@ public final class ChatDemoApp extends Application {
 	private static Context sContext;
 	private static SharedPreferences sDefaultSharedPreferences; // settings from preference activity 
 
-    public static ChatDemoApp instance = null;
+    public static ChatDemoApplication instance = null;
+    public DemoUser toAddUser;
 	
 	@Override
 	public void onCreate() {
@@ -29,7 +30,7 @@ public final class ChatDemoApp extends Application {
         super.onTerminate();
     }
 	
-	public static ChatDemoApp getInstance() {
+	public static ChatDemoApplication getInstance() {
         return instance;
     }
 	

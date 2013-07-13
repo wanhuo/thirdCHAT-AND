@@ -38,6 +38,7 @@ public class Register extends Activity {
 		
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage(getString(R.string.registering));
+		progressDialog.setCanceledOnTouchOutside(false);
 	}
 	
 	public void register(View view){
@@ -61,7 +62,7 @@ public class Register extends Activity {
                         progressDialog.dismiss();
                     }
 
-                    ChatDemoApp.setUserName(username);
+                    ChatDemoApplication.setUserName(username);
                     
                     Log.d("register", "create user successful: " + user.getName());                    
                     startActivityForResult(new Intent(getContext(), AlertDialog.class).putExtra("msg", getString(R.string.register_success)), REQUEST_CODE_REG_CONFIRM);

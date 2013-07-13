@@ -45,7 +45,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:name="com.easemob.demo.ChatDemoApp">
+        android:name="com.easemob.demo.ChatDemoApplication">
         
         <activity
             android:name="com.easemob.demo.Login"
