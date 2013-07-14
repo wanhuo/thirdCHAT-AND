@@ -281,7 +281,7 @@ public class MainActivity extends FragmentActivity {
 
 	private void updateUserinfo() {
         Log.d("###", "Update User Info");
-        final DemoUser user = ChatUtil.loadUser(this, UserUtil.getCurrentUserId());
+        final DemoUser user = ChatUtil.loadUser(this, EaseMob.getCurrentUserName());
 
         EMUser.updateContactInBackground(user, new UpdateAccountCallBack() {
             @Override

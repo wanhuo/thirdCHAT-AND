@@ -71,7 +71,7 @@ public class ChatUtil {
                         Contract.UserTable.COLUMN_NAME_FAVORITE,
                         Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH}, null, null,
                 null, null, Contract.UserTable.COLUMN_NAME_ID + " COLLATE LOCALIZED ASC");
-        String myselfId = UserUtil.getCurrentUserId();
+        String myselfId = EaseMob.getCurrentUserName();
         if (cursor.moveToFirst()) {
             do {
                 //Do not include "myself" 
@@ -552,7 +552,7 @@ public class ChatUtil {
         Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
         addOrUpdateUsers(ctx, remoteContactList);
         
-        String myselfId = UserUtil.getCurrentUserId();
+        String myselfId = EaseMob.getCurrentUserName();
         for(String userId : allLocalUsers.keySet()) {
             boolean found = false;           
             for(EMUserBase contact : remoteContactList) {
