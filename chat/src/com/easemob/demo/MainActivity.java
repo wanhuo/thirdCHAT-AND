@@ -46,6 +46,7 @@ import com.easemob.chat.callbacks.ContactListener;
 import com.easemob.chat.callbacks.GetContactsCallback;
 import com.easemob.chat.callbacks.UpdateAccountCallBack;
 import com.easemob.chat.domain.EMUserBase;
+import com.easemob.chat.domain.Group;
 import com.easemob.chat.domain.Message;
 import com.easemob.chat.domain.MessageFactory;
 import com.easemob.demo.R;
@@ -411,7 +412,12 @@ public class MainActivity extends FragmentActivity {
 						break;
 					case 1:
 						ContactGroupListFragment tmp = ((ContactGroupListFragment) fragments[1]);
-						List<EMUserBase> list = new ArrayList<EMUserBase>(allUsers.values());
+						List<EMUserBase> list = new ArrayList<EMUserBase>();
+                        for (EMUserBase user : EMUser.allUsers.values()) {
+                            if (!(user instanceof Group)) {
+                                list.add(user);
+                            }
+                        }
 						
 						Collections.sort(list, new Comparator<EMUserBase>() {
 							@Override
