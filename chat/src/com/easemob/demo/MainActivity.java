@@ -390,10 +390,6 @@ public class MainActivity extends FragmentActivity {
 	    
 		@Override
 		public void onSuccess(final List<EMUserBase> contacts) {
-			// Only the original thread that created a view hierarchy can touch
-			// its views.
-			// This is also a thread safe way to update allUsers (as long as we
-			// make sure all updates to allUsers come from the main UI thread)
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -448,12 +444,11 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onFailure(EaseMobException cause) {
 			if (cause instanceof EMNetworkUnconnectedException) {
-                Log.w(TAG, "网络连接不可用，请稍后重试: " + cause);
-
+                Log.w(TAG, "GetContactsCallback failed: 网络连接不可用，请稍后重试: " + cause);
 				return;
 			}
 
-			Log.e(TAG, cause.getMessage());
+			Log.e(TAG, "GetContactsCallback failed: " + cause.getMessage());
 		}
 	}
 
