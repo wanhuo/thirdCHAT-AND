@@ -318,7 +318,7 @@ public class MainActivity extends FragmentActivity {
 			if (!ChatDemoApplication.getInited()) {
 			    GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
 	            callback.addUserMode = true;	
-	            callback.setInitializedAfterSuccess = true;
+	            callback.setInitedAfterSuccess = true;
 			    EMUser.getContactsInBackground(callback);
 			}
 		}
@@ -386,7 +386,7 @@ public class MainActivity extends FragmentActivity {
 	    //if add user mode, we will add remote user to local
 	    //otherwise, we will sync the contacts between local and remote 
 	    public boolean addUserMode = false;
-	    public boolean setInitializedAfterSuccess = false;
+	    public boolean setInitedAfterSuccess = false;
 	    
 		@Override
 		public void onSuccess(final List<EMUserBase> contacts) {
@@ -434,7 +434,7 @@ public class MainActivity extends FragmentActivity {
 						break;
 					}
 					
-					if(setInitializedAfterSuccess) {
+					if(setInitedAfterSuccess) {
 		                ChatDemoApplication.setInited(true);
 					}
 				}
