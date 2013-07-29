@@ -196,8 +196,16 @@ public class ChatUtil {
 
                 Message user2LastMessage = user2.getMessages().get(user2.getMessages().size() -1);
                 Message user1LastMessage = user1.getMessages().get(user1.getMessages().size() -1);
-               
-                return user2LastMessage.getTime().compareTo(user1LastMessage.getTime());
+                long user2timestamp = user2LastMessage.getTime();
+                long user1timestamp = user1LastMessage.getTime();
+                
+                if (user2timestamp == user1timestamp) {
+                    return 0;
+                } else if (user2timestamp > user1timestamp) {
+                    return -1;
+                } else {
+                    return 1;
+                }
             }
             
         } );
