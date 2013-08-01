@@ -19,6 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.usergrid.java.client.entities.Entity;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -466,7 +468,8 @@ public class ChatUtil {
             
             if(localUser == null) {
                 //This is a new contact added on remote, sync it to local
-                DemoUser myUser = remoteContact.toType(DemoUser.class);
+                //DemoUser myUser = remoteContact.toType(DemoUser.class);
+                DemoUser myUser = new DemoUser((Entity)remoteContact.userObject);
                 addDB(myUser, db);
                 
                 final String picture = remoteContact.getPicture();
@@ -507,7 +510,8 @@ public class ChatUtil {
                 }).start();
             } else {
                 //Sync the existing local user with the remote user if necessary
-                DemoUser myUser = remoteContact.toType(DemoUser.class);
+                //DemoUser myUser = remoteContact.toType(DemoUser.class);
+                DemoUser myUser = new DemoUser((Entity)remoteContact.userObject);
                 updateDB(myUser, db);
                 
                 final String picture = remoteContact.getPicture();

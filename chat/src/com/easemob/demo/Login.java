@@ -1,5 +1,7 @@
 package com.easemob.demo;
 
+import org.usergrid.java.client.entities.Entity;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -54,7 +56,9 @@ public class Login extends Activity {
                     closeLogingDialog();
                     finish();
                     
-                    DemoUser demoUser = user.toType(DemoUser.class);
+                    //DemoUser demoUser = user.toType(DemoUser.class);
+                    DemoUser demoUser = new DemoUser((Entity)user.userObject);
+                    
                     ChatDemoApplication.setUserName(userName);
                     ChatDemoApplication.setPassword(password);
                     

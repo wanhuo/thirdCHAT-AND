@@ -1,7 +1,6 @@
 package com.easemob.demo;
 
-import static org.usergrid.java.client.utils.JsonUtils.getStringProperty;
-import static org.usergrid.java.client.utils.JsonUtils.setStringProperty;
+import org.usergrid.java.client.utils.JsonUtils;
 
 
 import org.usergrid.java.client.entities.Entity;
@@ -23,21 +22,21 @@ public class DemoUser extends EMUserBase {
     }   
 
     public String getMobile() {
-        return getStringProperty(properties, PROPERTY_MOBILE);
+        return JsonUtils.getStringProperty(properties, PROPERTY_MOBILE);
     }
     public void setMobile(String mobile) {
-        setStringProperty(properties, PROPERTY_MOBILE, mobile);
+        JsonUtils.setStringProperty(properties, PROPERTY_MOBILE, mobile);
     }
     public String getWorkPhone() {
-        return getStringProperty(properties, PROPERTY_WORKPHONE);
+        return JsonUtils.getStringProperty(properties, PROPERTY_WORKPHONE);
     }
     public void setWorkPhone(String workPhone) {
-        setStringProperty(properties, PROPERTY_WORKPHONE,workPhone);
+        JsonUtils.setStringProperty(properties, PROPERTY_WORKPHONE,workPhone);
     }
     public String getAddress() {
-        return getStringProperty(properties, PROPERTY_ADDRESS);
+        return JsonUtils.getStringProperty(properties, PROPERTY_ADDRESS);
     }
     public void setAddress(String address) {
-        setStringProperty(properties, PROPERTY_ADDRESS, address);
+        JsonUtils.setStringProperty(properties, PROPERTY_ADDRESS, address);
     }
 }

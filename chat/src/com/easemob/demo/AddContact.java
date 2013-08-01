@@ -1,5 +1,7 @@
 package com.easemob.demo;
 
+import org.usergrid.java.client.entities.Entity;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -115,7 +117,8 @@ public class AddContact extends Activity {
 						return;
 					}
 					
-					DemoUser user = contact.toType(DemoUser.class);
+					//DemoUser user = contact.toType(DemoUser.class);
+					DemoUser user = new DemoUser((Entity)contact.userObject);
 					final Message msg = Message.obtain();
 					msg.what = 1;
 					msg.obj = user;

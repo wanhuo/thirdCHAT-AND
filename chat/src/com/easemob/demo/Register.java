@@ -64,7 +64,7 @@ public class Register extends Activity {
 
                     ChatDemoApplication.setUserName(username);
                     
-                    Log.d("register", "create user successful: " + user.getName());                    
+                    Log.d("register", "create user successful: " + user.getUsername());                    
                     startActivityForResult(new Intent(getContext(), AlertDialog.class).putExtra("msg", getString(R.string.register_success)), REQUEST_CODE_REG_CONFIRM);
                 }
 
