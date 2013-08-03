@@ -155,7 +155,7 @@ public class AddContact extends Activity {
 			return;
 		}
 
-        EMUser.addContactInBackground(userName, new AddContactCallback() {
+        EMUser.addContactInBackground(userName, "", new AddContactCallback() {
             @Override
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
