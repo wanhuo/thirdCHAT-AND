@@ -56,8 +56,7 @@ public class Login extends Activity {
                     closeLogingDialog();
                     finish();
                     
-                    //DemoUser demoUser = user.toType(DemoUser.class);
-                    DemoUser demoUser = new DemoUser((Entity)user.userObject);
+                    DemoUser demoUser = user.toType(DemoUser.class);
                     
                     ChatDemoApplication.setUserName(userName);
                     ChatDemoApplication.setPassword(password);

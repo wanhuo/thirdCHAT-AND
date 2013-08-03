@@ -468,8 +468,7 @@ public class ChatUtil {
             
             if(localUser == null) {
                 //This is a new contact added on remote, sync it to local
-                //DemoUser myUser = remoteContact.toType(DemoUser.class);
-                DemoUser myUser = new DemoUser((Entity)remoteContact.userObject);
+                DemoUser myUser = remoteContact.toType(DemoUser.class);
                 addDB(myUser, db);
                 
                 final String picture = remoteContact.getPicture();
@@ -510,8 +509,7 @@ public class ChatUtil {
                 }).start();
             } else {
                 //Sync the existing local user with the remote user if necessary
-                //DemoUser myUser = remoteContact.toType(DemoUser.class);
-                DemoUser myUser = new DemoUser((Entity)remoteContact.userObject);
+                DemoUser myUser = remoteContact.toType(DemoUser.class);
                 updateDB(myUser, db);
                 
                 final String picture = remoteContact.getPicture();

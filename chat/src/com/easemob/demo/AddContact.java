@@ -117,8 +117,7 @@ public class AddContact extends Activity {
 						return;
 					}
 					
-					//DemoUser user = contact.toType(DemoUser.class);
-					DemoUser user = new DemoUser((Entity)contact.userObject);
+					DemoUser user = contact.toType(DemoUser.class);
 					final Message msg = Message.obtain();
 					msg.what = 1;
 					msg.obj = user;
