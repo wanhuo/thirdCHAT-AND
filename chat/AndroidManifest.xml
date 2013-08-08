@@ -130,7 +130,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide" />
         
-        <service android:name="com.easemob.chat.EaseMobService" />
+        <service android:name="com.easemob.EaseMobService" />
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"

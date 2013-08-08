@@ -28,7 +28,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
 
-import com.easemob.chat.EaseMob;
+import com.easemob.EaseMob;
 import com.easemob.chat.UserUtil;
 import com.easemob.chat.db.EaseMobMsgDB;
 import com.easemob.chat.domain.EMUserBase;

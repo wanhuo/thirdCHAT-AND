@@ -18,12 +18,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.easemob.chat.EMNetworkUnconnectedException;
 import com.easemob.chat.EMUser;
-import com.easemob.chat.EaseMobException;
 import com.easemob.chat.callbacks.AddContactCallback;
 import com.easemob.chat.callbacks.GetContactCallback;
 import com.easemob.chat.domain.EMUserBase;
+import com.easemob.exceptions.EMNetworkUnconnectedException;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
 
 public class AddContact extends Activity {

@@ -10,13 +10,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.easemob.chat.EMAuthenticationException;
-import com.easemob.chat.EMNetworkUnconnectedException;
-import com.easemob.chat.EMResourceNotExistException;
-import com.easemob.chat.EaseMob;
-import com.easemob.chat.EaseMobException;
+import com.easemob.EaseMob;
 import com.easemob.chat.callbacks.LoginCallBack;
 import com.easemob.chat.domain.EMUserBase;
+import com.easemob.exceptions.EMAuthenticationException;
+import com.easemob.exceptions.EMNetworkUnconnectedException;
+import com.easemob.exceptions.EMResourceNotExistException;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
 
 public class Login extends Activity {
