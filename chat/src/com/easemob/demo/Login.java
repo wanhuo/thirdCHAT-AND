@@ -69,20 +69,16 @@ public class Login extends Activity {
                 public void onFailure(final EaseMobException cause) {
                    Log.e(TAG, "登录失败:" + cause.getMessage());
                    closeLogingDialog();
-                   
-                   runOnUiThread(new Runnable() {
-                        public void run() {
-                            if(cause instanceof EMAuthenticationException) {
-                                startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" + getString(R.string.login_failuer_pswerror)));        
-                            } else if(cause instanceof EMNetworkUnconnectedException) {
-                                startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" + getString(R.string.login_failuer_network_unconnected)));        
-                            } else if(cause instanceof EMResourceNotExistException) {
-                                startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" +cause.getMessage()));        
-                            } else {
-                                startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+"：" + getString(R.string.login_failuer_toast)));        
-                            }                            
-                        }
-                   });
+
+                   if(cause instanceof EMAuthenticationException) {
+                       startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+": " + getString(R.string.login_failuer_pswerror)));        
+                   } else if(cause instanceof EMNetworkUnconnectedException) {
+                       startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+": " + getString(R.string.login_failuer_network_unconnected)));        
+                   } else if(cause instanceof EMResourceNotExistException) {
+                       startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+": " +cause.getMessage()));        
+                   } else {
+                       startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+": " + getString(R.string.login_failuer_toast)));        
+                   }                            
                 }
 
                 @Override
