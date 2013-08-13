@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.easemob.chat.db.EaseMobMsgDB;
-import com.easemob.demo.ChatDemoApplication;
+import com.easemob.demo.Gl;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
 
@@ -71,6 +71,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	    db.execSQL("DROP TABLE IF EXISTS " + Contract.UserTable.TABLE_NAME);
 	    onCreate(db);
 
-        ChatDemoApplication.setInited(false);
+        Gl.setInited(false);
 	}
 }

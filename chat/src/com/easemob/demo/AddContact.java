@@ -1,7 +1,5 @@
 package com.easemob.demo;
 
-import org.usergrid.java.client.entities.Entity;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -22,6 +20,7 @@ import com.easemob.chat.EMUser;
 import com.easemob.chat.callbacks.AddContactCallback;
 import com.easemob.chat.callbacks.GetContactCallback;
 import com.easemob.chat.domain.EMUserBase;
+import com.easemob.demo.domain.DemoUser;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;

@@ -48,6 +48,7 @@ import com.easemob.chat.domain.Group;
 import com.easemob.chat.domain.Message;
 import com.easemob.chat.domain.MessageFactory;
 import com.easemob.demo.R;
+import com.easemob.demo.domain.DemoUser;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.ChatActivity;
@@ -115,8 +116,8 @@ public class MainActivity extends FragmentActivity {
 		/************************************ EaseMob SDK Start ******************************************/
 		
 		/***** Use EaseMob SDK. Step 1: Call EaseMob.init() and EaseMob.login ***************************/
-        String userName = ChatDemoApplication.getUserName();
-        String password = ChatDemoApplication.getPassword();
+        String userName = Gl.getUserName();
+        String password = Gl.getPassword();
         
 		EaseMob.init(this.getApplicationContext(), userName, password);
 		EaseMob.login();
@@ -315,7 +316,7 @@ public class MainActivity extends FragmentActivity {
 			processMsgNotification();
 
 			// initialize the whole contact list only once
-			if (!ChatDemoApplication.getInited()) {
+			if (!Gl.getInited()) {
 			    GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
 	            callback.addUserMode = true;	
 	            callback.setInitedAfterSuccess = true;
@@ -435,7 +436,7 @@ public class MainActivity extends FragmentActivity {
 					}
 					
 					if(setInitedAfterSuccess) {
-		                ChatDemoApplication.setInited(true);
+		                Gl.setInited(true);
 					}
 				}
 			});

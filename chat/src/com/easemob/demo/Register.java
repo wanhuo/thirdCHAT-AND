@@ -1,6 +1,9 @@
 package com.easemob.demo;
 
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,6 +17,7 @@ import com.easemob.chat.EMUser;
 import com.easemob.EaseMob;
 import com.easemob.chat.callbacks.CreateAccountCallBack;
 import com.easemob.chat.domain.EMUserBase;
+import com.easemob.demo.R;
 import com.easemob.exceptions.EMDuplicateResourceException;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
@@ -27,6 +31,9 @@ public class Register extends Activity {
 	private EditText confirmPasswordEditText;
     private ProgressDialog progressDialog;
 
+    //a-z, 0-9, underscore, hyphen.   Length at least 3 characters and maximum length of 15 
+    private static final String USERNAME_PATTERN = "^[a-z0-9_-]{3,15}$";
+    
     private static final int REQUEST_CODE_REG_CONFIRM = 1;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +54,8 @@ public class Register extends Activity {
 	    final String confirmpassword = confirmPasswordEditText.getText().toString();
         if(username.isEmpty()){
             startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.regist_input_account)));
+        } else if(!validate(username)){
+            startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.regist_invalid_username)));
         } else if (password.isEmpty() && confirmpassword.isEmpty()){
             startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.login_input_pwd)));
         } else if (!password.equals(confirmpassword)){
@@ -62,36 +71,26 @@ public class Register extends Activity {
                         progressDialog.dismiss();
                     }
 
-                    ChatDemoApplication.setUserName(username);
-                    
-                    Log.d("register", "create user successful: " + user.getUsername());                    
+                    Gl.setUserName(username);                    
+                
                     startActivityForResult(new Intent(getContext(), AlertDialog.class).putExtra("msg", getString(R.string.register_success)), REQUEST_CODE_REG_CONFIRM);
                 }
 
                 @Override
                 public void onFailure(EaseMobException cause) {
+                    Log.e(TAG, cause.getMessage());
+                    
                     if (progressDialog != null) {
                         progressDialog.dismiss();
                     }
                     
                     if(cause instanceof EMDuplicateResourceException) {
-                        Log.w(TAG, cause.getMessage());
-                        if(cause.getMessage().contains("Creating company failed")) {
-                            startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+"：" + getString(R.string.register_failure_company_exist)));
-                         } else {
-                            startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+"：" + getString(R.string.register_failure_user_exist)));
-                        }
-                        return;
+                        startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+": " + getString(R.string.register_failure_user_exist)));
+                    } else if (cause instanceof EMNetworkUnconnectedException) {
+                        startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+": " + getString(R.string.login_failuer_network_unconnected)));        
+                    } else {                    
+                        startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+": " + getString(R.string.login_failuer_toast)));
                     }
-                    
-                    if(cause instanceof EMNetworkUnconnectedException) {
-                        Log.w(TAG, "网络连接不可用，请稍后重试");
-                        startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+"：" + getString(R.string.login_failuer_network_unconnected)));        
-                        return;
-                    }
-                    
-                    Log.e(TAG, cause.getMessage()); 
-                    startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+"：" + cause.getMessage()));                 
                 }
 
 				@Override
@@ -132,5 +131,10 @@ public class Register extends Activity {
 	public Context getContext() {
 	    return this;
 	}
-	
+		   
+    public boolean validate(final String username) {  
+        Pattern pattern = Pattern.compile(USERNAME_PATTERN);
+        Matcher matcher = pattern.matcher(username);
+        return matcher.matches();
+    }
 }

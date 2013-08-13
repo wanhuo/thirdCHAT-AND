@@ -37,6 +37,7 @@ import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
 import com.easemob.demo.db.Contract;
 import com.easemob.demo.db.DBOpenHelper;
+import com.easemob.demo.domain.DemoUser;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.util.AppendObjectOutputStream;
 import com.easemob.util.HanziToPinyin;

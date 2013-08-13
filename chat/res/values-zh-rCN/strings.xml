@@ -8,7 +8,8 @@
     <string name="addcontact_user_exist_in_contacts">用户已在联系人列表</string>
     <string name="login_input_username">请输入用户名</string>
     <string name="login_input_pwd">请输入密码</string>
-     <string name="regist_input_account">请输入个人账号/手机/邮箱</string>
-     <string name="regist_pwd_twice_error">两次的填写的密码不一致</string>
+    <string name="regist_input_account">请输入个人账号/手机/邮箱</string>
+    <string name="regist_pwd_twice_error">两次的填写的密码不一致</string>
+    <string name="regist_invalid_username">不合法的用户名。用户名只能包括英文字母，数字，下划线和横线。长度需在3到15个字符之间。</string>
     
 </resources>
