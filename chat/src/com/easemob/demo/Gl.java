@@ -67,8 +67,7 @@ public final class Gl extends Application {
     private static String userName = null;
     
     public static void setUserName(String user){
-        System.err.println("set user name:" + user);
-        if (user != null && !user.equals(userName)) {
+       if (user != null && !user.equals(userName)) {
             SharedPreferences.Editor editor = sDefaultSharedPreferences.edit();
             if (editor.putString(PREF_USERNAME, user).commit()) {
                 userName = user;
