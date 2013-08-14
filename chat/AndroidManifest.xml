@@ -148,6 +148,9 @@
         <meta-data
             android:name="EASEMOB_SERVER_DOMAIN"
             android:value="ac2" />
+        <meta-data
+            android:name="EASEMOB_ACCEPT_INVITATION_ALWAYS"
+            android:value="true" />             
     </application>
 
 </manifest>
