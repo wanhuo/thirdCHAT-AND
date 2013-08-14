@@ -16,21 +16,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +28,6 @@ import com.easemob.chat.EMChat;
 import com.easemob.chat.EMUser;
 import com.easemob.EaseMob;
 import com.easemob.EaseMobService;
-import com.easemob.chat.UserUtil;
 import com.easemob.chat.callbacks.ConnectionListener;
 import com.easemob.chat.callbacks.ContactListener;
 import com.easemob.chat.callbacks.GetContactsCallback;
@@ -51,14 +40,10 @@ import com.easemob.demo.R;
 import com.easemob.demo.domain.DemoUser;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
-import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.activity.ChatHistoryFragment;
 import com.easemob.ui.activity.ContactGroupListFragment;
-import com.easemob.ui.activity.ContactListFragment;
 import com.easemob.ui.adapter.ContactAdapter;
-import com.easemob.ui.adapter.ContactPagerAdapter;
 import com.easemob.ui.adapter.RowAdapter;
-import com.easemob.ui.widget.Sidebar;
 
 
 public class MainActivity extends FragmentActivity {
@@ -119,8 +104,12 @@ public class MainActivity extends FragmentActivity {
         String userName = Gl.getUserName();
         String password = Gl.getPassword();
         
-		EaseMob.init(this.getApplicationContext(), userName, password);
-		EaseMob.login();
+        boolean loggedin = getIntent().getBooleanExtra("loggedin", false);
+        // if already login from LoginActivity, skip the login in call below
+        if (!loggedin) {
+            EaseMob.init(this.getApplicationContext());
+            EaseMob.login(userName, password);
+        }
 		
 		/***** Use EaseMob SDK. Step 2: Register receivers to receive chat message and push message *****/
         IntentFilter chatIntentFilter = new IntentFilter(EaseMobService.BROADCAST_CHAT_ACTION);

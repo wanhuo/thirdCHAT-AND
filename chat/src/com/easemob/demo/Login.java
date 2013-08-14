@@ -53,8 +53,8 @@ public class Login extends Activity {
         	showLoginDialog();
         	Gl.setUserName(userName);
             
-    		EaseMob.init(this.getApplicationContext(), userName, password);
-    		EaseMob.login(new LoginCallBack() {
+    		EaseMob.init(this.getApplicationContext());
+    		EaseMob.login(userName, password, new LoginCallBack() {
                 @Override
                 public void onSuccess(EMUserBase user) {
                     DemoUser demoUser = user.toType(DemoUser.class);
@@ -69,7 +69,7 @@ public class Login extends Activity {
 
                 @Override
                 public void onFailure(final EaseMobException cause) {
-                   Log.e(TAG, "登录失败:" + cause.getMessage());
+                   Log.e(TAG, "login failed: " + cause.getMessage());
                    closeLogingDialog();
                    
                    if(cause instanceof EMAuthenticationException) {
