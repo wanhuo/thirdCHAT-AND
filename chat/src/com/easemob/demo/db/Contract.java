@@ -1,6 +1,5 @@
 package com.easemob.demo.db;
 
-
 import android.provider.BaseColumns;
 
 public class Contract {
@@ -25,15 +24,7 @@ public class Contract {
         public static final String COLUMN_NAME_REMOTEAVATARPATH = "remoteavatarpath"; 
 
 	}
-	
-	
-	public static abstract class GroupsTable implements BaseColumns{
-		public static final String TABLE_NAME = "groups";
-		public static final String COLUMN_NAME_ID = "id";
-		public static final String COLUMN_NAME_GROUP_NAME = "group_name";
 		
-	}
-	
 
 	public static abstract class LinkTable implements BaseColumns {
 		public static final String TABLE_NAME = "link";

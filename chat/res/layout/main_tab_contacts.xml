@@ -42,7 +42,7 @@
                         style="@style/contact_title_devide_style"
                         android:layout_alignParentRight="true" />
                 </RelativeLayout>
-                
+
                 <RelativeLayout
                     android:id="@+id/title_layout3"
                     android:layout_width="fill_parent"
@@ -55,10 +55,8 @@
                     <TextView
                         android:id="@+id/title3"
                         style="@style/contact_title_text_style"
-                        android:text="@string/work_group" />
-
+                        android:text="@string/group" />
                 </RelativeLayout>
-                
             </LinearLayout>
 
             <LinearLayout
@@ -72,20 +70,11 @@
                     style="@style/main_title_select_line_style"
                     android:visibility="visible" />
 
-                <ImageView
-                    android:id="@+id/iv_line2"
-                    style="@style/main_title_select_line_style"
-                    android:visibility="invisible" />
 
                 <ImageView
                     android:id="@+id/iv_line3"
                     style="@style/main_title_select_line_style"
                     android:visibility="invisible" />
-
-               <!--  <ImageView
-                    android:id="@+id/iv_line4"
-                    style="@style/main_title_select_line_style"
-                    android:visibility="invisible" /> -->
             </LinearLayout>
         </LinearLayout>
 

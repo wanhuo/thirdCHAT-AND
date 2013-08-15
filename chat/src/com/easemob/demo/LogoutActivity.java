@@ -36,7 +36,6 @@ public class LogoutActivity extends Activity {
         MainActivity.instance.finish();
 //        setResult(RESULT_OK);
 		startActivity(new Intent(this, Login.class));
-		overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}
 
 	public void cancel(View view) {

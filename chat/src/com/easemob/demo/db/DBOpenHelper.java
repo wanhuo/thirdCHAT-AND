@@ -4,8 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.easemob.chat.db.ContractGroup;
 import com.easemob.chat.db.EaseMobMsgDB;
 import com.easemob.demo.Gl;
+import com.easemob.chat.db.MsgDBOpenHelper;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
 
@@ -30,10 +32,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
             + Contract.UserTable.COLUMN_NAME_FAVORITE + " INT, "
             + Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH + " TEXT); ";
 
-    private static final String USER_TABLE_GROUPS_CREATE = "CREATE TABLE "
-			+ Contract.GroupsTable.TABLE_NAME + " (" 
-	        + Contract.GroupsTable.COLUMN_NAME_ID	+ " INTEGER PRIMARY KEY AUTOINCREMENT, " 
-			+ Contract.GroupsTable.COLUMN_NAME_GROUP_NAME	+ " TEXT); " ;
 	
 	private static final int DATABASE_VERSION = 9;
 
@@ -63,14 +61,16 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(USER_TABLE_CREATE);
-		db.execSQL(USER_TABLE_GROUPS_CREATE);
+		db.execSQL(MsgDBOpenHelper.USER_TABLE_GROUPS_CREATE);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 	    db.execSQL("DROP TABLE IF EXISTS " + Contract.UserTable.TABLE_NAME);
+	    db.execSQL("DROP TABLE IF EXISTS " + ContractGroup.GroupsTable.TABLE_NAME);
 	    onCreate(db);
 
         Gl.setInited(false);
 	}
+
 }

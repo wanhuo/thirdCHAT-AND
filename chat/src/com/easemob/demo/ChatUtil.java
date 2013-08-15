@@ -1,21 +1,14 @@
 package com.easemob.demo;
 
 import java.io.BufferedInputStream;
-import java.io.EOFException;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,19 +25,72 @@ import com.easemob.EaseMob;
 import com.easemob.chat.UserUtil;
 import com.easemob.chat.db.EaseMobMsgDB;
 import com.easemob.chat.domain.EMUserBase;
+import com.easemob.chat.domain.Group;
 import com.easemob.chat.domain.Message;
+import com.easemob.chat.domain.RESTDepartment;
 import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
 import com.easemob.demo.db.Contract;
 import com.easemob.demo.db.DBOpenHelper;
 import com.easemob.demo.domain.DemoUser;
 import com.easemob.ui.activity.ChatActivity;
-import com.easemob.ui.util.AppendObjectOutputStream;
 import com.easemob.util.HanziToPinyin;
 
 
 public class ChatUtil {
     private static final String TAG = ChatUtil.class.getSimpleName();  
+    
+    //public static List<RESTDepartment> restDepartments = new ArrayList<RESTDepartment>();
+    
+/*    static {
+        RESTDepartment restDepartment = new RESTDepartment();
+        restDepartment.setName("/");
+        //restDepartment.setChild("");
+        restDepartments.add(restDepartment);
+        restDepartment = new RESTDepartment();
+        
+        restDepartment.setName("/集团总公司");
+        restDepartment.setParent("/");
+        restDepartments.add(restDepartment);
+        
+        restDepartment = new RESTDepartment();
+        restDepartment.setName("/集团总公司/总经理办公室");
+        restDepartment.setParent("/集团总公司");
+        restDepartments.add(restDepartment);
+        
+        restDepartment = new RESTDepartment();
+        restDepartment.setName("/集团总公司/总经理办公室/人力资源部");
+        restDepartment.setParent("/集团总公司/总经理办公室");
+        restDepartments.add(restDepartment);
+        
+        restDepartment = new RESTDepartment();
+        restDepartment.setName("/集团总公司/总经理办公室/综合管理部");
+        restDepartment.setParent("/集团总公司/总经理办公室");
+        restDepartments.add(restDepartment);
+        
+        restDepartment = new RESTDepartment();
+        restDepartment.setName("/集团总公司/总经理办公室/物业管理部");
+        restDepartment.setParent("/集团总公司/总经理办公室");
+        restDepartments.add(restDepartment);
+        
+        
+        restDepartment = new RESTDepartment();
+        restDepartment.setName("/集团总公司/研发设计中心");
+        restDepartment.setParent("/集团总公司");
+        restDepartments.add(restDepartment);
+        
+        restDepartment = new RESTDepartment();
+        restDepartment.setName("/集团总公司/研发设计中心/android");
+        restDepartment.setParent("/集团总公司/研发设计中心");
+        restDepartments.add(restDepartment);
+        
+        restDepartment = new RESTDepartment();
+        restDepartment.setName("/集团总公司/研发设计中心/ios");
+        restDepartment.setParent("/集团总公司/研发设计中心");
+        restDepartments.add(restDepartment);
+    }*/
+
+
     
     //load all users
     
@@ -92,11 +138,14 @@ public class ChatUtil {
                 user.setWorkPhone(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_WORKPHONE)));
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
+                //user.setFavorite(cursor.getInt(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_FAVORITE)) > 0);
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
-                                
+                
+                
                 //Load chat history
                 if(EaseMobMsgDB.isTableExists(db, user.getUsername())){
                 	List<Message> chatHistory= EaseMobMsgDB.findAllMessages(ctx, user.getUsername());
+//                	List<Message> chatHistory= EaseMobMsgDB.findSpecifiedMessages(ctx, user.getUsername(), "0", ChatActivity.PAGE_SIZE);
                 	user.setMessages(chatHistory);
                 }
 //                List<Message> chatHistory = loadMessageHistory(user.getId(), false);            
@@ -114,7 +163,7 @@ public class ChatUtil {
     }
     
     public static DemoUser loadUser(Context ctx, String userId) {
-        DemoUser user = null;
+    	DemoUser user = null;
         
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         Cursor cursor = db.query(Contract.UserTable.TABLE_NAME,
@@ -138,7 +187,8 @@ public class ChatUtil {
                         null, null, null);
         
         if (cursor != null) {
-            if(cursor.moveToFirst()) {        
+            if(cursor.moveToFirst()) {
+        
                 user = new DemoUser();
                 user.setUsername(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ID)));
                 user.setJid(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_JID)));
@@ -150,6 +200,7 @@ public class ChatUtil {
                 user.setWorkPhone(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_WORKPHONE)));
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
+                //user.setFavorite(cursor.getInt(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_FAVORITE)) > 0);
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
             //Load chat history
 /*            List<Message> chatHistory = loadChatHistory(user.getId());            
@@ -160,60 +211,36 @@ public class ChatUtil {
         }
         
         return user;
+    }    
+    
+    /**
+    * Load all users whose favorite attribute is true
+    * @param allUsers
+    * @return List<User>
+    */
+    public static List<DemoUser> loadUsersWithFavorite(List<DemoUser> allUsers) {
+        List<DemoUser> resultList = new ArrayList<DemoUser>();
+        for(DemoUser user : allUsers) {
+/*            if(user.isFavorite()) {
+                resultList.add(user);
+            }*/
+        }
+        
+        return resultList;
     }
     
     /**
-    * Load all users who has recent chat. 
+    * Search users based on department path
     * @param allUsers
-    * @return List<User> sorted in order of last chat time
+    * @param path: department path. example: /department1/department2/department3
+    * @return List<User> 
     */
-    public static List<EMUserBase> loadUsersWithRecentChat(List<EMUserBase> allUsers,Context context) {
-        List<EMUserBase> resultList = new ArrayList<EMUserBase>();
-        for(EMUserBase user : allUsers) {
-            if(user.getMessages().size() >0) {
-                resultList.add(user);
-            }
-        }
-        
-        //TODO:
-        //create group adapter to also show conversation from groupchat in chats list fragment
-/*        for (Group group : Group.allGroups) {
-            GroupToUserAdapter ga = new GroupToUserAdapter(group, context);
-            if (ga.getMessages().size() > 0) {
-                resultList.add(ga);
-            }
-        }*/
-        
-        //Sort User by last chat time
-        Collections.sort( resultList, new Comparator<EMUserBase>() {
-            @Override
-            public int compare( final EMUserBase user1,
-                                final EMUserBase user2 ) {
-                if(user2.getMessages().size() == 0 && user1.getMessages().size() == 0) {
-                    return 0;
-                } else if(user2.getMessages().size() == 0 && user1.getMessages().size() > 0) {
-                    return -1;
-                } else if(user2.getMessages().size() > 0 && user1.getMessages().size() == 0) {
-                    return 1;
-                }
-
-                Message user2LastMessage = user2.getMessages().get(user2.getMessages().size() -1);
-                Message user1LastMessage = user1.getMessages().get(user1.getMessages().size() -1);
-                long user2timestamp = user2LastMessage.getTime();
-                long user1timestamp = user1LastMessage.getTime();
-                
-                if (user2timestamp == user1timestamp) {
-                    return 0;
-                } else if (user2timestamp > user1timestamp) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }
-            
-        } );
-        return resultList;
+    
+    public static String getDepartmentName(String path){
+    	return path.substring(path.lastIndexOf("/") + 1, path.length());
     }
+    
+    
     
     /**
     * Search users 
@@ -259,6 +286,7 @@ public class ChatUtil {
      * @param message message to log
      * @param isPushMessage if the message is push message, we save the message history to a file named PushMeg.db
      */
+    /*
     public static void saveMessageHistory(Message message, boolean isPushMessage) {
         String state = Environment.getExternalStorageState();
         if (!Environment.MEDIA_MOUNTED.equals(state)) {
@@ -302,9 +330,10 @@ public class ChatUtil {
             }
         }
     }
-    
+    */
 
     //TODO: only load most recent 50 messages (or 20?. we need a paged operation)
+    /*
     public static List<Message> loadMessageHistory(String userName,
             boolean isPushMessage) {
         List<Message> chatHistory = new LinkedList<Message>();
@@ -352,8 +381,10 @@ public class ChatUtil {
 
         return chatHistory;
     }
-    
+    */
+    /*
     public static void deleteMessageHistory(String userName, List<Message> messagesToDelete, boolean isPushMessage) {
+        System.out.println("delete msg historys");
         String state = Environment.getExternalStorageState();
         if (!Environment.MEDIA_MOUNTED.equals(state)) {
             return;
@@ -367,6 +398,7 @@ public class ChatUtil {
         }
 
         if (!historyFile.exists()) {
+            System.out.println("doesn't exists!");
             return;
         }
 
@@ -422,7 +454,9 @@ public class ChatUtil {
         // Now delete the old file and rename the temp file
         historyFile.delete();
         outputTempFile.renameTo(historyFile);
+        System.err.println("delete history finished");
     }
+    */
     
     public static void deleteAllMessageHistory(String userName, List<Message> messages, boolean isPushMessage) {
         String state = Environment.getExternalStorageState();
@@ -454,6 +488,21 @@ public class ChatUtil {
             }
         }
     }
+
+    /**
+    * If the user has been set as favorite by the current logged in user (myself). 
+    * @param Context
+    * @param userId 
+    * @param isFavoriate 
+    */
+    public static void setFavorite(Context ctx, String userId, boolean isFavoriate) {
+        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();        
+        ContentValues values = new ContentValues();
+        values.put(Contract.UserTable.COLUMN_NAME_FAVORITE, isFavoriate?1:0);
+        db.update(Contract.UserTable.TABLE_NAME, values, Contract.UserTable.COLUMN_NAME_ID + " = ?",
+                new String[] { String.valueOf(userId) });
+    }
+    
     
     //add user if doesn't exists
     public static void addOrUpdateUsers(Context ctx, List<EMUserBase> remoteContactList) {
@@ -468,8 +517,7 @@ public class ChatUtil {
         	EMUserBase localUser = allLocalUsers.get(username);
             
             if(localUser == null) {
-                //This is a new contact added on remote, sync it to local
-                DemoUser myUser = remoteContact.toType(DemoUser.class);
+            	DemoUser myUser = remoteContact.toType(DemoUser.class);
                 addDB(myUser, db);
                 
                 final String picture = remoteContact.getPicture();
@@ -477,7 +525,7 @@ public class ChatUtil {
                     //No need to download avatar for this user
                     continue;
                 }
-                final String localFilePath = UserUtil.getAvatorPath(username).getAbsolutePath();
+                final String localFilePath = UserUtil.getThumbAvatorPath(username).getAbsolutePath();
                 if (new File(localFilePath).exists()) {
                     //already have this avator on phone
                     continue;
@@ -485,8 +533,7 @@ public class ChatUtil {
                 new Thread(new Runnable() {                    
                     @Override
                     public void run() {
-                        final String localFilePath = UserUtil.getAvatorPath(username).getAbsolutePath();
-                        hfm.downloadFile(picture, localFilePath, EaseMob.APPKEY, null, new CloudOperationCallback() {
+                        hfm.downloadThumbnailFile(picture, localFilePath, EaseMob.APPKEY, null, 60, true, new CloudOperationCallback() {
 
                             @Override
                             public void onProgress(int progress) {
@@ -501,8 +548,8 @@ public class ChatUtil {
                             @Override
                             public void onSuccess() {
                                 Log.d("ease", "download complete");
-                                if (ChatActivity.getAvatorCache().get(username) != null) {
-                                    ChatActivity.getAvatorCache().remove(username);
+                                if (ChatActivity.getAvatorCache().get("th"+username) != null) {
+                                    ChatActivity.getAvatorCache().remove("th"+username);
                                 }
                             }
                         });
@@ -510,43 +557,42 @@ public class ChatUtil {
                 }).start();
             } else {
                 //Sync the existing local user with the remote user if necessary
-                DemoUser myUser = remoteContact.toType(DemoUser.class);
+            	DemoUser myUser = remoteContact.toType(DemoUser.class);
                 updateDB(myUser, db);
+                final String localFilePath = UserUtil.getThumbAvatorPath(username).getAbsolutePath();
                 
                 final String picture = remoteContact.getPicture();
-                final String localFilePath = UserUtil.getAvatorPath(username).getAbsolutePath();
                 if(picture == null || picture.equals(localUser.getPicture()) && new File(localFilePath).exists()){
                     //No need to download avatar for this user
                     continue;
                 }
-                if (new File(localFilePath).exists()) {
-                    //already have this avator on phone
-                    continue;
-                }
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						hfm.downloadFile(picture, localFilePath, EaseMob.APPKEY, null, new CloudOperationCallback() {
-							@Override
-							public void onProgress(int progress) {
-								Log.d("ease", "download progress: " + progress);
-							}
+                new Thread(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        hfm.downloadThumbnailFile(picture, localFilePath, EaseMob.APPKEY, null, new CloudOperationCallback() {
+                            @Override
+                            public void onProgress(int progress) {
+                                // TODO Auto-generated method stub
+                                
+                            }
+                            
+                            @Override
+                            public void onError(String msg) {
+                                Log.d("ease", "download error: " + msg);
+                            }
 
-							@Override
-							public void onError(String msg) {
-								Log.d("ease", "download error: " + msg);
-							}
-
-							@Override
-							public void onSuccess() {
-								Log.d("ease", "download complete");
-								if (ChatActivity.getAvatorCache().get(username) != null) {
-									ChatActivity.getAvatorCache().remove(username);
-								}
-							}
-						});
-					}
-				}).start();
+                            @Override
+                            public void onSuccess() {
+                                Log.d("ease", "download complete");
+                                if (ChatActivity.getAvatorCache().get(username) != null) {
+                                    ChatActivity.getAvatorCache().remove(username);
+                                }
+                            }
+                        });
+                        
+                    }
+                }).start();
             }
         } 
     }
@@ -697,7 +743,12 @@ public class ChatUtil {
         	if(nick == null || nick.isEmpty()){
         		values.put(Contract.UserTable.COLUMN_NAME_HEADER, "Z");
         	} else {
-        		values.put(Contract.UserTable.COLUMN_NAME_HEADER, HanziToPinyin.getInstance().get(contact.getNick().substring(0, 1)).get(0).target.substring(0, 1).toUpperCase());
+        	    String header = HanziToPinyin.getInstance().get(contact.getNick().substring(0, 1)).get(0).target.substring(0, 1).toUpperCase();
+        	    char h = header.charAt(0);
+        	    if(h >= 65)
+        	        values.put(Contract.UserTable.COLUMN_NAME_HEADER, HanziToPinyin.getInstance().get(contact.getNick().substring(0, 1)).get(0).target.substring(0, 1).toUpperCase());
+        	    else
+        	        values.put(Contract.UserTable.COLUMN_NAME_HEADER, "Z");
         	}
         }
         values.put(Contract.UserTable.COLUMN_NAME_SEX, contact.getSex());
@@ -707,6 +758,8 @@ public class ChatUtil {
         values.put(Contract.UserTable.COLUMN_NAME_SIGNATURE, contact.getSignature());
         values.put(Contract.UserTable.COLUMN_NAME_ADDRESS, contact.getAddress());
         values.put(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH, contact.getPicture());
+        
+        //values.put(Contract.UserTable.COLUMN_NAME_NOTE, "");  
         
         try {
             db.insert(Contract.UserTable.TABLE_NAME, null, values);
@@ -728,7 +781,38 @@ public class ChatUtil {
         db.delete(Contract.UserTable.TABLE_NAME, Contract.UserTable.COLUMN_NAME_ID + " = ?",
                 new String[] { String.valueOf(userId) });
     }
+    
+    private static void saveAvator(String userId, byte[] avator) {
+        String state = Environment.getExternalStorageState();
+        if (!Environment.MEDIA_MOUNTED.equals(state)) {   
+            Log.e(TAG, "MEDIA is not MOUNTED, saveAvator failed");
+            return;
+        }
+        
+        File filepath = UserUtil.getAvatorPath(userId);
+        filepath.getParentFile().mkdirs();
 
+        OutputStream os = null;
+        try {
+            os = new BufferedOutputStream(new FileOutputStream(filepath));
+            os.write(avator);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }  
+     
+    }
+    
+    
     public static byte[] getFileBytes(File file) throws IOException {
         BufferedInputStream bis = null;
         try {
