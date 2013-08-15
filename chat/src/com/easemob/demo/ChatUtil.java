@@ -40,56 +40,6 @@ import com.easemob.util.HanziToPinyin;
 public class ChatUtil {
     private static final String TAG = ChatUtil.class.getSimpleName();  
     
-    //public static List<RESTDepartment> restDepartments = new ArrayList<RESTDepartment>();
-    
-/*    static {
-        RESTDepartment restDepartment = new RESTDepartment();
-        restDepartment.setName("/");
-        //restDepartment.setChild("");
-        restDepartments.add(restDepartment);
-        restDepartment = new RESTDepartment();
-        
-        restDepartment.setName("/集团总公司");
-        restDepartment.setParent("/");
-        restDepartments.add(restDepartment);
-        
-        restDepartment = new RESTDepartment();
-        restDepartment.setName("/集团总公司/总经理办公室");
-        restDepartment.setParent("/集团总公司");
-        restDepartments.add(restDepartment);
-        
-        restDepartment = new RESTDepartment();
-        restDepartment.setName("/集团总公司/总经理办公室/人力资源部");
-        restDepartment.setParent("/集团总公司/总经理办公室");
-        restDepartments.add(restDepartment);
-        
-        restDepartment = new RESTDepartment();
-        restDepartment.setName("/集团总公司/总经理办公室/综合管理部");
-        restDepartment.setParent("/集团总公司/总经理办公室");
-        restDepartments.add(restDepartment);
-        
-        restDepartment = new RESTDepartment();
-        restDepartment.setName("/集团总公司/总经理办公室/物业管理部");
-        restDepartment.setParent("/集团总公司/总经理办公室");
-        restDepartments.add(restDepartment);
-        
-        
-        restDepartment = new RESTDepartment();
-        restDepartment.setName("/集团总公司/研发设计中心");
-        restDepartment.setParent("/集团总公司");
-        restDepartments.add(restDepartment);
-        
-        restDepartment = new RESTDepartment();
-        restDepartment.setName("/集团总公司/研发设计中心/android");
-        restDepartment.setParent("/集团总公司/研发设计中心");
-        restDepartments.add(restDepartment);
-        
-        restDepartment = new RESTDepartment();
-        restDepartment.setName("/集团总公司/研发设计中心/ios");
-        restDepartment.setParent("/集团总公司/研发设计中心");
-        restDepartments.add(restDepartment);
-    }*/
-
 
     
     //load all users

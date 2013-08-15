@@ -610,7 +610,7 @@ public class MainActivity extends FragmentActivity {
 						((ChatHistoryFragment) fragments[0]).rowAdapter.notifyDataSetChanged();
 						break;
 					case 1:
-						ContactGroupListFragment tmp = ((ContactGroupListFragment) fragments[1]);
+						TabFragment2 tmp = ((TabFragment2) fragments[1]);
 						List<EMUserBase> list = new ArrayList<EMUserBase>();
                         for (EMUserBase user : EMUser.allUsers.values()) {
                             if (!(user instanceof Group)) {
