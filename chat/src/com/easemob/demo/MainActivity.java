@@ -111,7 +111,7 @@ public class MainActivity extends FragmentActivity {
 		currentTabIndex = 0;
 		fragments = new Fragment[] { 
 				new ChatHistoryFragment(),
-				new ContactGroupListFragment(),
+				new TabFragment2(),
 				new SettingFragment()
 				};
 
