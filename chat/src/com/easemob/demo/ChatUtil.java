@@ -1,24 +1,16 @@
 package com.easemob.demo;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.usergrid.java.client.entities.Entity;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
 import android.util.Log;
 
 import com.easemob.EaseMob;
@@ -39,10 +31,6 @@ import com.easemob.util.HanziToPinyin;
 
 public class ChatUtil {
     private static final String TAG = ChatUtil.class.getSimpleName();  
-    
-
-    
-    //load all users
     
     /**
     * Load all users, this also load users' chat history. This does not include the current user (myself).
@@ -178,14 +166,7 @@ public class ChatUtil {
         
         return resultList;
     }
-    
-    /**
-    * Search users based on department path
-    * @param allUsers
-    * @param path: department path. example: /department1/department2/department3
-    * @return List<User> 
-    */
-    
+        
     public static String getDepartmentName(String path){
     	return path.substring(path.lastIndexOf("/") + 1, path.length());
     }
@@ -407,37 +388,6 @@ public class ChatUtil {
         System.err.println("delete history finished");
     }
     */
-    
-    public static void deleteAllMessageHistory(String userName, List<Message> messages, boolean isPushMessage) {
-        String state = Environment.getExternalStorageState();
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            return;
-        }
-
-        File historyFile;
-        if (isPushMessage) {
-            historyFile = UserUtil.getPushMessagePath(userName);
-        } else {
-            historyFile = UserUtil.getMessagePath(userName);
-        }
-
-        if (!historyFile.exists()) {
-            return;
-        }
-
-        historyFile.delete();
-        //delete pic, voice files attached in the message
-        for (Message msg : messages) {
-            if(msg.getType() == Message.TYPE_IMAGE || msg.getType() == Message.TYPE_VOICE) {
-                if (msg.getFilePath() != null) {
-                    File toDelFile = new File(msg.getFilePath());
-                    if (toDelFile.exists()) {
-                        toDelFile.delete();
-                    }
-                }
-            }
-        }
-    }
 
     /**
     * If the user has been set as favorite by the current logged in user (myself). 
@@ -452,10 +402,45 @@ public class ChatUtil {
         db.update(Contract.UserTable.TABLE_NAME, values, Contract.UserTable.COLUMN_NAME_ID + " = ?",
                 new String[] { String.valueOf(userId) });
     }
+        
+
     
+    /**
+    * Update the user list using a Contact list retrieved from remote chat server. This will remove the local user if the same user has been deleted on 
+    * the remote chat server. This will add a new local user if the user does not exist locally yet. This will update the local user to sync with the user 
+    * info retrieved from the remote chat server.
+    * @param Context
+    * @param List<EMUserBase> remoteContactList
+    * @param removeNonExistingUser Remove the local user from db if the user is not listed in remoteContactList, which means the user has been deleted on the remote server.
+    */
+    public static void updateUsers(Context ctx, List<EMUserBase> remoteContactList, boolean removeNonExistingUser) {
+        updateUsers(ctx, remoteContactList);
+        
+        if (removeNonExistingUser) {
+            SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
+            Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
+            String myselfId = EaseMob.getCurrentUserName();
+            for (String userId : allLocalUsers.keySet()) {
+                boolean found = false;
+                for (EMUserBase contact : remoteContactList) {
+                    if (userId.equals(contact.getUsername())) {
+                        found = true;
+                    }
+                }
+
+                // This local user has been removed on remote (except myself)
+                if (!found && !userId.equals(myselfId)) {
+                    db.delete(Contract.UserTable.TABLE_NAME, Contract.UserTable.COLUMN_NAME_ID + " = ?",
+                            new String[] { String.valueOf(userId) });
+                }
+            }
+        }
+
+        //db.close();       
+    }
     
-    //add user if doesn't exists
-    public static void addOrUpdateUsers(Context ctx, List<EMUserBase> remoteContactList) {
+     //update or add user (if the user does not exist in db yet)
+    private static void updateUsers(Context ctx, List<EMUserBase> remoteContactList) {
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         
         final HttpFileManager hfm = new HttpFileManager();
@@ -477,7 +462,7 @@ public class ChatUtil {
                 }
                 final String localFilePath = UserUtil.getThumbAvatorPath(username).getAbsolutePath();
                 if (new File(localFilePath).exists()) {
-                    //already have this avator on phone
+                    //already have this avator locally
                     continue;
                 }
                 new Thread(new Runnable() {                    
@@ -487,17 +472,16 @@ public class ChatUtil {
 
                             @Override
                             public void onProgress(int progress) {
-                                Log.d("ease", "download progress: " + progress);
                             }
 
                             @Override
                             public void onError(String msg) {
-                                Log.d("ease", "download error: " + msg);
+                                Log.e(TAG, "downloadThumbnailFile failed: " + msg);
                             }
 
                             @Override
                             public void onSuccess() {
-                                Log.d("ease", "download complete");
+                                Log.d(TAG, "downloadThumbnailFile succeed");
                                 if (ChatActivity.getAvatorCache().get("th"+username) != null) {
                                     ChatActivity.getAvatorCache().remove("th"+username);
                                 }
@@ -529,12 +513,12 @@ public class ChatUtil {
                             
                             @Override
                             public void onError(String msg) {
-                                Log.d("ease", "download error: " + msg);
+                                Log.d(TAG, "downloadThumbnailFile failed: " + msg);
                             }
 
                             @Override
                             public void onSuccess() {
-                                Log.d("ease", "download complete");
+                                Log.d(TAG, "downloadThumbnailFile succeed");
                                 if (ChatActivity.getAvatorCache().get(username) != null) {
                                     ChatActivity.getAvatorCache().remove(username);
                                 }
@@ -545,38 +529,7 @@ public class ChatUtil {
                 }).start();
             }
         } 
-    }
-    
-    /**
-    * Update the user list using a Contact list retrieved from remote chat server. This will remove the local user if the same user has been deleted on 
-    * the remote chat server. This will add a new local user if the user does not exist locally yet. This will update the local user to sync with the user 
-    * info retrieved from the remote chat server.
-    * @param Context
-    * @param remoteContactList 
-    */
-    public static void addOrUpdateOrDeleteUsers(Context ctx, List<EMUserBase> remoteContactList) {
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-        Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
-        addOrUpdateUsers(ctx, remoteContactList);
-        
-        String myselfId = EaseMob.getCurrentUserName();
-        for(String userId : allLocalUsers.keySet()) {
-            boolean found = false;           
-            for(EMUserBase contact : remoteContactList) {
-                if(userId.equals(contact.getUsername())) {
-                    found = true;
-                }
-            }
-            
-            //This local user has been removed on remote (except myself)
-            if(!found && !userId.equals(myselfId)) {
-                db.delete(Contract.UserTable.TABLE_NAME, Contract.UserTable.COLUMN_NAME_ID + " = ?",
-                        new String[] { String.valueOf(userId) });
-            }
-        }
-
-        //db.close();       
-    }
+    }   
     
     //Need a field to indicate if the change is avator only
     /**
@@ -584,11 +537,11 @@ public class ChatUtil {
     * @param Context
     * @param remoteContact 
     */
-    public static void updateOrAddUser(Context ctx, DemoUser remoteContact) {
+/*    public static void updateOrAddUser(Context ctx, MyUser remoteContact) {
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         
         //TODO: Refactor. avoid unnecessary db access. for example, can we load it from userlist cached in MainActivity?
-        DemoUser user = loadUser(ctx, remoteContact.getUsername());
+        MyUser user = loadUser(ctx, remoteContact.getUsername());
         
         if(user == null) {
             //This is a new contact added on remote, sync it to local
@@ -597,7 +550,7 @@ public class ChatUtil {
             //Update the local user if necessary
             updateDB(remoteContact, db);
         }
-    }
+    }*/
         
     /**
     * Update user, persist the change to DB. This is for updating currently logged in user, i.e., myself. 
@@ -730,55 +683,5 @@ public class ChatUtil {
         
         db.delete(Contract.UserTable.TABLE_NAME, Contract.UserTable.COLUMN_NAME_ID + " = ?",
                 new String[] { String.valueOf(userId) });
-    }
-    
-    private static void saveAvator(String userId, byte[] avator) {
-        String state = Environment.getExternalStorageState();
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {   
-            Log.e(TAG, "MEDIA is not MOUNTED, saveAvator failed");
-            return;
-        }
-        
-        File filepath = UserUtil.getAvatorPath(userId);
-        filepath.getParentFile().mkdirs();
-
-        OutputStream os = null;
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(filepath));
-            os.write(avator);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }  
-     
-    }
-    
-    
-    public static byte[] getFileBytes(File file) throws IOException {
-        BufferedInputStream bis = null;
-        try {
-            bis = new BufferedInputStream(new FileInputStream(file));
-            int bytes = (int) file.length();
-            byte[] buffer = new byte[bytes];
-            int readBytes = bis.read(buffer);
-            if (readBytes != buffer.length) {
-                throw new IOException("Entire file not read");
-            }
-            return buffer;
-        } finally {
-            if (bis != null) {
-                bis.close();
-            }
-        }
-    }
-        
+    }  
 }
