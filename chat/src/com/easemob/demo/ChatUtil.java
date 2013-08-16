@@ -17,9 +17,7 @@ import com.easemob.EaseMob;
 import com.easemob.chat.UserUtil;
 import com.easemob.chat.db.EaseMobMsgDB;
 import com.easemob.chat.domain.EMUserBase;
-import com.easemob.chat.domain.Group;
 import com.easemob.chat.domain.Message;
-import com.easemob.chat.domain.RESTDepartment;
 import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
 import com.easemob.demo.db.Contract;
@@ -149,29 +147,7 @@ public class ChatUtil {
         }
         
         return user;
-    }    
-    
-    /**
-    * Load all users whose favorite attribute is true
-    * @param allUsers
-    * @return List<User>
-    */
-    public static List<DemoUser> loadUsersWithFavorite(List<DemoUser> allUsers) {
-        List<DemoUser> resultList = new ArrayList<DemoUser>();
-        for(DemoUser user : allUsers) {
-/*            if(user.isFavorite()) {
-                resultList.add(user);
-            }*/
-        }
-        
-        return resultList;
-    }
-        
-    public static String getDepartmentName(String path){
-    	return path.substring(path.lastIndexOf("/") + 1, path.length());
-    }
-    
-    
+    }       
     
     /**
     * Search users 
@@ -213,202 +189,7 @@ public class ChatUtil {
     }
     
     /**
-     * persist a message.
-     * @param message message to log
-     * @param isPushMessage if the message is push message, we save the message history to a file named PushMeg.db
-     */
-    /*
-    public static void saveMessageHistory(Message message, boolean isPushMessage) {
-        String state = Environment.getExternalStorageState();
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            return;
-        }
-
-        File filepath;
-        if (isPushMessage) {
-            filepath = UserUtil.getPushMessagePath(message.getTo());
-        } else if (message.isIncoming()) {
-            filepath = UserUtil.getMessagePath(message.getFrom());
-        } else {
-            filepath = UserUtil.getMessagePath(message.getTo());
-        }
-
-        ObjectOutputStream output = null;
-        try {
-            filepath.getParentFile().mkdirs();
-            // write to the last record
-            // @Johnson: this need revisi. we can hold a member variable on
-            // objectoutstream, instead of creating it everytime
-
-            if (filepath.exists() & filepath.length() > 0) {
-                OutputStream file = new FileOutputStream(filepath, true);
-                output = new AppendObjectOutputStream(file);
-            } else {
-                OutputStream file = new FileOutputStream(filepath, true);
-                output = new ObjectOutputStream(file);
-            }
-            output.writeObject(message);
-            output.flush();
-            output.reset();
-        } catch (IOException e) {
-            Log.e(TAG, "Error writing chat history", e);
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (Exception e) {
-                }
-            }
-        }
-    }
-    */
-
-    //TODO: only load most recent 50 messages (or 20?. we need a paged operation)
-    /*
-    public static List<Message> loadMessageHistory(String userName,
-            boolean isPushMessage) {
-        List<Message> chatHistory = new LinkedList<Message>();
-
-        String state = Environment.getExternalStorageState();
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            return chatHistory;
-        }
-
-        ObjectInput input = null;
-        try {
-            File historyFile;
-            if (isPushMessage) {
-                historyFile = UserUtil.getPushMessagePath(userName);
-            } else {
-                historyFile = UserUtil.getMessagePath(userName);
-            }
-
-            if (historyFile.exists()) {
-                FileInputStream fis = new FileInputStream(historyFile);
-                input = new ObjectInputStream(fis);
-                Message msg = null;
-                while ((msg = (Message) input.readObject()) != null) {
-                	msg.setProgress(100);
-                	msg.setAttachDownloaded(true);
-                    chatHistory.add(msg);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "loadChatHistory failed: ", e);
-        } catch (EOFException e) {
-            // do nothing to skip the error
-        } catch (IOException e) {
-            Log.e(TAG, "loadChatHistory failed: ", e);
-        } catch (Exception e) {
-            Log.e(TAG, "loadChatHisotry failed:", e);
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (Exception e) {
-                }
-            }
-        }
-
-        return chatHistory;
-    }
-    */
-    /*
-    public static void deleteMessageHistory(String userName, List<Message> messagesToDelete, boolean isPushMessage) {
-        System.out.println("delete msg historys");
-        String state = Environment.getExternalStorageState();
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            return;
-        }
-
-        File historyFile;
-        if (isPushMessage) {
-            historyFile = UserUtil.getPushMessagePath(userName);
-        } else {
-            historyFile = UserUtil.getMessagePath(userName);
-        }
-
-        if (!historyFile.exists()) {
-            System.out.println("doesn't exists!");
-            return;
-        }
-
-        File outputTempFile = UserUtil.getTempPath(historyFile);
-
-        ObjectInput input = null;
-        ObjectOutputStream output = null;
-
-        try {
-            FileInputStream fis = new FileInputStream(historyFile);
-            input = new ObjectInputStream(fis);
-
-            OutputStream os = new FileOutputStream(outputTempFile, false);
-            output = new ObjectOutputStream(os);
-
-            Message msg = null;
-            while ((msg = (Message) input.readObject()) != null) {
-                for (Message messageToDelete : messagesToDelete) {
-                    if (msg.equals(messageToDelete)) {
-                        // Delete this message
-                        continue;
-                    }
-                }
-
-                output.writeObject(msg);
-            }
-
-            output.flush();
-            output.reset();
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "loadChatHistory failed: ", e);
-        } catch (EOFException e) {
-            // do nothing to skip the error
-        } catch (IOException e) {
-            Log.e(TAG, "loadChatHistory failed: ", e);
-        } catch (Exception e) {
-            Log.e(TAG, "loadChatHisotry failed:", e);
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (Exception e) {
-                }
-            }
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (Exception e) {
-                }
-            }
-        }
-
-        // Now delete the old file and rename the temp file
-        historyFile.delete();
-        outputTempFile.renameTo(historyFile);
-        System.err.println("delete history finished");
-    }
-    */
-
-    /**
-    * If the user has been set as favorite by the current logged in user (myself). 
-    * @param Context
-    * @param userId 
-    * @param isFavoriate 
-    */
-    public static void setFavorite(Context ctx, String userId, boolean isFavoriate) {
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();        
-        ContentValues values = new ContentValues();
-        values.put(Contract.UserTable.COLUMN_NAME_FAVORITE, isFavoriate?1:0);
-        db.update(Contract.UserTable.TABLE_NAME, values, Contract.UserTable.COLUMN_NAME_ID + " = ?",
-                new String[] { String.valueOf(userId) });
-    }
-        
-
-    
-    /**
-    * Update the user list using a Contact list retrieved from remote chat server. This will remove the local user if the same user has been deleted on 
-    * the remote chat server. This will add a new local user if the user does not exist locally yet. This will update the local user to sync with the user 
-    * info retrieved from the remote chat server.
+    * Update the user list using a contact list retrieved from remote server. 
     * @param Context
     * @param List<EMUserBase> remoteContactList
     * @param removeNonExistingUser Remove the local user from db if the user is not listed in remoteContactList, which means the user has been deleted on the remote server.
@@ -439,7 +220,7 @@ public class ChatUtil {
         //db.close();       
     }
     
-     //update or add user (if the user does not exist in db yet)
+    //update or add user (if the user does not exist in db yet)
     private static void updateUsers(Context ctx, List<EMUserBase> remoteContactList) {
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         
@@ -507,13 +288,11 @@ public class ChatUtil {
                         hfm.downloadThumbnailFile(picture, localFilePath, EaseMob.APPKEY, null, new CloudOperationCallback() {
                             @Override
                             public void onProgress(int progress) {
-                                // TODO Auto-generated method stub
-                                
                             }
                             
                             @Override
                             public void onError(String msg) {
-                                Log.d(TAG, "downloadThumbnailFile failed: " + msg);
+                                Log.e(TAG, "downloadThumbnailFile failed: " + msg);
                             }
 
                             @Override
@@ -530,27 +309,6 @@ public class ChatUtil {
             }
         } 
     }   
-    
-    //Need a field to indicate if the change is avator only
-    /**
-    * Update user, persist the change to DB or add the user if the user does not exist on DB.
-    * @param Context
-    * @param remoteContact 
-    */
-/*    public static void updateOrAddUser(Context ctx, MyUser remoteContact) {
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-        
-        //TODO: Refactor. avoid unnecessary db access. for example, can we load it from userlist cached in MainActivity?
-        MyUser user = loadUser(ctx, remoteContact.getUsername());
-        
-        if(user == null) {
-            //This is a new contact added on remote, sync it to local
-            addDB(remoteContact, db);
-        } else {
-            //Update the local user if necessary
-            updateDB(remoteContact, db);
-        }
-    }*/
         
     /**
     * Update user, persist the change to DB. This is for updating currently logged in user, i.e., myself. 
