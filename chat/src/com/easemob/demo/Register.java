@@ -78,7 +78,7 @@ public class Register extends Activity {
 
                 @Override
                 public void onFailure(EaseMobException cause) {
-                    Log.e(TAG, cause.getMessage());
+                    Log.e(TAG, "createAppUserInBackground failed: " + cause.getMessage());
                     
                     if (progressDialog != null) {
                         progressDialog.dismiss();
