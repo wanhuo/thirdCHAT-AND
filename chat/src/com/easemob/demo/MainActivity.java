@@ -710,8 +710,7 @@ public class MainActivity extends FragmentActivity {
                 callback.setInitedAfterSuccess = true;
                 // Johnson change. for qixin, we get all users from server
                 // temperately
-                // EMUser.getContactsInBackground(callback);
-                EMUser.getAllUsersInBackground(callback);
+                EMUser.getContactsInBackground(callback);
 
                 // Temporary hack, otherwise we got push notification twice
                 // (because we login in twice).
@@ -861,7 +860,7 @@ public class MainActivity extends FragmentActivity {
                         e.printStackTrace();
                     }
                     
-                    // Refresh UI
+                    // Refresh UI`
                     switch (currentTabIndex) {
                     case 0:
                         ((ChatHistoryFragment) fragments[0]).rowAdapter.notifyDataSetChanged();
