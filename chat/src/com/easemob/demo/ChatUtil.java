@@ -74,7 +74,6 @@ public class ChatUtil {
                 user.setWorkPhone(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_WORKPHONE)));
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
-                //user.setFavorite(cursor.getInt(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_FAVORITE)) > 0);
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
                 
                 
@@ -83,18 +82,14 @@ public class ChatUtil {
                 	List<Message> chatHistory= EaseMobMsgDB.findAllMessages(ctx, user.getUsername());
 //                	List<Message> chatHistory= EaseMobMsgDB.findSpecifiedMessages(ctx, user.getUsername(), "0", ChatActivity.PAGE_SIZE);
                 	user.setMessages(chatHistory);
-                }
-//                List<Message> chatHistory = loadMessageHistory(user.getId(), false);            
+                }          
                 
                 allUsers.put(user.getUsername(), user); 
             } while (cursor.moveToNext());
         }
 
         cursor.close();
-        
-        //NOTE: do not close db otherwise we get a "database not open" exception: http://stackoverflow.com/questions/6554436/keep-getting-database-not-open-error
-        //db.close();       
-        
+
         return allUsers;
     }
     
@@ -136,7 +131,6 @@ public class ChatUtil {
                 user.setWorkPhone(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_WORKPHONE)));
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
-                //user.setFavorite(cursor.getInt(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_FAVORITE)) > 0);
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
             //Load chat history
 /*            List<Message> chatHistory = loadChatHistory(user.getId());            

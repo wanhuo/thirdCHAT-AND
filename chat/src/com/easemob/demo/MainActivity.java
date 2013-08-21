@@ -22,7 +22,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -46,13 +45,11 @@ import com.easemob.chat.EMUser;
 import com.easemob.chat.callbacks.ConnectionListener;
 import com.easemob.chat.callbacks.ContactListener;
 import com.easemob.chat.callbacks.GetContactsCallback;
-import com.easemob.chat.callbacks.GetDepartmentsCallback;
 import com.easemob.chat.db.EaseMobMsgDB;
 import com.easemob.chat.domain.EMUserBase;
 import com.easemob.chat.domain.Group;
 import com.easemob.chat.domain.Message;
 import com.easemob.chat.domain.MessageFactory;
-import com.easemob.chat.domain.RESTDepartment;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AddGroup;
@@ -92,16 +89,7 @@ public class MainActivity extends FragmentActivity {
 
     public static List<Message> pushMessages;
 
-    // REVISIT: Be careful with global static. We may want to consider
-    // Parcelable instead.
-    // http://stackoverflow.com/questions/2736389/how-to-pass-object-from-one-activity-to-another-in-android
     public static Map<String, EMUserBase> allUsers;
-
-    public static List<RESTDepartment> allDepartments = new ArrayList<RESTDepartment>();
-
-    // ip or dial the phone number into the meeting
-    public static int callMeetingState;
-
 
     MyConnectionListener remoteConnectionListener = new MyConnectionListener();
     MyContactListener remoteContactListener = new MyContactListener();
@@ -117,10 +105,7 @@ public class MainActivity extends FragmentActivity {
 
         inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         unreadLabel = (TextView) findViewById(R.id.unread_msg_number);
-        // zhangwei 2012/5/2
-        // use this mode be lead to bottle bar rise up and in some phone search
-        // editext can't input text
-        // getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         instance = this;
 
         mTabs = new Button[3];
@@ -147,10 +132,7 @@ public class MainActivity extends FragmentActivity {
             EaseMob.init(this.getApplicationContext());
             EaseMob.login(userName, password);
         }
-        /******
-         * Use EaseMob SDK. Step 2: Register receivers to receive chat message
-         * and push message
-         *****/
+        /****** Use EaseMob SDK. Step 2: Register receivers to receive chat message and push message *****/
         // Register receiver on EaseMobService for receiving chat message
         IntentFilter chatIntentFilter = new IntentFilter(EaseMobService.BROADCAST_CHAT_ACTION);
         chatIntentFilter.setPriority(3);
@@ -166,22 +148,15 @@ public class MainActivity extends FragmentActivity {
         IntentFilter groupDelIntentFilter = new IntentFilter(EaseMobService.BROADCAST_GROUP_DELETED_ACTION);
         registerReceiver(groupDeletedReceiver, groupDelIntentFilter);
 
-        /******
-         * Use EaseMob SDK. Step 3: Register listeners to receive contact and
-         * connection event
-         *******/
+        /****** Use EaseMob SDK. Step 3: Register listeners to receive contact and connection event *******/
         // Register receiver for contact changed event.
-
-        // Johnsn change. for qixin, we get all users in background. so won't
-        // register the contact listener
-        // EaseMob.addContactListener(remoteContactListener);
+        EaseMob.addContactListener(remoteContactListener);
         // Register receiver for connection status event.
         EaseMob.addConnectionListener(remoteConnectionListener);
 
         /********************************** EaseMob SDK End ******************************************/
 
-        // Load all available users from local DB. This also load users' chat
-        // history
+        // Load all available users from local DB. This also load users' chat history
         allUsers = ChatUtil.loadAllUsers(this);
         EMUser.setAllUsers(allUsers);
         // Load push messages from db
@@ -205,13 +180,6 @@ public class MainActivity extends FragmentActivity {
 
         Group.allGroups = EaseMobMsgDB.loadGroups(this, new ArrayList<EMUserBase>(allUsers.values()));
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragments[0]).commit();
-
-        // start Voip if enabled
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        IntentFilter filter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-
-
     }
 
     @Override
@@ -254,9 +222,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onDestroy() {
-
-        // johnson comment out
-        // EaseMob.removeContactListener(remoteContactListener);
+        EaseMob.removeContactListener(remoteContactListener);
         EaseMob.removeConnectionListener(remoteConnectionListener);
 
         if (chatBroadcastReceiver != null && isChatBroadcastReceiverRegistered) {
@@ -517,7 +483,6 @@ public class MainActivity extends FragmentActivity {
                 stopService(new Intent(this, EaseMobService.class));
                 finish();
             } else {
-                // Pine, why we call updateUnreadLabel() here?
                 updateUnreadLabel();
             }
         }
@@ -708,12 +673,9 @@ public class MainActivity extends FragmentActivity {
                 GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
                 callback.deleteNonExistingUsers = true;
                 callback.setInitedAfterSuccess = true;
-                // Johnson change. for qixin, we get all users from server
-                // temperately
+
                 EMUser.getContactsInBackground(callback);
 
-                // Temporary hack, otherwise we got push notification twice
-                // (because we login in twice).
                 Gl.setInited(true);
             } else {
                 // contacts has been inited, sync group everytime after login
@@ -723,29 +685,6 @@ public class MainActivity extends FragmentActivity {
                     e.printStackTrace();
                 }
             }
-
-            // Get department list
-            EMUser.getDepartmentsInBackground(new GetDepartmentsCallback() {
-                @Override
-                public void onSuccess(List<RESTDepartment> departments) {
-                    allDepartments = departments;
-                }
-
-                @Override
-                public void onFailure(EaseMobException cause) {
-                    // TODO Auto-generated method stub
-                }
-            });
-
-            // try to send a test cmd
-            /*
-             * try {
-             * System.err.println("try to send remote command to another device"
-             * ); EMChat.sendRemoteCommand("weiquan29_jma2@ac2", "applygroup",
-             * new String[]{"group_id1", "verification info"});
-             * System.err.println("end send remote command"); } catch (Exception
-             * e) { e.printStackTrace(); }
-             */
         }
 
         @Override
@@ -781,11 +720,6 @@ public class MainActivity extends FragmentActivity {
         public void onConnecting(String progress) {
             runOnUiThread(new Runnable() {
                 public void run() {
-                    // TODO: ZHANGWEI: 此处显示connecting status: 比如正在连接，正在登录等
-                    /*
-                     * TabFragment1 fragment1 = (TabFragment1) fragments[0];
-                     * fragment1.errorItem.setVisibility(View.VISIBLE);
-                     */
                 }
             });
         }

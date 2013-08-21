@@ -146,7 +146,7 @@
             android:value="chatdemo" />
         <meta-data
             android:name="EASEMOB_SERVER_ADDRESS"
-            android:value="117.135.138.202" />
+            android:value="push.easemob.com" />
         <meta-data
             android:name="EASEMOB_SERVER_DOMAIN"
             android:value="ac2" />
