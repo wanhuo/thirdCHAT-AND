@@ -287,12 +287,8 @@ public class MainActivity extends FragmentActivity {
         	super.onActivityCreated(savedInstanceState);
             manager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             list = new ArrayList<EMUserBase>();
-            // remove group user from the list
-            for (EMUserBase user : EMUser.allUsers.values()) {
-                if (!(user instanceof Group)) {
-                    list.add(user);
-                }
-            }
+            
+            List<EMUserBase> list = new ArrayList<EMUserBase>(allUsers.values());
             Collections.sort(list, new Comparator<EMUserBase>() {
                 @Override
                 public int compare(EMUserBase lhs, EMUserBase rhs) {
@@ -802,13 +798,7 @@ public class MainActivity extends FragmentActivity {
                     case 1: // when add a user these code be invoke twice?
                         TabFragment2 tmp = ((TabFragment2) fragments[1]);
 
-                        List<EMUserBase> list = new ArrayList<EMUserBase>();
-                        for (EMUserBase user : EMUser.allUsers.values()) {
-                            if (!(user instanceof Group)) {
-                                list.add(user);
-                            }
-                        }
-
+                        List<EMUserBase> list = new ArrayList<EMUserBase>(allUsers.values());
                         Collections.sort(list, new Comparator<EMUserBase>() {
                             @Override
                             public int compare(EMUserBase lhs, EMUserBase rhs) {
