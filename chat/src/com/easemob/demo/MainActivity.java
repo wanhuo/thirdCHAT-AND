@@ -655,6 +655,8 @@ public class MainActivity extends FragmentActivity {
 
             // process the notification message if there are any
             processMsgNotification();
+            Log.d(TAG, "onconnected, try to retrive offline msg if any");
+            EaseMobService.getInstance().getChatManager().retrieveOfflineMsg();
 
             // initialize the whole contact list only once
             if (!Gl.getInited()) {
