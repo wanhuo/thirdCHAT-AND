@@ -180,6 +180,8 @@ public class MainActivity extends FragmentActivity {
 
         Group.allGroups = EaseMobMsgDB.loadGroups(this, new ArrayList<EMUserBase>(allUsers.values()));
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragments[0]).commit();
+        //until here, notify SDK that the UI is inited
+        EaseMob.applicationInited = true;
     }
 
     @Override
@@ -222,6 +224,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onDestroy() {
+        EaseMob.applicationInited = false;
         EaseMob.removeContactListener(remoteContactListener);
         EaseMob.removeConnectionListener(remoteConnectionListener);
 
