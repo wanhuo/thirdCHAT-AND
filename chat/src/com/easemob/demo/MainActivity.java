@@ -678,13 +678,6 @@ public class MainActivity extends FragmentActivity {
                 EMUser.getContactsInBackground(callback);
 
                 Gl.setInited(true);
-            } else {
-                // contacts has been inited, sync group everytime after login
-                try {
-                    EMChat.getEaseMobGroupManager().syncGroupInBackground();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         }
 
@@ -789,11 +782,6 @@ public class MainActivity extends FragmentActivity {
                     // }
                     EMUser.setAllUsers(allUsers);
                     
-                    try {
-                        EMChat.getEaseMobGroupManager().syncGroupInBackground();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                     
                     // Refresh UI`
                     switch (currentTabIndex) {
