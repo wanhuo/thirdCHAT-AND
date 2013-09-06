@@ -663,21 +663,11 @@ public class MainActivity extends FragmentActivity {
 
             // initialize the whole contact list only once
             if (!Gl.getInited()) {
-                // Add some mock push messages for debugging purpose
-                Message pushMessage = new Message();
-                pushMessage.setBody("欢迎您使用企业公告！\n\n" + "基于实时推送技术的企业公告，可以将重要的通知推送到所有手机客户端，实时到达！");
-                pushMessage.setSubject("欢迎使用企业公告");
-                pushMessage.setFrom("管理员");
-                pushMessage.setTime(System.currentTimeMillis());
-                pushMessages.add(pushMessage);
-
                 GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
                 callback.deleteNonExistingUsers = true;
                 callback.setInitedAfterSuccess = true;
 
                 EMUser.getContactsInBackground(callback);
-
-                Gl.setInited(true);
             }
         }
 
@@ -707,15 +697,10 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public void onReConnecting() {
-            // TODO Auto-generated method stub
         }
 
         @Override
         public void onConnecting(String progress) {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                }
-            });
         }
     }
 
@@ -749,9 +734,6 @@ public class MainActivity extends FragmentActivity {
     }
 
     private class GetContactsCallbackImpl implements GetContactsCallback {
-
-        // if add user mode, we will add remote user to local
-        // otherwise, we will sync the contacts between local and remote
         public boolean deleteNonExistingUsers = false;
         public boolean setInitedAfterSuccess = false;
 
@@ -769,20 +751,10 @@ public class MainActivity extends FragmentActivity {
                     }
                     ChatUtil.updateUsers(MainActivity.this, contacts, deleteNonExistingUsers);
 
-                    // TODO: no need to update whole list. refactor later. do we
-                    // lose unread_message_count in this case?
-
-                    // @Jervis. below code has performance issue
-                    // don't load all users from db again everytime.
-                    // this will also override group data in allusers, which
-                    // caused issue in group chat
                     allUsers = ChatUtil.loadAllUsers(MainActivity.this);
-                    // for (Group grp : Group.allGroups) {
-                    // allUsers.put(grp.getGroupId(), grp);
-                    // }
+
                     EMUser.setAllUsers(allUsers);
-                    
-                    
+
                     // Refresh UI`
                     switch (currentTabIndex) {
                     case 0:
