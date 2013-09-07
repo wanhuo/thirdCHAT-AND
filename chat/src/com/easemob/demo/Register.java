@@ -17,7 +17,6 @@ import com.easemob.chat.EMUser;
 import com.easemob.EaseMob;
 import com.easemob.chat.callbacks.CreateAccountCallBack;
 import com.easemob.chat.domain.EMUserBase;
-import com.easemob.demo.R;
 import com.easemob.exceptions.EMDuplicateResourceException;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
@@ -71,25 +70,27 @@ public class Register extends Activity {
                         progressDialog.dismiss();
                     }
 
-                    Gl.setUserName(username);                    
-                
+                    Gl.setUserName(username);
+                    
+                    Log.d("register", "create user successful: " + user.getUsername());                    
                     startActivityForResult(new Intent(getContext(), AlertDialog.class).putExtra("msg", getString(R.string.register_success)), REQUEST_CODE_REG_CONFIRM);
                 }
 
                 @Override
                 public void onFailure(EaseMobException cause) {
                     Log.e(TAG, "createAppUserInBackground failed: " + cause.getMessage());
-                    
+
+
                     if (progressDialog != null) {
                         progressDialog.dismiss();
                     }
                     
                     if(cause instanceof EMDuplicateResourceException) {
                         startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+": " + getString(R.string.register_failure_user_exist)));
-                    } else if (cause instanceof EMNetworkUnconnectedException) {
+                    } else if(cause instanceof EMNetworkUnconnectedException) {
                         startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+": " + getString(R.string.login_failuer_network_unconnected)));        
-                    } else {                    
-                        startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+": " + getString(R.string.login_failuer_toast)));
+                    } else {
+                       startActivity(new Intent(Register.this, AlertDialog.class).putExtra("msg", getString(R.string.register_failure)+": " + getString(R.string.login_failuer_toast)));
                     }
                 }
 

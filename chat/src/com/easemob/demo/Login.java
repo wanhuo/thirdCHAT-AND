@@ -51,16 +51,18 @@ public class Login extends Activity {
             startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.login_input_pwd)));
         } else {
         	showLoginDialog();
-        	Gl.setUserName(userName);
+            Gl.setUserName(userName);
             
     		EaseMob.init(this.getApplicationContext());
     		EaseMob.login(userName, password, new LoginCallBack() {
                 @Override
-                public void onSuccess(EMUserBase user) {
+                public void onSuccess(EMUserBase user) {       
                     DemoUser demoUser = user.toType(DemoUser.class);
                     Gl.setPassword(password);
                     
                     ChatUtil.addUser(Login.this, demoUser);
+                    
+                    //Gl.setUserInfoSaveState(true);
                     
                     closeLogingDialog();
                     startActivity(new Intent(Login.this, MainActivity.class).putExtra("loggedin", true));
@@ -69,7 +71,7 @@ public class Login extends Activity {
 
                 @Override
                 public void onFailure(final EaseMobException cause) {
-                   Log.e(TAG, "login failed: " + cause.getMessage());
+                   Log.e(TAG, "login: " + cause.getMessage());
                    closeLogingDialog();
                    
                    if(cause instanceof EMAuthenticationException) {
@@ -77,7 +79,7 @@ public class Login extends Activity {
                    } else if(cause instanceof EMNetworkUnconnectedException) {
                        startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+": " + getString(R.string.login_failuer_network_unconnected)));        
                    } else if(cause instanceof EMResourceNotExistException) {
-                       startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+": " + getString(R.string.login_failuer_toast)));         
+                       startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+": " + getString(R.string.login_failuer_toast)));           
                    } else {
                        startActivity(new Intent(Login.this, AlertDialog.class).putExtra("msg", getString(R.string.login_failure)+": " + getString(R.string.login_failuer_toast)));        
                    }                            
