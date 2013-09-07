@@ -492,14 +492,6 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            // TODO: Why we want to check getResultCode() != RESULT_OK here? it
-            // always -1
-            // if(getResultCode() != RESULT_OK){
-            /*
-             * 
-             * the new message is not handled by previous handlers
-             */
-
             Log.d(TAG, "main activity received msg:" + intent.getStringExtra(EaseMobService.MESSAGE));
             EMUserBase tmpUser = null;
             String groupId = intent.getStringExtra("GROUP");
@@ -535,23 +527,20 @@ public class MainActivity extends FragmentActivity {
                     return;
                 }
             }
-
+            
+            //Update the group or user object with the latest message received
             int rowId;
             Message message = MessageFactory.createMsgFromIntent(intent);
             tmpUser.setTableName(tmpUser.getUsername());
-
+            
+            //Save to db
             rowId = tmpUser.addMessage(message, true);
             message.setRowId(rowId + "");
             message.setBackReceive(true);
+            
+            //Refresh UI:
             updateUnreadLabel();
 
-            // if (currentTabIndex == 0) {
-            ChatHistoryFragment tmp = (ChatHistoryFragment) fragments[0];
-            tmp.rowAdapter = new RowAdapter(getApplicationContext(), R.layout.row_weixin,
-                    ChatHistoryFragment.loadUsersWithRecentChat(context));
-            tmp.listView.setAdapter(tmp.rowAdapter);
-            tmp.rowAdapter.notifyDataSetChanged();
-            // }
             abortBroadcast();
         }
     };
