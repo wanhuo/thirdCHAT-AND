@@ -119,32 +119,30 @@ public class MainActivity extends FragmentActivity {
                 getResources().getDrawable(R.drawable.tab_find_frd_normal),
                 getResources().getDrawable(R.drawable.tab_settings_normal) };
         currentTabIndex = 0;
-        ChatHistoryFragment historyFragment = new ChatHistoryFragment();
-        fragments = new Fragment[] { historyFragment, new TabFragment2(), new SettingFragment()};
+        fragments = new Fragment[] { new ChatHistoryFragment(), new MyContactListFragment(), new SettingFragment()};
 
-        /************************************ EaseMob SDK Start ******************************************/
-        /***** Use EaseMob SDK. Step 1: EaseMob.init() and EaseMob.login.login() *************************/
+        /******************************* EaseMob SDK Start ***********************************/
+        /***** Use EaseMob SDK. Step 1: EaseMob.init() and EaseMob.login. ********************/
         String userName = Gl.getUserName();
         String password = Gl.getPassword();
         boolean loggedin = getIntent().getBooleanExtra("loggedin", false);
-        // if already login from LoginActivity, skip the login in call below
+        // if already login from LoginActivity, skip the login call below
         if (!loggedin) {
             EaseMob.init(this.getApplicationContext());
             EaseMob.login(userName, password);
         }
-        /****** Use EaseMob SDK. Step 2: Register receivers to receive chat message and push message *****/
+        /****** Use EaseMob SDK. Step 2: Register receivers to receive chat message **********/
         // Register receiver on EaseMobService for receiving chat message
         IntentFilter chatIntentFilter = new IntentFilter(EaseMobService.BROADCAST_CHAT_ACTION);
         chatIntentFilter.setPriority(3);
         registerReceiver(chatBroadcastReceiver, chatIntentFilter);
         isChatBroadcastReceiverRegistered = true;
 
-
-        // register receiver for receive group invited broadcast
+        // Register receiver for receiving group invited broadcast
         IntentFilter groupIntentFilter = new IntentFilter(EaseMobService.BROADCAST_GROUP_INVITED_ACTION);
         registerReceiver(groupInvitedReceiver, groupIntentFilter);
 
-        // register receiver for receive group deleted broadcast
+        // Register receiver for receiving group deleted broadcast
         IntentFilter groupDelIntentFilter = new IntentFilter(EaseMobService.BROADCAST_GROUP_DELETED_ACTION);
         registerReceiver(groupDeletedReceiver, groupDelIntentFilter);
 
@@ -156,30 +154,16 @@ public class MainActivity extends FragmentActivity {
 
         /********************************** EaseMob SDK End ******************************************/
 
+        
         // Load all available users from local DB. This also load users' chat history
         allUsers = ChatUtil.loadAllUsers(this);
         EMUser.setAllUsers(allUsers);
-        // Load push messages from db
-        pushMessages = EaseMobMsgDB.findAllMessages(this, "push_" + EaseMob.getCurrentUserName());
-        // sort push messages
-        Collections.sort(pushMessages, new Comparator<Message>() {
-            @Override
-            public int compare(Message lhs, Message rhs) {
-                long rt = rhs.getTime();
-                long lt = lhs.getTime();
-                if (rt == lt) {
-                    return 0;
-                } else if (rt > lt) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-                // return rhs.getTime().compareTo(lhs.getTime());
-            }
-        });
-
+        
+        // Load all available groups from local DB. 
         Group.allGroups = EaseMobMsgDB.loadGroups(this, new ArrayList<EMUserBase>(allUsers.values()));
+        
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragments[0]).commit();
+        
         //until here, notify SDK that the UI is inited
         EaseMob.applicationInited = true;
     }
@@ -252,7 +236,7 @@ public class MainActivity extends FragmentActivity {
         super.onDestroy();
     }
 
-    public static class TabFragment2 extends ContactListFragment {
+    public static class MyContactListFragment extends ContactListFragment {
         private GroupAdapter groupAdapter;
         private ListView groupListView;
         private ListView listView3;
@@ -405,7 +389,6 @@ public class MainActivity extends FragmentActivity {
 
             titleLayout1.setOnClickListener(new ContactTitleClickListener(0));
             titleLayout2.setOnClickListener(new ContactTitleClickListener(1));
-
         }
 
     }
@@ -452,8 +435,6 @@ public class MainActivity extends FragmentActivity {
         // }
     }
 
-
-
     public void logout(View view) {
         startActivityForResult(new Intent(this, LogoutActivity.class), REQUEST_CODE_LOGOUT);
     }
@@ -461,7 +442,6 @@ public class MainActivity extends FragmentActivity {
     public void onAddContact(View view) {
         startActivity(new Intent(this, AddContact.class));
     }
-
 
     // Result of all activities.
     @Override
@@ -499,8 +479,7 @@ public class MainActivity extends FragmentActivity {
                 Log.d(TAG, "received msg from group:" + groupId);
                 Group group = Group.getGroupById(groupId);
                 if (group == null) {
-                    // the group doesn't exist
-                    // create group object here
+                    // the group doesn't exist create group object here
                     Log.d(TAG, "create group obj:" + groupId);
                     group = new Group();
                     String groupName = groupId;
@@ -546,7 +525,6 @@ public class MainActivity extends FragmentActivity {
     };
 
     private BroadcastReceiver groupInvitedReceiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             String groupId = intent.getStringExtra("groupId");
@@ -567,7 +545,7 @@ public class MainActivity extends FragmentActivity {
                     tmp.rowAdapter.notifyDataSetChanged();
                 }
 
-                TabFragment2 contactGroup = (TabFragment2) fragments[1];
+                MyContactListFragment contactGroup = (MyContactListFragment) fragments[1];
                 if (contactGroup != null) {
                     ListView groupListView = contactGroup.getGroupListView();
                     if (groupListView != null) {
@@ -595,7 +573,7 @@ public class MainActivity extends FragmentActivity {
                     tmp.rowAdapter.notifyDataSetChanged();
                 }
 
-                TabFragment2 contactGroup = (TabFragment2) fragments[1];
+                MyContactListFragment contactGroup = (MyContactListFragment) fragments[1];
                 if (contactGroup != null) {
                     ListView groupListView = contactGroup.getGroupListView();
                     if (groupListView != null) {
@@ -606,9 +584,6 @@ public class MainActivity extends FragmentActivity {
 
         }
     };
-
-
-
 
     public int getUnreadMsgCountTotal() {
         int unreadMsgCountTotal = 0;
@@ -632,7 +607,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-
     private class MyConnectionListener implements ConnectionListener {
         @Override
         public void onConnected() {
@@ -655,7 +629,6 @@ public class MainActivity extends FragmentActivity {
                 GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
                 callback.deleteNonExistingUsers = true;
                 callback.setInitedAfterSuccess = true;
-
                 EMUser.getContactsInBackground(callback);
             }
         }
@@ -666,9 +639,6 @@ public class MainActivity extends FragmentActivity {
                 public void run() {
                     ChatHistoryFragment fragment1 = (ChatHistoryFragment) fragments[0];
                     fragment1.errorItem.setVisibility(View.VISIBLE);
-                    // Toast.makeText(MainActivity.this,
-                    // instance.getResources().getString(R.string.network_unavailable),
-                    // 0).show();
                 }
             });
         }
@@ -679,7 +649,6 @@ public class MainActivity extends FragmentActivity {
                 public void run() {
                     ChatHistoryFragment fragment1 = (ChatHistoryFragment) fragments[0];
                     fragment1.errorItem.setVisibility(View.GONE);
-                    // Toast.makeText(MainActivity.this, "网络重新连接成功", 0).show();
                 }
             });
         }
@@ -750,7 +719,7 @@ public class MainActivity extends FragmentActivity {
                         ((ChatHistoryFragment) fragments[0]).rowAdapter.notifyDataSetChanged();
                         break;
                     case 1: // when add a user these code be invoke twice?
-                        TabFragment2 tmp = ((TabFragment2) fragments[1]);
+                        MyContactListFragment tmp = ((MyContactListFragment) fragments[1]);
 
                         List<EMUserBase> list = new ArrayList<EMUserBase>(allUsers.values());
                         Collections.sort(list, new Comparator<EMUserBase>() {
