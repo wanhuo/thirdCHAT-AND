@@ -510,7 +510,6 @@ public class MainActivity extends FragmentActivity {
             //Update the group or user object with the latest message received
             int rowId;
             Message message = MessageFactory.createMsgFromIntent(intent);
-            tmpUser.setTableName(tmpUser.getUsername());
             
             //Save to db
             rowId = tmpUser.addMessage(message, true);
@@ -537,7 +536,6 @@ public class MainActivity extends FragmentActivity {
                 msg.setBody("你被" + nick + "邀请加入" + group.getName());
                 msg.setTime(System.currentTimeMillis());
                 msg.setFrom("xitong");
-                group.setTableName(group.getName().startsWith("_") ? group.getName() : "_" + group.getName());
                 group.addMessage(msg, true);
                 updateUnreadLabel();
                 ChatHistoryFragment tmp = (ChatHistoryFragment) fragments[0];
@@ -771,7 +769,6 @@ public class MainActivity extends FragmentActivity {
             while ((notificationMsg = EMChat.getNextNotificationMsg()) != null) {
                 Message message = MessageFactory.createMsgFromNotification(notificationMsg);
                 EMUserBase tmpUser = MainActivity.allUsers.get(notificationMsg.getFrom());
-                tmpUser.setTableName(tmpUser.getUsername());
                 tmpUser.addMessage(message, true);
                 updateUnreadLabel();
                 notificationManager.cancel(notificationMsg.getNotificationID());
