@@ -61,7 +61,6 @@ import com.easemob.ui.activity.GroupDetails;
 import com.easemob.ui.adapter.ContactAdapter;
 import com.easemob.ui.adapter.ContactPagerAdapter;
 import com.easemob.ui.adapter.GroupAdapter;
-import com.easemob.ui.adapter.RowAdapter;
 import com.easemob.ui.widget.Sidebar;
 
 public class MainActivity extends FragmentActivity {
@@ -73,7 +72,6 @@ public class MainActivity extends FragmentActivity {
 
     public static MainActivity instance = null;
 
-    public static int unreadPushMsgNum;
     private Button[] mTabs;
     private Drawable[] selectedTabs;
     private Drawable[] unSelectedTabs;
@@ -85,17 +83,12 @@ public class MainActivity extends FragmentActivity {
 
     public static boolean isChat = false;
 
-    // private NewMessageBroadcastReceiver receiver;
-
-    public static List<Message> pushMessages;
-
     public static Map<String, EMUserBase> allUsers;
 
     MyConnectionListener remoteConnectionListener = new MyConnectionListener();
     MyContactListener remoteContactListener = new MyContactListener();
 
     public boolean wasPaused = false;
-
 
 
     @Override
@@ -422,7 +415,7 @@ public class MainActivity extends FragmentActivity {
             trx.show(fragments[index]).commit();
 
             if (index == 0) {
-                ((ChatHistoryFragment) fragments[0]).rowAdapter.notifyDataSetChanged();
+                ((ChatHistoryFragment) fragments[0]).userRowAdapter.notifyDataSetChanged();
             }
         }
         // mTabs[currentTabIndex].setBackgroundDrawable(null);
@@ -516,8 +509,14 @@ public class MainActivity extends FragmentActivity {
             message.setRowId(rowId + "");
             message.setBackReceive(true);
             
-            //Refresh UI:
+            //Refresh UnreadLabel:
             updateUnreadLabel();
+            
+            //Refresh ChatHistoryFragment
+            if (currentTabIndex == 0) {
+                ChatHistoryFragment chatHistoryFragment = (ChatHistoryFragment) fragments[0];
+                chatHistoryFragment.refresh();
+            }
 
             abortBroadcast();
         }
@@ -540,7 +539,7 @@ public class MainActivity extends FragmentActivity {
                 updateUnreadLabel();
                 ChatHistoryFragment tmp = (ChatHistoryFragment) fragments[0];
                 if (tmp != null) {
-                    tmp.rowAdapter.notifyDataSetChanged();
+                    tmp.userRowAdapter.notifyDataSetChanged();
                 }
 
                 MyContactListFragment contactGroup = (MyContactListFragment) fragments[1];
@@ -568,7 +567,7 @@ public class MainActivity extends FragmentActivity {
                 updateUnreadLabel();
                 ChatHistoryFragment tmp = (ChatHistoryFragment) fragments[0];
                 if (tmp != null) {
-                    tmp.rowAdapter.notifyDataSetChanged();
+                    tmp.userRowAdapter.notifyDataSetChanged();
                 }
 
                 MyContactListFragment contactGroup = (MyContactListFragment) fragments[1];
@@ -714,7 +713,7 @@ public class MainActivity extends FragmentActivity {
                     // Refresh UI`
                     switch (currentTabIndex) {
                     case 0:
-                        ((ChatHistoryFragment) fragments[0]).rowAdapter.notifyDataSetChanged();
+                        ((ChatHistoryFragment) fragments[0]).userRowAdapter.notifyDataSetChanged();
                         break;
                     case 1: // when add a user these code be invoke twice?
                         MyContactListFragment tmp = ((MyContactListFragment) fragments[1]);
