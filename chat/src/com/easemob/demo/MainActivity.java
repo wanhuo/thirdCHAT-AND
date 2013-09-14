@@ -60,6 +60,8 @@ public class MainActivity extends FragmentActivity {
 
     private static final int REQUEST_CODE_LOGOUT = 1;
     private static final int REQUEST_CODE_EXIT = 2;
+	private static final int REQUEST_CODE_CONTACT = 3;
+	private static final int REQUEST_CODE_GROUP = 4;
     private static final int REQUEST_CODE_GROUPDETAIL = 10;
 
     public static MainActivity instance = null;
@@ -88,6 +90,9 @@ public class MainActivity extends FragmentActivity {
 	private MyContactsListFragment contactFragment;
 
 	private MyGroupListFragment groupFragment;
+	
+
+	
 
 
     @Override
@@ -187,7 +192,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onListItemClickListener(int position) {
 //			Toast.makeText(MainActivity.this, "第position"+"被点击", 1).show();
-			//点击进入回话页面
+			//点击进入会话页面
 			startActivity(new Intent(MainActivity.this, ChatActivity.class).putExtra("userId", contactList.get(position).getUsername()));
 		}
     	
@@ -205,7 +210,7 @@ public class MainActivity extends FragmentActivity {
 			//点击新建群组按钮item
 		   if (position == groupFragment.groupAdapter.getCount() - 1) {
                if (EaseMobService.isConnected()) {
-                   startActivityForResult(new Intent(MainActivity.this, AddGroup.class), 0);
+                   startActivityForResult(new Intent(MainActivity.this, AddGroup.class),REQUEST_CODE_GROUP);
                } else {
                    startActivity(new Intent(MainActivity.this, AlertDialog.class).putExtra(
                            "msg", MainActivity.this.getString(R.string.network_unavailable)));
@@ -217,7 +222,7 @@ public class MainActivity extends FragmentActivity {
                intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
                intent.putExtra("position", position - 1);
                intent.putExtra("groupName", groupFragment.groupAdapter.getItem(position-1).getUsername());
-               startActivityForResult(intent, 0);
+               startActivityForResult(intent, REQUEST_CODE_GROUP);
            }
 			
 		}
@@ -234,6 +239,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
+			//如果不需要显示标题栏等操作，直接用sdk里的即可
 			//显示标题栏
 			titleLayout.setVisibility(View.VISIBLE);
 			//设置标题
@@ -243,31 +249,12 @@ public class MainActivity extends FragmentActivity {
 				
 				@Override
 				public void onClick(View v) {
-					startActivityForResult(new Intent(getActivity(), AddContact.class), 1);
+					startActivityForResult(new Intent(getActivity(), AddContact.class), REQUEST_CODE_CONTACT);
 					
 				}
 			});
 		}
 		
-		@Override
-		public void onActivityResult(int requestCode, int resultCode, Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
-			if(resultCode == RESULT_OK){
-				contactList.clear();
-				contactList.addAll(allUsers.values());
-            	//排序
-                Collections.sort(contactList, new Comparator<EMUserBase>() {
-                    @Override
-                    public int compare(EMUserBase lhs, EMUserBase rhs) {
-                        return lhs.getHeader().compareTo(rhs.getHeader());
-
-                    }
-                });
-                //更新好友列表
-				contactFragment.contactAdapter.notifyDataSetChanged();
-				
-			}
-		}
     	
     }
     
@@ -286,14 +273,6 @@ public class MainActivity extends FragmentActivity {
 			title.setText("群组");
 		}
 		
-		@Override
-		public void onActivityResult(int requestCode, int resultCode, Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
-			if(resultCode == RESULT_OK){
-				//跟新群组列表
-				groupFragment.groupAdapter.notifyDataSetChanged();
-			}
-		}
     }
 
     @Override
@@ -417,6 +396,22 @@ public class MainActivity extends FragmentActivity {
                 EaseMobService.autoRestart = false;
                 stopService(new Intent(this, EaseMobService.class));
                 finish();
+            } else if(requestCode == REQUEST_CODE_GROUP){
+            	//更新群组列表
+				groupFragment.groupAdapter.notifyDataSetChanged();
+            } else if(requestCode == REQUEST_CODE_CONTACT){
+            	contactList.clear();
+				contactList.addAll(allUsers.values());
+            	//排序
+                Collections.sort(contactList, new Comparator<EMUserBase>() {
+                    @Override
+                    public int compare(EMUserBase lhs, EMUserBase rhs) {
+                        return lhs.getHeader().compareTo(rhs.getHeader());
+
+                    }
+                });
+                //更新好友列表
+				contactFragment.contactAdapter.notifyDataSetChanged();
             } else {
                 updateUnreadLabel();
             }
