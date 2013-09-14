@@ -303,28 +303,12 @@ public class MainActivity extends FragmentActivity {
         updateUnreadLabel();
 
         if (wasPaused) {
-            // if resumed from background, need to check network connect,
-            // if not connected, show to disconnect error msg
+            // 从后台返回后，检查网络状态。在错误信息提示栏显示“无法连接服务器信息”如果没有网络连接。
             wasPaused = false;
             if (!EaseMobService.isConnected()) {
                 ChatHistoryFragment fragment1 = (ChatHistoryFragment) fragments[0];
                 fragment1.errorItem.setVisibility(View.VISIBLE);
             }
-        }
-
-        if (isChat) {
-            FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
-            trx.hide(fragments[currentTabIndex]);
-            if (!fragments[0].isAdded()) {
-                trx.add(R.id.fragment_container, fragments[0]);
-            }
-            trx.show(fragments[0]).commit();
-
-            mTabs[currentTabIndex].setCompoundDrawablesWithIntrinsicBounds(null, unSelectedTabs[currentTabIndex], null,
-                    null);
-            mTabs[0].setCompoundDrawablesWithIntrinsicBounds(null, selectedTabs[0], null, null);
-            currentTabIndex = 0;
-            isChat = false;
         }
     }
 
