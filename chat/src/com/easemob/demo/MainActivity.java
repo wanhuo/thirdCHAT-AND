@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,21 +21,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,12 +50,10 @@ import com.easemob.ui.activity.AddGroup;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.activity.ChatHistoryFragment;
-import com.easemob.ui.activity.ContactListFragment;
-import com.easemob.ui.activity.GroupDetails;
-import com.easemob.ui.adapter.ContactAdapter;
-import com.easemob.ui.adapter.ContactPagerAdapter;
-import com.easemob.ui.adapter.GroupAdapter;
-import com.easemob.ui.widget.Sidebar;
+import com.easemob.ui.activity.ContactsListFragment;
+import com.easemob.ui.activity.ContactsListFragment.ContactsListFragmentListener;
+import com.easemob.ui.activity.GroupListFragment;
+import com.easemob.ui.activity.GroupListFragment.GroupListFragmentListener;
 
 public class MainActivity extends FragmentActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -90,6 +82,13 @@ public class MainActivity extends FragmentActivity {
 
     public boolean wasPaused = false;
 
+	private List<EMUserBase> contactList;
+
+
+	private MyContactsListFragment contactFragment;
+
+	private MyGroupListFragment groupFragment;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,18 +100,21 @@ public class MainActivity extends FragmentActivity {
 
         instance = this;
 
-        mTabs = new Button[3];
+        mTabs = new Button[4];
         mTabs[0] = (Button) findViewById(R.id.btn_conversations);
         mTabs[1] = (Button) findViewById(R.id.btn_contacts);
-        mTabs[2] = (Button) findViewById(R.id.btn_settings);
+        mTabs[2] = (Button) findViewById(R.id.btn_groups);
+        mTabs[3] = (Button) findViewById(R.id.btn_settings);
         selectedTabs = new Drawable[] { getResources().getDrawable(R.drawable.tab_weixin_pressed),
                 getResources().getDrawable(R.drawable.tab_find_frd_pressed),
+                getResources().getDrawable(R.drawable.tab_address_pressed),
                 getResources().getDrawable(R.drawable.tab_settings_pressed) };
         unSelectedTabs = new Drawable[] { getResources().getDrawable(R.drawable.tab_weixin_normal),
                 getResources().getDrawable(R.drawable.tab_find_frd_normal),
+                getResources().getDrawable(R.drawable.tab_address_normal),
                 getResources().getDrawable(R.drawable.tab_settings_normal) };
         currentTabIndex = 0;
-        fragments = new Fragment[] { new ChatHistoryFragment(), new MyContactListFragment(), new SettingFragment()};
+      
 
         /******************************* EaseMob SDK Start ***********************************/
         /***** Use EaseMob SDK. Step 1: EaseMob.init() and EaseMob.login. ********************/
@@ -151,14 +153,147 @@ public class MainActivity extends FragmentActivity {
         // Load all available users from local DB. This also load users' chat history
         allUsers = ChatUtil.loadAllUsers(this);
         EMUser.setAllUsers(allUsers);
-        
         // Load all available groups from local DB. 
         Group.allGroups = EaseMobMsgDB.loadGroups(this, new ArrayList<EMUserBase>(allUsers.values()));
         
+        contactList = new ArrayList<EMUserBase>(allUsers.values());
+        //排序
+        Collections.sort(contactList, new Comparator<EMUserBase>() {
+            @Override
+            public int compare(EMUserBase lhs, EMUserBase rhs) {
+                return (lhs.getHeader().compareTo(rhs.getHeader()));
+            }
+        });
+        
+        contactFragment = new MyContactsListFragment(contactList, new MyContactListListener());
+        groupFragment = new MyGroupListFragment(Group.allGroups, new MyGroupListListener());
+        fragments = new Fragment[] { new ChatHistoryFragment(), 
+        		contactFragment,
+        		groupFragment,
+        		new SettingFragment()};
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragments[0]).commit();
         
         //until here, notify SDK that the UI is inited
         EaseMob.applicationInited = true;
+    }
+    
+    /**
+     * contactlist 监听事件
+     * @author Administrator
+     *
+     */
+    class MyContactListListener implements ContactsListFragmentListener{
+
+		@Override
+		public void onListItemClickListener(int position) {
+//			Toast.makeText(MainActivity.this, "第position"+"被点击", 1).show();
+			//点击进入回话页面
+			startActivity(new Intent(MainActivity.this, ChatActivity.class).putExtra("userId", contactList.get(position).getUsername()));
+		}
+    	
+    }
+    
+    /**
+     * grouplist监听事件
+     * @author Administrator
+     *
+     */
+    class MyGroupListListener implements GroupListFragmentListener{
+
+		@Override
+		public void onListItemClickListener(int position) {
+			//点击新建群组按钮item
+		   if (position == groupFragment.groupAdapter.getCount() - 1) {
+               if (EaseMobService.isConnected()) {
+                   startActivityForResult(new Intent(MainActivity.this, AddGroup.class), 0);
+               } else {
+                   startActivity(new Intent(MainActivity.this, AlertDialog.class).putExtra(
+                           "msg", MainActivity.this.getString(R.string.network_unavailable)));
+               }
+           } else {//点击普通item进入群组聊天页面
+               Intent intent = new Intent(MainActivity.this,ChatActivity.class);
+               intent.putExtra("isChat", false);
+               //it is group chat
+               intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
+               intent.putExtra("position", position - 1);
+               intent.putExtra("groupName", groupFragment.groupAdapter.getItem(position-1).getUsername());
+               startActivityForResult(intent, 0);
+           }
+			
+		}
+    	
+    }
+    
+    @SuppressLint("ValidFragment")
+	class MyContactsListFragment extends ContactsListFragment{
+
+		public MyContactsListFragment(List<EMUserBase> contactList, ContactsListFragmentListener listener) {
+			super(contactList, listener);
+		}
+		
+		@Override
+		public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+			//显示标题栏
+			titleLayout.setVisibility(View.VISIBLE);
+			//设置标题
+			title.setText("好友");
+			//添加好友
+			addContactBtn.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					startActivityForResult(new Intent(getActivity(), AddContact.class), 1);
+					
+				}
+			});
+		}
+		
+		@Override
+		public void onActivityResult(int requestCode, int resultCode, Intent data) {
+			super.onActivityResult(requestCode, resultCode, data);
+			if(resultCode == RESULT_OK){
+				contactList.clear();
+				contactList.addAll(allUsers.values());
+            	//排序
+                Collections.sort(contactList, new Comparator<EMUserBase>() {
+                    @Override
+                    public int compare(EMUserBase lhs, EMUserBase rhs) {
+                        return lhs.getHeader().compareTo(rhs.getHeader());
+
+                    }
+                });
+                //更新好友列表
+				contactFragment.contactAdapter.notifyDataSetChanged();
+				
+			}
+		}
+    	
+    }
+    
+    @SuppressLint("ValidFragment")
+	class MyGroupListFragment extends GroupListFragment{
+
+		public MyGroupListFragment(List<Group> grouplist, GroupListFragmentListener listener) {
+			super(grouplist, listener);
+			// TODO Auto-generated constructor stub
+		}
+    	
+		@Override
+		public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+			titleLayout.setVisibility(View.VISIBLE);
+			title.setText("群组");
+		}
+		
+		@Override
+		public void onActivityResult(int requestCode, int resultCode, Intent data) {
+			super.onActivityResult(requestCode, resultCode, data);
+			if(resultCode == RESULT_OK){
+				//跟新群组列表
+				groupFragment.groupAdapter.notifyDataSetChanged();
+			}
+		}
     }
 
     @Override
@@ -229,162 +364,8 @@ public class MainActivity extends FragmentActivity {
         super.onDestroy();
     }
 
-    public static class MyContactListFragment extends ContactListFragment {
-        private GroupAdapter groupAdapter;
-        private ListView groupListView;
-        private ListView listView3;
-        private RelativeLayout titleLayout2;
-        private TextView titleText2;
-        private ImageView titleLine2;
-        // private InputMethodManager manager;
-        private boolean isDeptInited = false;
-        // private Sidebar sidebar2;
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-            return inflater.inflate(R.layout.main_tab_contacts, container, false);
-        }
-
-        public ListView getGroupListView() {
-            return groupListView;
-        }
-
-        public GroupAdapter getGroupAdapter() {
-            return groupAdapter;
-        }
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-            if (resultCode == RESULT_OK) {
-                groupAdapter.notifyDataSetChanged();
-            }
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-        	super.onActivityCreated(savedInstanceState);
-            manager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            list = new ArrayList<EMUserBase>();
-            
-            List<EMUserBase> list = new ArrayList<EMUserBase>(allUsers.values());
-            Collections.sort(list, new Comparator<EMUserBase>() {
-                @Override
-                public int compare(EMUserBase lhs, EMUserBase rhs) {
-                    return lhs.getHeader().compareTo(rhs.getHeader());
-
-                }
-            });
-            layoutInflater = LayoutInflater.from(getActivity());
-            titleLayout1 = (RelativeLayout) getView().findViewById(R.id.title_layout1);
-            titleLayout2 = (RelativeLayout) getView().findViewById(R.id.title_layout3);
-            titleText1 = (TextView) getView().findViewById(R.id.title1);
-            titleText2 = (TextView) getView().findViewById(R.id.title3);
-            titleLine1 = (ImageView) getView().findViewById(R.id.iv_line1);
-            titleLine2 = (ImageView) getView().findViewById(R.id.iv_line3);
-            contactListViews = new ArrayList<View>();
-
-            contactListViews.add(layoutInflater.inflate(R.layout.contacts_list2, null));
-            contactListViews.add(layoutInflater.inflate(R.layout.contact_list, null));
-            sidebar2 = (Sidebar) contactListViews.get(0).findViewById(R.id.sidebar);
-            contactAdapter = new ContactAdapter(getActivity(), R.layout.row_contact, list, sidebar2);
-            contactListView = (ListView) contactListViews.get(0).findViewById(R.id.list);
-            groupListView = (ListView) contactListViews.get(1).findViewById(R.id.list);
-            contactListView.setOnTouchListener(new ContactTouchListener());
-            groupListView.setOnTouchListener(new ContactTouchListener());
-            // listView3 = (ListView)
-            // contactListViews.get(3).findViewById(R.id.list);
-            contactListView.setOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    getActivity().startActivity(
-                            new Intent(getActivity(), ChatActivity.class).putExtra("userId",
-                                    contactAdapter.getItem(position).getUsername()));
-                }
-            });
-            // registerForContextMenu(contactListView);
-            // registerForContextMenu(groupListView);
-
-            vPager = (ViewPager) getView().findViewById(R.id.vPager);
-            vPager.setAdapter(new ContactPagerAdapter(contactListViews, getActivity(), contactAdapter));
-            vPager.setOffscreenPageLimit(4);
-            // vPager.getAdapter().notifyDataSetChanged();
-            vPager.setOnPageChangeListener(new OnPageChangeListener() {
-
-                @Override
-                public void onPageSelected(int arg0) {
-                    switch (arg0) {
-                    case 0:
-                        if (currentPagerIndex == 1) {
-                            setToNormalColor(titleText2);
-                            titleLine2.setVisibility(View.INVISIBLE);
-                        } 
-                        setToSelectedColor(titleText1);
-                        titleLine1.setVisibility(View.VISIBLE);
-
-                        break;
-                    case 1:
-                        if (currentPagerIndex == 0) {
-                            setToNormalColor(titleText1);
-                            titleLine1.setVisibility(View.INVISIBLE);
-                        } 
-                        setToSelectedColor(titleText2);
-                        titleLine2.setVisibility(View.VISIBLE);
-                        if (groupAdapter == null) {
-                            // add fake data
-                            groupAdapter = new GroupAdapter(getActivity(), 1, Group.allGroups);
-                        }
-                        groupListView.setAdapter(groupAdapter);
-                        groupListView.setOnItemClickListener(new OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                if (position == groupAdapter.getCount() - 1) {
-                                    if (EaseMobService.isConnected()) {
-                                        startActivityForResult(new Intent(getActivity(), AddGroup.class), 0);
-                                    } else {
-                                        startActivity(new Intent(MainActivity.instance, AlertDialog.class).putExtra(
-                                                "msg", MainActivity.instance.getString(R.string.network_unavailable)));
-                                    }
-                                } else {
-                                    startActivity(new Intent(getActivity(), GroupDetails.class).putExtra(
-                                            "position", position - 1));
-                                }
-
-                            }
-                        });
-
-                        groupListView.invalidate();
-                       
-                        break;
-
-                    }
-
-                    currentPagerIndex = arg0;
-
-                }
-
-                @Override
-                public void onPageScrolled(int arg0, float arg1, int arg2) {
-                    if (getActivity().getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-                        if (getActivity().getCurrentFocus() != null)
-                            manager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                    }
-
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int arg0) {
-                }
-            });
-            vPager.setCurrentItem(0);
-
-            titleLayout1.setOnClickListener(new ContactTitleClickListener(0));
-            titleLayout2.setOnClickListener(new ContactTitleClickListener(1));
-        }
-
-    }
+    
+    
 
     public static class SettingFragment extends Fragment{
 		@Override
@@ -399,8 +380,11 @@ public class MainActivity extends FragmentActivity {
         case R.id.btn_contacts:
             index = 1;
             break;
+        case R.id.btn_groups:
+        	index = 2;
+        	break;
         case R.id.btn_settings:
-            index = 2;
+            index = 3;
             break;
         default:
             break;
@@ -441,12 +425,7 @@ public class MainActivity extends FragmentActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            // 因为设成的是singtask模式，所以在切换登陆的时候必须确保main finish时才切换到loginactivity
-            // 所以mainactivity finish的操作得放在logout里
-            /*
-             * if (requestCode == REQUEST_CODE_LOGOUT) { //finish the
-             * MainActivity finish(); }else
-             */if (requestCode == REQUEST_CODE_EXIT) {
+           if (requestCode == REQUEST_CODE_EXIT) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
                 Editor editor = sp.edit();
                 editor.putBoolean("isShowSplash", true);
@@ -542,14 +521,9 @@ public class MainActivity extends FragmentActivity {
                     tmp.userRowAdapter.notifyDataSetChanged();
                 }
 
-                MyContactListFragment contactGroup = (MyContactListFragment) fragments[1];
-                if (contactGroup != null) {
-                    ListView groupListView = contactGroup.getGroupListView();
-                    if (groupListView != null) {
-                        if (contactGroup.getGroupAdapter() != null) {
-                            contactGroup.getGroupAdapter().notifyDataSetChanged();
-                        }
-                    }
+                GroupListFragment groupFragment = (GroupListFragment) fragments[2];
+                if (groupFragment != null && groupFragment.groupAdapter != null) {
+                    	groupFragment.groupAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -570,12 +544,9 @@ public class MainActivity extends FragmentActivity {
                     tmp.userRowAdapter.notifyDataSetChanged();
                 }
 
-                MyContactListFragment contactGroup = (MyContactListFragment) fragments[1];
-                if (contactGroup != null) {
-                    ListView groupListView = contactGroup.getGroupListView();
-                    if (groupListView != null) {
-                        contactGroup.getGroupAdapter().notifyDataSetChanged();
-                    }
+                GroupListFragment groupFragment = (GroupListFragment) fragments[2];
+                if (groupFragment != null && groupFragment.groupAdapter != null) {
+                    	groupFragment.groupAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -631,7 +602,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         @Override
-        public void onDisConnected() {
+        public void onDisConnected(String errorString) {
             runOnUiThread(new Runnable() {
                 public void run() {
                     ChatHistoryFragment fragment1 = (ChatHistoryFragment) fragments[0];
@@ -657,6 +628,7 @@ public class MainActivity extends FragmentActivity {
         @Override
         public void onConnecting(String progress) {
         }
+
     }
 
     private class MyContactListener implements ContactListener {
@@ -716,22 +688,20 @@ public class MainActivity extends FragmentActivity {
                         ((ChatHistoryFragment) fragments[0]).userRowAdapter.notifyDataSetChanged();
                         break;
                     case 1: // when add a user these code be invoke twice?
-                        MyContactListFragment tmp = ((MyContactListFragment) fragments[1]);
-
-                        List<EMUserBase> list = new ArrayList<EMUserBase>(allUsers.values());
-                        Collections.sort(list, new Comparator<EMUserBase>() {
+                    	ContactsListFragment tmp = ((ContactsListFragment) fragments[1]);
+                    	contactList.clear();
+                    	contactList.addAll(allUsers.values());
+                    	//排序
+                        Collections.sort(contactList, new Comparator<EMUserBase>() {
                             @Override
                             public int compare(EMUserBase lhs, EMUserBase rhs) {
                                 return lhs.getHeader().compareTo(rhs.getHeader());
 
                             }
                         });
-                        tmp.list = list;
-                        if (tmp.vPager.getCurrentItem() != 0 && deleteNonExistingUsers)
-                            tmp.vPager.setCurrentItem(0);
-                        tmp.contactAdapter = new ContactAdapter(getApplicationContext(), R.layout.row_contact,
-                                tmp.list, tmp.sidebar);
-                        tmp.contactListView.setAdapter(tmp.contactAdapter);
+//                        tmp.contactAdapter = new ContactAdapter(getApplicationContext(), R.layout.row_contact,
+//                                tmp.list, tmp.sidebar);
+//                        tmp.contactListView.setAdapter(tmp.contactAdapter);
                         tmp.contactAdapter.notifyDataSetChanged();
                         break;
                     case 2:
@@ -779,7 +749,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // TODO Auto-generated method stub
+        //隐藏软键盘
         if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
             if (getCurrentFocus() != null && getCurrentFocus().getWindowToken() != null) {
                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),

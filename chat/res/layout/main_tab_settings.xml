@@ -26,6 +26,8 @@
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
         android:layout_marginTop="20dp"
+         android:paddingBottom="7dp"
+          		android:paddingTop="7dp"
         android:background="@drawable/btn_style_alert_dialog_special"
         android:onClick="logout"
         android:text="@string/button_logout"

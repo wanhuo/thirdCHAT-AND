@@ -125,12 +125,15 @@
             android:name="com.easemob.demo.LogoutActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MyDialogStyleBottom" />
-        
-         <activity
+        <activity
             android:name="com.easemob.ui.activity.ExitGroupDialog"
             android:screenOrientation="portrait"
             android:theme="@style/MyDialogStyleBottom" >
         </activity>
+        <activity
+            android:name="com.easemob.ui.activity.ConfirmDialog"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyDialogStyle" />
 
         <service android:name="com.easemob.EaseMobService" />
         <service
