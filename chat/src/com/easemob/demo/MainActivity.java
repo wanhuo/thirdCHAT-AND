@@ -221,7 +221,7 @@ public class MainActivity extends FragmentActivity {
                //it is group chat
                intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
                intent.putExtra("position", position - 1);
-               intent.putExtra("groupName", groupFragment.groupAdapter.getItem(position-1).getUsername());
+               intent.putExtra("groupId", groupFragment.groupAdapter.getItem(position-1).getGroupId());
                startActivityForResult(intent, REQUEST_CODE_GROUP);
            }
 			
