@@ -162,13 +162,13 @@ public class ChatUtil {
     }
     
     /**
-    * Search users' conversation history with provided keywords
+    * Search users' chat history with provided keywords
     * @param allUsers
-    * @param query the query string. Can be part of conversation history
-    * @return List<User>
+    * @param query the query string. Can be part of chat history
+    * @return List<DemoUser>
     */
-    public static List<DemoUser> searchConversation(List<DemoUser> allUsers, String query) {
-        //TODO: we only search against conversation history stored in cache at the moment. We may need to search from message history files if necessary
+    public static List<DemoUser> searchChatHistory(List<DemoUser> allUsers, String query) {
+        //TODO: we only search against chat history stored in cache at the moment. We may need to search from message history files if necessary
         List<DemoUser> resultList = new ArrayList<DemoUser>();
         for(DemoUser user : allUsers) {
             List<Message> history = user.getMessages();
