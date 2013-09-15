@@ -86,14 +86,10 @@ public class MainActivity extends FragmentActivity {
 
 	private List<EMUserBase> contactList;
 
-
 	private MyContactsListFragment contactFragment;
 
 	private MyGroupListFragment groupFragment;
 	
-
-	
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -229,9 +225,11 @@ public class MainActivity extends FragmentActivity {
     	
     }
     
+	//MyContactsListFragment继承了SDK中的ContactsListFragment（即联系人页面），做了以下改动：
+    //1. ContactsListFragment缺省包含一个不可见的标题栏，标题栏右侧还有“添加好友”按钮。在MyContactsListFragment中我们将标题栏设为可见
+    //2. 重载“添加好友”按钮的处理。
     @SuppressLint("ValidFragment")
-	class MyContactsListFragment extends ContactsListFragment{
-
+	class MyContactsListFragment extends ContactsListFragment {
 		public MyContactsListFragment(List<EMUserBase> contactList, ContactsListFragmentListener listener) {
 			super(contactList, listener);
 		}
@@ -239,14 +237,12 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
-			//如果不需要显示标题栏等操作，直接用sdk里的即可
 			//显示标题栏
 			titleLayout.setVisibility(View.VISIBLE);
 			//设置标题
 			title.setText("好友");
 			//添加好友
-			addContactBtn.setOnClickListener(new OnClickListener() {
-				
+			addContactBtn.setOnClickListener(new OnClickListener() {				
 				@Override
 				public void onClick(View v) {
 					startActivityForResult(new Intent(getActivity(), AddContact.class), REQUEST_CODE_CONTACT);
@@ -254,25 +250,26 @@ public class MainActivity extends FragmentActivity {
 				}
 			});
 		}
-		
-    	
     }
     
+    //MyGroupListFragment继承了SDK中的GroupListFragment（即群组页面），做了以下改动：
+    //1. ContactsListFragment缺省包含一个不可见的标题栏，标题栏右侧还有“添加群组（添加公开群组）”按钮。在MyContactsListFragment中我们将标题栏设为可见
+    //2. 重载“添加群组”按钮的处理。
     @SuppressLint("ValidFragment")
-	class MyGroupListFragment extends GroupListFragment{
+	class MyGroupListFragment extends GroupListFragment {
 
 		public MyGroupListFragment(List<Group> grouplist, GroupListFragmentListener listener) {
 			super(grouplist, listener);
-			// TODO Auto-generated constructor stub
 		}
     	
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
-			titleLayout.setVisibility(View.VISIBLE);
-			title.setText("群组");
-		}
-		
+			//显示标题栏
+            titleLayout.setVisibility(View.VISIBLE);
+            //设置标题
+            title.setText("群组");
+		}		
     }
 
     @Override
@@ -326,9 +323,7 @@ public class MainActivity extends FragmentActivity {
 
         super.onDestroy();
     }
-
-    
-    
+        
 
     public static class SettingFragment extends Fragment{
 		@Override
