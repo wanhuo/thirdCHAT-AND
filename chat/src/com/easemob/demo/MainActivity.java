@@ -129,17 +129,17 @@ public class MainActivity extends FragmentActivity {
         }
         /****** Use EaseMob SDK. Step 2: Register receivers to receive chat message **********/
         // Register receiver on EaseMobService for receiving chat message
-        IntentFilter chatIntentFilter = new IntentFilter(EaseMobService.BROADCAST_CHAT_ACTION);
+        IntentFilter chatIntentFilter = new IntentFilter(EaseMobService.getBroadcastChatAction());
         chatIntentFilter.setPriority(3);
         registerReceiver(chatBroadcastReceiver, chatIntentFilter);
         isChatBroadcastReceiverRegistered = true;
 
         // Register receiver for receiving group invited broadcast
-        IntentFilter groupIntentFilter = new IntentFilter(EaseMobService.BROADCAST_GROUP_INVITED_ACTION);
+        IntentFilter groupIntentFilter = new IntentFilter(EaseMobService.getBroadcastGroupInvitedAction());
         registerReceiver(groupInvitedReceiver, groupIntentFilter);
 
         // Register receiver for receiving group deleted broadcast
-        IntentFilter groupDelIntentFilter = new IntentFilter(EaseMobService.BROADCAST_GROUP_DELETED_ACTION);
+        IntentFilter groupDelIntentFilter = new IntentFilter(EaseMobService.getBroadcastGroupDeletedAction());
         registerReceiver(groupDeletedReceiver, groupDelIntentFilter);
 
         /****** Use EaseMob SDK. Step 3: Register listeners to receive contact and connection event *******/
