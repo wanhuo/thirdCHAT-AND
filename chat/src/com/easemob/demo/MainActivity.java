@@ -139,8 +139,8 @@ public class MainActivity extends FragmentActivity {
         registerReceiver(groupInvitedReceiver, groupIntentFilter);
 
         // Register receiver for receiving group deleted broadcast
-        IntentFilter groupDelIntentFilter = new IntentFilter(EaseMobService.getBroadcastGroupDeletedAction());
-        registerReceiver(groupDeletedReceiver, groupDelIntentFilter);
+        IntentFilter groupDelIntentFilter = new IntentFilter(EaseMobService.getBroadcastGroupChangedAction());
+        registerReceiver(groupChangedReceiver, groupDelIntentFilter);
 
         /****** Use EaseMob SDK. Step 3: Register listeners to receive contact and connection event *******/
         // Register receiver for contact changed event.
@@ -314,9 +314,9 @@ public class MainActivity extends FragmentActivity {
             } catch (Exception e) {
             }
         }
-        if (groupDeletedReceiver != null) {
+        if (groupChangedReceiver != null) {
             try {
-                unregisterReceiver(groupDeletedReceiver);
+                unregisterReceiver(groupChangedReceiver);
             } catch (Exception e) {
             }
         }
@@ -504,7 +504,7 @@ public class MainActivity extends FragmentActivity {
         }
     };
 
-    private BroadcastReceiver groupDeletedReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver groupChangedReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
