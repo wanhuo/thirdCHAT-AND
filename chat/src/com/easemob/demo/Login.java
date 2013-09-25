@@ -56,8 +56,8 @@ public class Login extends Activity {
     		EaseMob.init(this.getApplicationContext());
     		EaseMob.login(userName, password, new LoginCallBack() {
                 @Override
-                public void onSuccess(EMUserBase user) {       
-                    DemoUser demoUser = user.toType(DemoUser.class);
+                public void onSuccess(Object user) {       
+                    DemoUser demoUser = ((EMUserBase)user).toType(DemoUser.class);
                     Gl.setPassword(password);
                     
                     ChatUtil.addUser(Login.this, demoUser);
