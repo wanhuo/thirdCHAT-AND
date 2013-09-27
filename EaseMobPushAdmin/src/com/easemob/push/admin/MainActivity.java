@@ -72,9 +72,9 @@ public class MainActivity extends Activity{
 
         protected void onPostExecute(Boolean result) {
             if (result) {
-                Toast.makeText(instance,  "sent push succfully", Toast.LENGTH_LONG).show();
+                Toast.makeText(instance,  "request exec succfully", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(instance,  "sent push failed. check logs for detail", Toast.LENGTH_LONG).show();
+                Toast.makeText(instance,  "request failed. check logs for detail", Toast.LENGTH_LONG).show();
             }
         }
     }

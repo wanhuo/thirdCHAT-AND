@@ -10,8 +10,12 @@ public class ExampleApplication extends Application {
     @Override
     public void onCreate() {             
          super.onCreate();
-         Log.i("app", "initialize EaseMob Push Service");         
+         Log.i("app", "initialize EaseMob Push Service");
          EaseMobPush.init(this);
     }
 
+    public void onTerminate () {
+        EaseMobPush.stopPush(this);
+        super.onTerminate();
+    }
 }

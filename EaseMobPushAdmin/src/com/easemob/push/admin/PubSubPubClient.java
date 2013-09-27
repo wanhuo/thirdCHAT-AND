@@ -56,44 +56,7 @@ public class PubSubPubClient {
     
     
     private ConnectionConfiguration connectionConfig = null;
-    
-	public void sub() throws Exception {
-		// Create a XMPPConnection
-		SASLAuthentication.supportSASLMechanism("PLAIN");
-		// For debugging
-		XMPPConnection.DEBUG_ENABLED = false;
-
-		ConnectionConfiguration config = new ConnectionConfiguration("push.easemob.com", 5222);
-		XMPPConnection conn = new XMPPConnection(config);
-		conn.connect();
-		conn.login(userName, password);
-
-		// Create the topic
-		ConfigureForm f = new ConfigureForm(FormType.submit);
-		// Set some params for the topic node according to your requirement
-		f.setPersistentItems(false);
-		f.setDeliverPayloads(true);
-		f.setAccessModel(AccessModel.open);
-		f.setPublishModel(PublishModel.open);
-		f.setSubscribe(true);
-
-		// Note that you need to set the second parameter for openfire. This is
-		// the
-		// same as the pubsub service name
-		PubSubManager mgr = new PubSubManager(conn, "pubsub.ac2");
-		//Node n = mgr.createNode("appkey3", f);
-		Node n = mgr.getNode("appkey3");
-		
-		// Now publish something
-		SimplePayload payload = new SimplePayload("book", "pubsub:test:book",
-				"<entry>testcontent2</entry>");
-
-		PayloadItem payloadItem = new PayloadItem(null, payload);
-		((LeafNode) n).publish(payloadItem);
-		
-		conn.disconnect();
-	}
-	
+    	
 	private void initFeatures(XMPPConnection connection) {
 	        ServiceDiscoveryManager.setIdentityName("easemob");
 	        ServiceDiscoveryManager.setIdentityType("phone");
@@ -268,7 +231,7 @@ public class PubSubPubClient {
             // Create the topic
             ConfigureForm f = new ConfigureForm(FormType.submit);
             // Set some params for the topic node according to your requirement
-            f.setPersistentItems(false);
+            f.setPersistentItems(true);
             f.setDeliverPayloads(true);
             f.setAccessModel(AccessModel.open);
             f.setPublishModel(PublishModel.open);
@@ -295,15 +258,7 @@ public class PubSubPubClient {
             return false;
         }
         try {
-            // Create the topic
-            ConfigureForm f = new ConfigureForm(FormType.submit);
-            // Set some params for the topic node according to your requirement
-            f.setPersistentItems(false);
-            f.setDeliverPayloads(true);
-            f.setAccessModel(AccessModel.open);
-            f.setPublishModel(PublishModel.open);
-            f.setSubscribe(true);
-
+            
             PubSubManager mgr = new PubSubManager(conn, "pubsub.ac2");
             mgr.deleteNode(node);
             
