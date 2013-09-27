@@ -33,6 +33,7 @@ import org.jivesoftware.smackx.pubsub.ConfigureForm;
 import org.jivesoftware.smackx.pubsub.FormType;
 import org.jivesoftware.smackx.pubsub.LeafNode;
 import org.jivesoftware.smackx.pubsub.Node;
+import org.jivesoftware.smackx.pubsub.NodeType;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.pubsub.PublishModel;
@@ -232,9 +233,11 @@ public class PubSubPubClient {
             ConfigureForm f = new ConfigureForm(FormType.submit);
             // Set some params for the topic node according to your requirement
             f.setPersistentItems(true);
+            f.setPresenceBasedDelivery(false);
             f.setDeliverPayloads(true);
             f.setAccessModel(AccessModel.open);
             f.setPublishModel(PublishModel.open);
+            f.setMaxItems(-1);
             f.setSubscribe(true);
 
             PubSubManager mgr = new PubSubManager(conn, "pubsub.ac2");
