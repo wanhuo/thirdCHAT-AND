@@ -176,11 +176,12 @@ public class PubSubPubClient {
             //SmackConfiguration.setKeepAliveInterval(180000);
             
             connectionConfig = new ConnectionConfiguration("push.easemob.com", 5222, "ac2");
+            
             connectionConfig.setRosterLoadedAtLogin(false);
             //NOTE: Setting to true or false has no effect on whether or not we can receive presence events from roster friends.
             connectionConfig.setSendPresence(false);
             connectionConfig.setReconnectionAllowed(false);
-            connectionConfig.setCompressionEnabled(true);
+            connectionConfig.setCompressionEnabled(false);
 
             /*
              * connConfig.setSecurityMode(SecurityMode.required);
@@ -232,13 +233,18 @@ public class PubSubPubClient {
             // Create the topic
             ConfigureForm f = new ConfigureForm(FormType.submit);
             // Set some params for the topic node according to your requirement
-            f.setPersistentItems(true);
+            f.setPersistentItems(false);
             f.setPresenceBasedDelivery(false);
             f.setDeliverPayloads(true);
             f.setAccessModel(AccessModel.open);
             f.setPublishModel(PublishModel.open);
             f.setMaxItems(-1);
             f.setSubscribe(true);
+            
+            
+            f.setNotifyConfig(false);
+            f.setNotifyDelete(false);
+            f.setNotifyRetract(false); 
 
             PubSubManager mgr = new PubSubManager(conn, "pubsub.ac2");
             Node n = mgr.createNode(node, f);
@@ -309,11 +315,9 @@ public class PubSubPubClient {
             SimplePayload payload = new SimplePayload("content", "easemob:push",
                     "<entry xmlns='easemob:pubsub'>" + message +"</entry>");
 
-
             PayloadItem payloadItem = new PayloadItem(null, payload);
             ((LeafNode) n).publish(payloadItem);
-            Log.d("pubsub", "publish notification on node:" + node + " msg:" + message);
-            return true;
+            Thread.sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -322,6 +326,8 @@ public class PubSubPubClient {
                 conn.disconnect();
             }
         }
+        Log.d("pubsub", "publish notification on node:" + node + " msg:" + message);
+        return true;
     }
 	
 	public boolean publishMsg(String node, String message) {
@@ -342,6 +348,7 @@ public class PubSubPubClient {
             PayloadItem payloadItem = new PayloadItem(null, payload);
             ((LeafNode) n).publish(payloadItem);
             Log.d("pubsub", "publish message on node:" + node + " msg:" + message);
+            Thread.sleep(500);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
