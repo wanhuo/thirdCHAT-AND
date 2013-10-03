@@ -61,4 +61,16 @@ public class MainActivity extends Activity implements OnClickListener{
         instance.tvDebugOutput.append("\n\r");
     }
 
+    @Override
+    protected void onResume() {
+        System.out.println("main activity resumed");
+        super.onResume();
+    }
+
+
+    @Override
+    protected void onPause() {
+        System.out.println("main activity paused");
+        super.onPause();
+    }
 }

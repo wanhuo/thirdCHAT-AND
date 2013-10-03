@@ -35,17 +35,6 @@
             </intent-filter>
         </activity>
         
-        <!-- receiver to receive message from easemob push service -->
-        <receiver android:name="com.easemob.push.admin.PushMessageReceiver" >
-            <intent-filter>
-                <action android:name="com.easemob.push.action" />
-            </intent-filter>
-        </receiver>
-        
-        <!-- easemob push sdk service -->
-        <service android:name="com.easemob.EaseMobService" />
-        <!-- easemob push appkey -->
-        <meta-data android:name="EASEMOB_APPKEY" android:value="weiquan5"/>
-    </application>
+=    </application>
 
 </manifest>
