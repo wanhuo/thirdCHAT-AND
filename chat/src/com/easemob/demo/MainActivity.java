@@ -144,9 +144,9 @@ public class MainActivity extends FragmentActivity {
 
         /****** Use EaseMob SDK. Step 3: Register listeners to receive contact and connection event *******/
         // Register receiver for contact changed event.
-        EaseMob.addContactListener(remoteContactListener);
+        EaseMob.getInstance().addContactListener(remoteContactListener);
         // Register receiver for connection status event.
-        EaseMob.addConnectionListener(remoteConnectionListener);
+        EaseMob.getInstance().addConnectionListener(remoteConnectionListener);
 
         /********************************** EaseMob SDK End ******************************************/
 
@@ -297,8 +297,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onDestroy() {
         EaseMob.applicationInited = false;
-        EaseMob.removeContactListener(remoteContactListener);
-        EaseMob.removeConnectionListener(remoteConnectionListener);
+        EaseMob.getInstance().removeContactListener(remoteContactListener);
+        EaseMob.getInstance().removeConnectionListener(remoteConnectionListener);
 
         if (chatBroadcastReceiver != null && isChatBroadcastReceiverRegistered) {
             try {
