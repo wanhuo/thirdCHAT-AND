@@ -52,7 +52,7 @@ import android.util.Log;
 
 public class PubSubPubClient {
 
-    private static final String userName = "admin";
+    private static final String userName = "pushadmin";
     private static final String password = "thepushbox";
     
     
@@ -175,7 +175,8 @@ public class PubSubPubClient {
             //set the heatbeat interval to 5 minutes
             //SmackConfiguration.setKeepAliveInterval(180000);
             
-            connectionConfig = new ConnectionConfiguration("push.easemob.com", 5222, "ac2");
+            //connectionConfig = new ConnectionConfiguration("push.easemob.com", 5222, "ac2");
+            connectionConfig = new ConnectionConfiguration("223.202.120.14", 5222, "ac2");
             
             connectionConfig.setRosterLoadedAtLogin(false);
             //NOTE: Setting to true or false has no effect on whether or not we can receive presence events from roster friends.
@@ -216,7 +217,7 @@ public class PubSubPubClient {
             XMPPConnection.DEBUG_ENABLED = true;
             conn.connect();
             initFeatures(conn);
-            conn.login("admin", "thepushbox");
+            conn.login(userName, password);
             return conn;
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -238,13 +239,16 @@ public class PubSubPubClient {
             f.setDeliverPayloads(true);
             f.setAccessModel(AccessModel.open);
             f.setPublishModel(PublishModel.open);
-            f.setMaxItems(-1);
+            //f.setMaxItems(-1); //works with openfire, not supported by ejabberd
             f.setSubscribe(true);
+            
             
             
             f.setNotifyConfig(false);
             f.setNotifyDelete(false);
             f.setNotifyRetract(false); 
+            
+
 
             PubSubManager mgr = new PubSubManager(conn, "pubsub.ac2");
             Node n = mgr.createNode(node, f);
