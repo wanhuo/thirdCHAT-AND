@@ -2,6 +2,7 @@ package com.easemob.push.admin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ReconnectionManager;
@@ -18,6 +19,7 @@ import org.jivesoftware.smackx.bytestreams.ibb.provider.DataPacketProvider;
 import org.jivesoftware.smackx.bytestreams.ibb.provider.OpenIQProvider;
 import org.jivesoftware.smackx.bytestreams.socks5.provider.BytestreamsProvider;
 import org.jivesoftware.smackx.packet.ChatStateExtension;
+import org.jivesoftware.smackx.packet.DiscoverItems;
 import org.jivesoftware.smackx.packet.OfflineMessageInfo;
 import org.jivesoftware.smackx.packet.OfflineMessageRequest;
 import org.jivesoftware.smackx.provider.DataFormProvider;
@@ -38,6 +40,7 @@ import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.pubsub.PublishModel;
 import org.jivesoftware.smackx.pubsub.SimplePayload;
+import org.jivesoftware.smackx.pubsub.Subscription;
 import org.jivesoftware.smackx.pubsub.provider.EventProvider;
 import org.jivesoftware.smackx.pubsub.provider.ItemProvider;
 import org.jivesoftware.smackx.pubsub.provider.ItemsProvider;
@@ -52,7 +55,8 @@ import android.util.Log;
 
 public class PubSubPubClient {
 
-    private static final String userName = "pushadmin";
+    //private static final String userName = "pushadmin";
+    private static final String userName = "admin"; 
     private static final String password = "thepushbox";
     
     
@@ -176,7 +180,8 @@ public class PubSubPubClient {
             //SmackConfiguration.setKeepAliveInterval(180000);
             
             //connectionConfig = new ConnectionConfiguration("push.easemob.com", 5222, "ac2");
-            connectionConfig = new ConnectionConfiguration("223.202.120.14", 5222, "ac2");
+            //connectionConfig = new ConnectionConfiguration("223.202.120.14", 5222, "ac2");
+            connectionConfig = new ConnectionConfiguration("223.202.120.59", 5222, "ac2");
             
             connectionConfig.setRosterLoadedAtLogin(false);
             //NOTE: Setting to true or false has no effect on whether or not we can receive presence events from roster friends.
@@ -254,6 +259,10 @@ public class PubSubPubClient {
             Node n = mgr.createNode(node, f);
             
             Log.d("pubsub", "pubsub node created:" + node);
+            /*
+            Node createdNode = mgr.getNode(node);
+            createdNode.subscribe("pushtest1_test1@ac2");
+            */
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -294,8 +303,9 @@ public class PubSubPubClient {
         }
         try {
             PubSubManager mgr = new PubSubManager(conn, "pubsub.ac2");
-            mgr.deleteNode(node);            
-            Log.d("pubsub", "pubsub node deleted:" + node);
+            
+            DiscoverItems items = mgr.discoverNodes(null);
+            Log.d("pubsub", "pubsub list node:" + items.toXML());
             return true;
         } catch (Exception e) {
             e.printStackTrace();

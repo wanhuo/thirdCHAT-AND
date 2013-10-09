@@ -40,6 +40,10 @@ public class MainActivity extends Activity{
         new SendTask().execute("delete");
     }
     
+    public void onListNode(View v) {
+        new SendTask().execute("list");
+    }
+    
     public void onSendMessage(View v) {
         new SendTask().execute("push");
     }
@@ -63,7 +67,9 @@ public class MainActivity extends Activity{
                 result = client.createPubSubNode(appKey);
             } else if (type.equals("delete")) {
                 result = client.deletePubSubNode(appKey);
-            }
+            } else if (type.equals("list")) {
+                result = client.listPubSubNode(appKey);
+            } 
             return new Boolean(result);
         }
 
