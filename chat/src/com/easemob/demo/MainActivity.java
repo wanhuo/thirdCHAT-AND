@@ -155,7 +155,7 @@ public class MainActivity extends FragmentActivity {
         allUsers = ChatUtil.loadAllUsers(this);
         EMUser.setAllUsers(allUsers);
         // Load all available groups from local DB. 
-        Group.allGroups = EaseMobMsgDB.loadGroups(this, new ArrayList<EMUserBase>(allUsers.values()));
+        Group.allGroups = EaseMobMsgDB.loadGroups(this);
         
         contactList = new ArrayList<EMUserBase>(allUsers.values());
         //排序
