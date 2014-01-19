@@ -11,11 +11,12 @@ public class ExampleApplication extends Application {
     public void onCreate() {             
          super.onCreate();
          Log.i("app", "initialize EaseMob Push Service");
+         EaseMobPush.setDebugMode(true);
          EaseMobPush.init(this);
     }
 
     public void onTerminate () {
-        EaseMobPush.stopPush(this);
+        //EaseMobPush.stopPush(this);
         super.onTerminate();
     }
 }

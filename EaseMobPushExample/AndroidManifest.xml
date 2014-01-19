@@ -39,14 +39,19 @@
         <!-- receiver to receive message from easemob push service -->
         <receiver android:name="com.easemob.push.example.PushMessageReceiver" >
             <intent-filter>
-                <action android:name="com.easemob.push.action" />
+                <action android:name="com.easemob.push.intent.registration" />
+                <action android:name="com.easemob.push.intent.notification" />
+                <action android:name="com.easemob.push.intent.message" />
             </intent-filter>
         </receiver>
         
         <!-- easemob push sdk service -->
-        <service android:name="com.easemob.EaseMobService" />
+        <service android:name="com.easemob.push.EaseMobPushService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
         <!-- easemob push appkey -->
-        <meta-data android:name="EASEMOB_APPKEY" android:value="pushtest2"/>
+        <meta-data android:name="EASEMOB_APPKEY" android:value="pushdemo"/>
         <meta-data android:name="EASEMOB_PUSH_ADDRESS" android:value="http://210.76.97.31" />
         <meta-data android:name="EASEMOB_CHAT_ADDRESS" android:value="210.76.97.31" />
         <meta-data android:name="EASEMOB_CHAT_DOMAIN" android:value="hoho3" />
