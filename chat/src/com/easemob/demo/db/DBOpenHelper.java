@@ -8,6 +8,7 @@ import com.easemob.chat.db.ContractGroup;
 import com.easemob.chat.db.EaseMobMsgDB;
 import com.easemob.demo.Gl;
 import com.easemob.chat.db.MsgDBOpenHelper;
+import com.easemob.core.EaseMobConfig;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
 
@@ -36,8 +37,12 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 9;
 
 	private DBOpenHelper(Context context) {
-		super(context, EaseMobMsgDB.getDatabaseName(), null, DATABASE_VERSION);
+		super(context, getUserDatabaseName(), null, DATABASE_VERSION);
 	}
+	
+	private static String getUserDatabaseName() {
+        return EaseMobConfig.APPKEY + EaseMobConfig.getCurrentUserName() + "_users.db";
+    }
 
 	public static DBOpenHelper getInstance(Context context) {
 		if (instance == null) {

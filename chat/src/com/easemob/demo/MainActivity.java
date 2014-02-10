@@ -44,8 +44,11 @@ import com.easemob.chat.domain.EMUserBase;
 import com.easemob.chat.domain.Group;
 import com.easemob.chat.domain.Message;
 import com.easemob.chat.domain.MessageFactory;
+import com.easemob.core.EaseMobConfig;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
+import com.easemob.group.EaseMobGroupManager;
+import com.easemob.notify.EMNotificationService;
 import com.easemob.ui.activity.AddGroup;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.ui.activity.ChatActivity;
@@ -175,7 +178,7 @@ public class MainActivity extends FragmentActivity {
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragments[0]).commit();
         
         //until here, notify SDK that the UI is inited
-        EaseMob.applicationInited = true;
+        EaseMob.setApplicationInited(true);
     }
     
     /**
@@ -187,9 +190,12 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onListItemClickListener(int position) {
+
+            startActivity(new Intent(MainActivity.this, ChatActivity.class).
+                    putExtra("userId", contactFragment.contactAdapter.getItem(position).getUsername()));
 //			Toast.makeText(MainActivity.this, "第position"+"被点击", 1).show();
 			//点击进入会话页面
-			startActivity(new Intent(MainActivity.this, ChatActivity.class).putExtra("userId", contactList.get(position).getUsername()));
+			//startActivity(new Intent(MainActivity.this, ChatActivity.class).putExtra("userId", contactList.get(position).getUsername()));
 		}
     	
     }
@@ -296,7 +302,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onDestroy() {
-        EaseMob.applicationInited = false;
+        EaseMob.setApplicationInited(false);
         EaseMob.getInstance().removeContactListener(remoteContactListener);
         EaseMob.getInstance().removeConnectionListener(remoteConnectionListener);
 
@@ -425,6 +431,8 @@ public class MainActivity extends FragmentActivity {
                 Log.d(TAG, "received msg from group:" + groupId);
                 Group group = Group.getGroupById(groupId);
                 if (group == null) {
+                    Log.d(TAG, "ignore msg from unknow group:" + groupId);
+                    /*
                     // the group doesn't exist create group object here
                     Log.d(TAG, "create group obj:" + groupId);
                     group = new Group();
@@ -440,6 +448,8 @@ public class MainActivity extends FragmentActivity {
                     Group.allGroups.add(group);
                     Log.d(TAG, "create group obj, add to allgroups:" + group.getGroupId());
                     EaseMobMsgDB.saveGroup(context, group);
+                    */
+                    return;
                 }
                 tmpUser = group;
                 Log.d(TAG, "set groupuser to:" + group.getName());
@@ -564,7 +574,14 @@ public class MainActivity extends FragmentActivity {
             // process the notification message if there are any
             processMsgNotification();
             Log.d(TAG, "onconnected, try to retrive offline msg if any");
-            EaseMobService.getInstance().getChatManager().retrieveOfflineMsg();
+            try {
+                //retrieve offline chat msg
+                EMChat.retrieveOfflineMsg();
+                //retrieve offline group msg
+                EaseMobGroupManager.getInstance().retrieveOfflineMsg();
+            } catch (Exception oe) {
+                oe.printStackTrace();
+            }
 
             // initialize the whole contact list only once
             if (!Gl.getInited()) {
@@ -646,7 +663,7 @@ public class MainActivity extends FragmentActivity {
                     Iterator<EMUserBase> itor = contacts.iterator();
                     while (itor.hasNext()) {
                         EMUserBase user = itor.next();
-                        if (user.getUsername().equals(EaseMob.getCurrentUserName())) {
+                        if (user.getUsername().equals(EaseMobConfig.getCurrentUserName())) {
                             itor.remove();
                         }
                     }
@@ -709,7 +726,7 @@ public class MainActivity extends FragmentActivity {
         try {
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             com.easemob.chat.Message notificationMsg;
-            while ((notificationMsg = EMChat.getNextNotificationMsg()) != null) {
+            while ((notificationMsg = EMNotificationService.getInstance().getNextNotificationMsg()) != null) {
                 Message message = MessageFactory.createMsgFromNotification(notificationMsg);
                 EMUserBase tmpUser = MainActivity.allUsers.get(notificationMsg.getFrom());
                 tmpUser.addMessage(message, true);

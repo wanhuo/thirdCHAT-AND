@@ -148,8 +148,21 @@
             android:name="EASEMOB_APPKEY"
             android:value="chatdemo" />
         <meta-data
-            android:name="EASEMOB_SERVER_ADDRESS"
+            android:name="EASEMOB_CHAT_ADDRESS"
             android:value="push.easemob.com" />
+        <meta-data
+            android:name="EASEMOB_CHAT_DOMAIN"
+            android:value="ac2" />
+        <meta-data
+            android:name="EASEMOB_API_URL"
+            android:value="http://api.easemob.com" />   
+        <meta-data
+            android:name="EASEMOB_STORAGE_URL"
+            android:value="http://storage.easemob.com" />                   
+        <meta-data
+            android:name="EASEMOB_CLOUDCODE_URL"
+            android:value="http://cloudcode.easemob.com" />   
+        
         <meta-data
             android:name="EASEMOB_SERVER_DOMAIN"
             android:value="ac2" />

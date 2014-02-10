@@ -20,6 +20,7 @@ import com.easemob.chat.domain.EMUserBase;
 import com.easemob.chat.domain.Message;
 import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
+import com.easemob.core.EaseMobConfig;
 import com.easemob.demo.db.Contract;
 import com.easemob.demo.db.DBOpenHelper;
 import com.easemob.demo.domain.DemoUser;
@@ -56,7 +57,7 @@ public class ChatUtil {
                         Contract.UserTable.COLUMN_NAME_FAVORITE,
                         Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH}, null, null,
                 null, null, Contract.UserTable.COLUMN_NAME_ID + " COLLATE LOCALIZED ASC");
-        String myselfId = EaseMob.getCurrentUserName();
+        String myselfId = EaseMobConfig.getCurrentUserName();
         if (cursor.moveToFirst()) {
             do {
                 //Do not include "myself" 
@@ -194,7 +195,7 @@ public class ChatUtil {
         if (removeNonExistingUser) {
             SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
             Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
-            String myselfId = EaseMob.getCurrentUserName();
+            String myselfId = EaseMobConfig.getCurrentUserName();
             for (String userId : allLocalUsers.keySet()) {
                 boolean found = false;
                 for (EMUserBase contact : remoteContactList) {

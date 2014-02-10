@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.easemob.EaseMob;
 import com.easemob.chat.EMUser;
-import com.easemob.chat.callbacks.AddContactCallback;
+import com.easemob.chat.callbacks.GenericCallBack;
 import com.easemob.chat.callbacks.GetContactCallback;
 import com.easemob.chat.domain.EMUserBase;
 import com.easemob.demo.domain.DemoUser;
@@ -196,7 +196,7 @@ public class AddContact extends Activity {
 			return;
 		}
 
-        EMUser.addContactInBackground(userName, "", new AddContactCallback() {
+        EMUser.addContactInBackground(userName, "", new GenericCallBack() {
             @Override
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
