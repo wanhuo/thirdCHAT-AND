@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.easemob.chat.EMSessionManager;
 import com.easemob.chat.EaseMobChat;
 import com.easemob.user.domain.EMUserBase;
 import com.easemob.user.domain.Group;
@@ -300,7 +301,7 @@ public class MainActivity extends FragmentActivity {
         if (wasPaused) {
             // 从后台返回后，检查网络状态。在错误信息提示栏显示“无法连接服务器信息”如果没有网络连接。
             wasPaused = false;
-            if (!EaseMobChat.getSessionManager(this.getApplicationContext()).isConnected()) {
+            if (!EMSessionManager.getInstance(this.getApplicationContext()).isConnected()) {
                 ChatHistoryFragment fragment1 = (ChatHistoryFragment) fragments[0];
                 fragment1.errorItem.setVisibility(View.VISIBLE);
             }

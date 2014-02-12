@@ -32,8 +32,8 @@ public final class Gl extends Application {
 		init(this.getApplicationContext());
 		
 		Log.d("app", "initialize EaseMob Chat Service");
-        EaseMobChat.setDebugMode(true);
-        EaseMobChat.init(this.getApplicationContext());
+        EaseMobChat.getInstance().setDebugMode(true);
+        EaseMobChat.getInstance().init(this.getApplicationContext());
         EaseMobUser.getInstance().init(this.getApplicationContext());
 	}
 	
