@@ -40,7 +40,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	}
 	
 	private static String getUserDatabaseName() {
-        return EaseMobUserConfig.APPKEY + EaseMobUserConfig.getCurrentUserName() + "_users.db";
+        return EaseMobUserConfig.getInstance().APPKEY + EaseMobUserConfig.getInstance().getCurrentUserName() + "_users.db";
     }
 
 	public static DBOpenHelper getInstance(Context context) {

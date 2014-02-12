@@ -18,6 +18,7 @@ import com.easemob.exceptions.EMDuplicateResourceException;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
+import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 import com.easemob.user.callbacks.CreateAccountCallBack;
 
@@ -61,8 +62,7 @@ public class Register extends Activity {
         } else {
         	progressDialog.show();       	
 
-            EaseMobUser.init(this.getApplicationContext());
-		    EaseMobUser.getUserManager().createAppUserInBackground(username, password, new CreateAccountCallBack() {
+		    EMUserManager.getInstance().createAppUserInBackground(username, password, new CreateAccountCallBack() {
                 @Override
                 public void onSuccess(EMUserBase user) {
                     if (progressDialog != null) {

@@ -2,6 +2,7 @@ package com.easemob.demo;
 
 import com.easemob.user.domain.Group;
 import com.easemob.demo.db.DBOpenHelper;
+import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 
 import android.app.Activity;
@@ -31,7 +32,7 @@ public class LogoutActivity extends Activity {
         //reset inited so that the new user can retrieve contact list after login 
         Gl.setInited(false);
         
-        EaseMobUser.getUserManager().logout();
+        EMUserManager.getInstance().logout();
         finish();
         MainActivity.instance.finish();
 //        setResult(RESULT_OK);

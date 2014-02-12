@@ -57,7 +57,7 @@ public class ChatUtil {
                         Contract.UserTable.COLUMN_NAME_FAVORITE,
                         Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH}, null, null,
                 null, null, Contract.UserTable.COLUMN_NAME_ID + " COLLATE LOCALIZED ASC");
-        String myselfId = EaseMobUserConfig.getCurrentUserName();
+        String myselfId = EaseMobUserConfig.getInstance().getCurrentUserName();
         if (cursor.moveToFirst()) {
             do {
                 //Do not include "myself" 
@@ -195,7 +195,7 @@ public class ChatUtil {
         if (removeNonExistingUser) {
             SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
             Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
-            String myselfId = EaseMobUserConfig.getCurrentUserName();
+            String myselfId = EaseMobUserConfig.getInstance().getCurrentUserName();
             for (String userId : allLocalUsers.keySet()) {
                 boolean found = false;
                 for (EMUserBase contact : remoteContactList) {
@@ -244,7 +244,7 @@ public class ChatUtil {
                 new Thread(new Runnable() {                    
                     @Override
                     public void run() {
-                        hfm.downloadThumbnailFile(picture, localFilePath, EaseMobUserConfig.APPKEY, null, 60, true, new CloudOperationCallback() {
+                        hfm.downloadThumbnailFile(picture, localFilePath, EaseMobUserConfig.getInstance().APPKEY, null, 60, true, new CloudOperationCallback() {
 
                             @Override
                             public void onProgress(int progress) {
@@ -280,7 +280,7 @@ public class ChatUtil {
                     
                     @Override
                     public void run() {
-                        hfm.downloadThumbnailFile(picture, localFilePath, EaseMobUserConfig.APPKEY, null, new CloudOperationCallback() {
+                        hfm.downloadThumbnailFile(picture, localFilePath, EaseMobUserConfig.getInstance().APPKEY, null, new CloudOperationCallback() {
                             @Override
                             public void onProgress(int progress) {
                             }

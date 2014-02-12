@@ -14,6 +14,7 @@ import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EMResourceNotExistException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
+import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 
 public class Login extends Activity {
@@ -51,8 +52,7 @@ public class Login extends Activity {
         	showLoginDialog();
             Gl.setUserName(userName);
             
-    		EaseMobUser.init(this.getApplicationContext());
-    		EaseMobUser.getUserManager().login(userName, password, null);
+    		EMUserManager.getInstance().login(userName, password, null);
     		/*
     		EaseMob.login(userName, password, new LoginCallBack() {
                 @Override

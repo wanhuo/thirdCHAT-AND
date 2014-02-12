@@ -27,6 +27,7 @@ import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.user.AvatorUtils;
+import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.callbacks.GenericCallBack;
@@ -149,7 +150,7 @@ public class AddContact extends Activity {
 			progressDialog.show();
 			
 			// check if user exists
-			EaseMobUser.getUserManager().getContactInBackground(userName, new GetContactCallback() {
+			EMUserManager.getInstance().getContactInBackground(userName, new GetContactCallback() {
 				@Override
 				public void onSuccess(EMUserBase contact) {
 					progressDialog.dismiss();
@@ -200,7 +201,7 @@ public class AddContact extends Activity {
 			return;
 		}
 
-        EaseMobUser.getUserManager().addContactInBackground(userName, "", new GenericCallBack() {
+        EMUserManager.getInstance().addContactInBackground(userName, "", new GenericCallBack() {
             @Override
             public void onSuccess() {
                 runOnUiThread(new Runnable() {

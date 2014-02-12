@@ -49,6 +49,7 @@ import com.easemob.ui.activity.ContactsListFragment;
 import com.easemob.ui.activity.ContactsListFragment.ContactsListFragmentListener;
 import com.easemob.ui.activity.GroupListFragment;
 import com.easemob.ui.activity.GroupListFragment.GroupListFragmentListener;
+import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.callbacks.GetContactsCallback;
@@ -123,8 +124,7 @@ public class MainActivity extends FragmentActivity {
         boolean loggedin = getIntent().getBooleanExtra("loggedin", false);
         // if already login from LoginActivity, skip the login call below
         if (!loggedin) {
-            EaseMobUser.init(this.getApplicationContext());
-            EaseMobUser.getUserManager().login(userName, password, null);
+            EMUserManager.getInstance().login(userName, password, null);
         }
         /****** Use EaseMob SDK. Step 2: Register receivers to receive chat message **********/
         // Register receiver on EaseMobService for receiving chat message
@@ -658,7 +658,7 @@ public class MainActivity extends FragmentActivity {
                     Iterator<EMUserBase> itor = contacts.iterator();
                     while (itor.hasNext()) {
                         EMUserBase user = itor.next();
-                        if (user.getUsername().equals(EaseMobUserConfig.getCurrentUserName())) {
+                        if (user.getUsername().equals(EaseMobUserConfig.getInstance().getCurrentUserName())) {
                             itor.remove();
                         }
                     }
