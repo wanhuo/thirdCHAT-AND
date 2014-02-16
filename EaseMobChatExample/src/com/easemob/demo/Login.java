@@ -16,6 +16,8 @@ import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
+import com.easemob.user.callbacks.LoginCallBack;
+import com.easemob.user.domain.EMUserBase;
 
 public class Login extends Activity {
     private static final String TAG = Login.class.getSimpleName();
@@ -52,17 +54,13 @@ public class Login extends Activity {
         	showLoginDialog();
             Gl.setUserName(userName);
             
-    		EMUserManager.getInstance().login(userName, password, null);
-    		/*
-    		EaseMob.login(userName, password, new LoginCallBack() {
+    		EMUserManager.getInstance().login(userName, password, new LoginCallBack() {
                 @Override
                 public void onSuccess(Object user) {       
                     DemoUser demoUser = ((EMUserBase)user).toType(DemoUser.class);
                     Gl.setPassword(password);
                     
                     ChatUtil.addUser(Login.this, demoUser);
-                    
-                    //Gl.setUserInfoSaveState(true);
                     
                     closeLogingDialog();
                     startActivity(new Intent(Login.this, MainActivity.class).putExtra("loggedin", true));
@@ -94,7 +92,6 @@ public class Login extends Activity {
                     });                        
                 }
             });
-            */
 
         }		
 	}

@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMSessionManager;
 import com.easemob.chat.EaseMobChat;
+import com.easemob.demo.domain.DemoUser;
 import com.easemob.user.domain.EMUserBase;
 import com.easemob.user.domain.Group;
 import com.easemob.user.domain.Message;
@@ -54,6 +55,7 @@ import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.callbacks.GetContactsCallback;
+import com.easemob.user.callbacks.LoginCallBack;
 import com.easemob.user.db.EaseMobMsgDB;
 
 public class MainActivity extends FragmentActivity {
@@ -125,7 +127,18 @@ public class MainActivity extends FragmentActivity {
         boolean loggedin = getIntent().getBooleanExtra("loggedin", false);
         // if already login from LoginActivity, skip the login call below
         if (!loggedin) {
-            EMUserManager.getInstance().login(userName, password, null);
+            EMUserManager.getInstance().login(userName, password, 
+                    new MainLoginCallback());
+        } {
+            //here, logined from login activity, try to get contacts if not inited;
+            //@@@@ temp workaround. need to move contact db, sync to user sdk!!!
+            if (!Gl.getInited()) {
+                GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
+                callback.deleteNonExistingUsers = true;
+                callback.setInitedAfterSuccess = true;
+                Log.d(TAG, "logined, now start to get contacts in background");
+                EMUserManager.getInstance().getContactsInBackground(callback);
+            }
         }
         /****** Use EaseMob SDK. Step 2: Register receivers to receive chat message **********/
         // Register receiver on EaseMobService for receiving chat message
@@ -162,11 +175,10 @@ public class MainActivity extends FragmentActivity {
         
         // Load all available users from local DB. This also load users' chat history
         allUsers = ChatUtil.loadAllUsers(this);
-        Exception e = new Exception("not implemented");
-        e.printStackTrace();
         
         //@@@ need to find a way to hold and set all users, singleton
         //EaseMobUser.setAllUsers(allUsers);
+        EMUserManager.getInstance().setAllUsers(allUsers);
         
         // Load all available groups from local DB. 
         Group.allGroups = EaseMobMsgDB.loadGroups(this);
@@ -659,7 +671,7 @@ public class MainActivity extends FragmentActivity {
                     Iterator<EMUserBase> itor = contacts.iterator();
                     while (itor.hasNext()) {
                         EMUserBase user = itor.next();
-                        if (user.getUsername().equals(EaseMobUserConfig.getInstance().getCurrentUserName())) {
+                        if (user.getUsername().equals(EMUserManager.getInstance().getCurrentUserName())) {
                             itor.remove();
                         }
                     }
@@ -667,9 +679,9 @@ public class MainActivity extends FragmentActivity {
 
                     allUsers = ChatUtil.loadAllUsers(MainActivity.this);
 
-                    Exception e = new Exception("not implemented");
-                    e.printStackTrace();
-                    //EMUser.setAllUsers(allUsers);
+                    
+                    EMUserManager.getInstance().setAllUsers(allUsers);
+                    System.err.println("app get contacts callback. users:" + allUsers.size());
 
                     // Refresh UI`
                     switch (currentTabIndex) {
@@ -722,6 +734,9 @@ public class MainActivity extends FragmentActivity {
 
     
     private void processMsgNotification() {
+        Exception e = new Exception("!!!! check how to deal with notification in sdk2.0");
+        e.printStackTrace();
+        /*
         try {
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             com.easemob.user.Message notificationMsg;
@@ -734,7 +749,7 @@ public class MainActivity extends FragmentActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
     
 
@@ -750,5 +765,27 @@ public class MainActivity extends FragmentActivity {
         return super.onTouchEvent(event);
     }
 
+    
+    private class MainLoginCallback implements LoginCallBack {
+        @Override
+        public void onSuccess(Object user) {
+         // initialize the whole contact list only once
+            if (!Gl.getInited()) {
+                GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
+                callback.deleteNonExistingUsers = true;
+                callback.setInitedAfterSuccess = true;
+                Log.d(TAG, "logined, now start to get contacts in background");
+                EMUserManager.getInstance().getContactsInBackground(callback);
+            }
+            
+        }
 
+        @Override
+        public void onFailure(EaseMobException cause) {
+        }
+
+        @Override
+        public void onProgress(String progress) {
+        }
+    }
 }

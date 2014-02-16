@@ -16,12 +16,15 @@ import android.util.Log;
 
 import com.easemob.user.domain.EMUserBase;
 import com.easemob.user.domain.Message;
+import com.easemob.chat.EaseMobChatConfig;
 import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
 import com.easemob.demo.db.Contract;
 import com.easemob.demo.db.DBOpenHelper;
 import com.easemob.demo.domain.DemoUser;
 import com.easemob.ui.activity.ChatActivity;
+import com.easemob.user.AvatorUtils;
+import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.UserUtil;
 import com.easemob.user.db.EaseMobMsgDB;
@@ -57,7 +60,7 @@ public class ChatUtil {
                         Contract.UserTable.COLUMN_NAME_FAVORITE,
                         Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH}, null, null,
                 null, null, Contract.UserTable.COLUMN_NAME_ID + " COLLATE LOCALIZED ASC");
-        String myselfId = EaseMobUserConfig.getInstance().getCurrentUserName();
+        String myselfId = EMUserManager.getInstance().getCurrentUserName();
         if (cursor.moveToFirst()) {
             do {
                 //Do not include "myself" 
@@ -195,7 +198,7 @@ public class ChatUtil {
         if (removeNonExistingUser) {
             SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
             Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
-            String myselfId = EaseMobUserConfig.getInstance().getCurrentUserName();
+            String myselfId = EMUserManager.getInstance().getCurrentUserName();
             for (String userId : allLocalUsers.keySet()) {
                 boolean found = false;
                 for (EMUserBase contact : remoteContactList) {
@@ -219,7 +222,8 @@ public class ChatUtil {
     private static void updateUsers(Context ctx, List<EMUserBase> remoteContactList) {
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         
-        final HttpFileManager hfm = new HttpFileManager();
+        final HttpFileManager hfm = new HttpFileManager(EaseMobUserConfig.getInstance().applicationContext,
+                EaseMobChatConfig.getInstance().EASEMOB_STORAGE_URL);
         
         Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
         for(EMUserBase remoteContact : remoteContactList) {
@@ -258,8 +262,8 @@ public class ChatUtil {
                             @Override
                             public void onSuccess() {
                                 Log.d(TAG, "downloadThumbnailFile succeed");
-                                if (ChatActivity.getAvatorCache().get("th"+username) != null) {
-                                    ChatActivity.getAvatorCache().remove("th"+username);
+                                if (AvatorUtils.getAvatorCache().get("th"+username) != null) {
+                                    AvatorUtils.getAvatorCache().remove("th"+username);
                                 }
                             }
                         });
@@ -293,8 +297,8 @@ public class ChatUtil {
                             @Override
                             public void onSuccess() {
                                 Log.d(TAG, "downloadThumbnailFile succeed");
-                                if (ChatActivity.getAvatorCache().get(username) != null) {
-                                    ChatActivity.getAvatorCache().remove(username);
+                                if (AvatorUtils.getAvatorCache().get(username) != null) {
+                                    AvatorUtils.getAvatorCache().remove(username);
                                 }
                             }
                         });

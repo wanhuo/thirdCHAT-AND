@@ -112,7 +112,7 @@ public final class Gl extends Application {
     }
     
     
-    public static final String PREF_INITED = "inited";
+    public static final String PREF_INITED = "easemob.contact.inited";
     private static Boolean inited = null;
     
     public static void setInited(boolean init){

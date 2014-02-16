@@ -22,17 +22,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.easemob.user.domain.EMUserBase;
+import com.easemob.chat.EaseMobChatConfig;
 import com.easemob.demo.domain.DemoUser;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.user.AvatorUtils;
 import com.easemob.user.EMUserManager;
-import com.easemob.user.EaseMobUser;
 import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.callbacks.GenericCallBack;
 import com.easemob.user.callbacks.GetContactCallback;
-import com.easemob.util.ImageUtils;
 
 public class AddContact extends Activity {
     private static final String TAG = AddContact.class.getSimpleName();
@@ -110,19 +109,8 @@ public class AddContact extends Activity {
 		prompt = (TextView) findViewById(R.id.tv_prompt);
 		inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		
-		try {
-            ApplicationInfo info = getPackageManager().getApplicationInfo(getPackageName(),  PackageManager.GET_META_DATA);
-            Bundle data = info.metaData;
-            //Johnson: comment out for sdk2.0 need to check later
-            /*
-            boolean b = data.getBoolean(EaseMobUserConfig.CONFIG_EASEMOB_ACCEPT_INVITATION_ALWAYS);
-            if(b){
-                prompt.setText("当前为自动添加好友模式，如果对方在线，添加会自动成为好友并且添加到你的好友列表里");
-            }
-            */
-        } catch (NameNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if(EaseMobChatConfig.getInstance().ACCEPT_INVITATION_ALWAYS){
+            prompt.setText("当前为自动添加好友模式，如果对方在线，添加会自动成为好友并且添加到你的好友列表里");
         }
 //		inputMethodManager.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS );
 //		searchedUser.setOnClickListener(new UserOnclickListener());
@@ -168,7 +156,7 @@ public class AddContact extends Activity {
 
 				@Override
 				public void onFailure(EaseMobException cause) {
-					Log.e("contact", "error when adding new contact:" + cause.toString());
+					Log.e(TAG, "error when adding new contact:" + cause.toString());
 						                
 	                if(cause instanceof EMNetworkUnconnectedException) {
 	                    startActivity(new Intent(AddContact.this, AlertDialog.class).putExtra("msg", getString(R.string.network_unavailable)));
@@ -206,7 +194,7 @@ public class AddContact extends Activity {
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        Log.d("contact", "add contact success:" + contact);
+                        Log.d(TAG, "add contact success:" + contact);
                         // ChatUtil.updateOrAddUser(instance, contact);
                         progressDialog.dismiss();
                         setResult(RESULT_OK);
@@ -217,7 +205,7 @@ public class AddContact extends Activity {
 
             @Override
             public void onFailure(EaseMobException cause) {
-                Log.e("contact", "error when adding new contact:" + cause.toString());
+                Log.e(TAG, "error when adding new contact:" + cause.toString());
                 
                 if(cause instanceof EMNetworkUnconnectedException) {
                     startActivity(new Intent(AddContact.this, AlertDialog.class).putExtra("msg", getString(R.string.network_unavailable)));

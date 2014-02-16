@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.easemob.user.db.ContractGroup;
 import com.easemob.demo.Gl;
 import com.easemob.user.db.MsgDBOpenHelper;
+import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUserConfig;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
@@ -40,7 +41,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	}
 	
 	private static String getUserDatabaseName() {
-        return EaseMobUserConfig.getInstance().APPKEY + EaseMobUserConfig.getInstance().getCurrentUserName() + "_users.db";
+        return EaseMobUserConfig.getInstance().APPKEY + EMUserManager.getInstance().getCurrentUserName() + "_users.db";
     }
 
 	public static DBOpenHelper getInstance(Context context) {
