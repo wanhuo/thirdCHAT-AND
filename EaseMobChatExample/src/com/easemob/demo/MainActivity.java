@@ -98,6 +98,8 @@ public class MainActivity extends FragmentActivity {
 
 	private MyGroupListFragment groupFragment;
 	
+	private ChatHistoryFragment chatHistoryFragment;
+	
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -200,7 +202,8 @@ public class MainActivity extends FragmentActivity {
         
         contactFragment = new MyContactsListFragment(contactList, new MyContactListListener());
         groupFragment = new MyGroupListFragment(Group.allGroups, null/*new MyGroupListListener()*/);
-        fragments = new Fragment[] { new ChatHistoryFragment(), 
+        chatHistoryFragment = new ChatHistoryFragment();
+        fragments = new Fragment[] {chatHistoryFragment, 
         		contactFragment,
         		groupFragment,
         		new SettingFragment()};
