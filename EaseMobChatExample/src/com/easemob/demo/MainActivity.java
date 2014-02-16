@@ -32,8 +32,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.easemob.EMCallBack;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMSessionManager;
 import com.easemob.chat.EaseMobChat;
+import com.easemob.chat.ImageMessageBody;
+import com.easemob.chat.MessageListener;
 import com.easemob.demo.domain.DemoUser;
 import com.easemob.user.domain.EMUserBase;
 import com.easemob.user.domain.Group;
@@ -125,6 +130,7 @@ public class MainActivity extends FragmentActivity {
         String userName = Gl.getUserName();
         String password = Gl.getPassword();
         boolean loggedin = getIntent().getBooleanExtra("loggedin", false);
+        EMChatManager.getInstance().addMessageReciverListener(new AppMessageListener());
         // if already login from LoginActivity, skip the login call below
         if (!loggedin) {
             EMUserManager.getInstance().login(userName, password, 
@@ -787,5 +793,46 @@ public class MainActivity extends FragmentActivity {
         @Override
         public void onProgress(String progress) {
         }
+    }
+    
+    
+    private class AppMessageListener implements MessageListener {
+
+        @Override
+        public void onMessageReceived(final EMMessage emMessage) {
+            Log.d("chatdemo", "received msg:" + emMessage.toString());
+            
+            runOnUiThread(new Runnable() {
+                public void run() {
+            //@todo deal with group msg later
+            EMUserBase tmpUser = null;
+            String from = emMessage.getFrom();
+            tmpUser = MainActivity.allUsers.get(from);
+            if (tmpUser == null) {
+                Log.e(TAG, "receive msg error, cant find user with name:" + from);
+                return;
+            }
+            
+            int rowId;
+            Message message = MessageFactory.createMsgFromEMMsg(emMessage);
+            
+            //@@@@ todo. move db operation to chatsdk
+            //Save to db
+            rowId = tmpUser.addMessage(message, true);
+            message.setRowId(rowId + "");
+            message.setBackReceive(true);
+            
+            //Refresh UnreadLabel:
+            updateUnreadLabel();
+            
+            //Refresh ChatHistoryFragment
+            if (currentTabIndex == 0) {
+                ChatHistoryFragment chatHistoryFragment = (ChatHistoryFragment) fragments[0];
+                chatHistoryFragment.refresh();
+            }
+                }
+            });//end of run ui thread
+
+        }    
     }
 }
