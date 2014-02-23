@@ -39,10 +39,10 @@ import com.easemob.chat.EMSessionManager;
 import com.easemob.chat.EaseMobChat;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.MessageListener;
+import com.easemob.chat.TextMessageBody;
 import com.easemob.demo.domain.DemoUser;
 import com.easemob.user.domain.EMUserBase;
 import com.easemob.user.domain.Group;
-import com.easemob.user.domain.Message;
 import com.easemob.user.domain.MessageFactory;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
@@ -515,10 +515,12 @@ public class MainActivity extends FragmentActivity {
             // @ZW： plz fix this
             if (groupId != null) {
                 Group group = Group.getGroupById(groupId);
-                Message msg = new Message();
-                msg.setBody("你被" + nick + "邀请加入" + group.getName());
-                msg.setTime(System.currentTimeMillis());
-                msg.setFrom("xitong");
+                EMMessage msg = EMMessage.createSendMessage(EMMessage.Type.TXT);
+                //msg.setBody("你被" + nick + "邀请加入" + group.getName());
+                TextMessageBody txtBody = new TextMessageBody("你被" + nick + "邀请加入" + group.getName());
+                msg.msgTime = System.currentTimeMillis();
+                msg.setReceipt("xitong");
+                msg.dir = EMMessage.Dir.RECEIVE;
                 group.addMessage(msg, true);
                 updateUnreadLabel();
                 ChatHistoryFragment tmp = (ChatHistoryFragment) fragments[0];
@@ -817,22 +819,27 @@ public class MainActivity extends FragmentActivity {
             }
             
             int rowId;
-            Message message = MessageFactory.createMsgFromEMMsg(emMessage);
+            //Message message = MessageFactory.createMsgFromEMMsg(emMessage);
             
             //@@@@ todo. move db operation to chatsdk
             //Save to db
-            rowId = tmpUser.addMessage(message, true);
-            message.setRowId(rowId + "");
-            message.setBackReceive(true);
+            rowId = tmpUser.addMessage(emMessage, true);
+            //message.setRowId(rowId + "");
+            //message.setBackReceive(true);
             
             //Refresh UnreadLabel:
             updateUnreadLabel();
             
+            System.err.println("!!! mainacttivy alluser:" + MainActivity.allUsers.size());
+            System.err.println("main emusermanager allusers size:" + EMUserManager.getInstance().allUsers.size());
+            
+            /*@todo, comment for NPE now. revisit!
             //Refresh ChatHistoryFragment
             if (currentTabIndex == 0) {
                 ChatHistoryFragment chatHistoryFragment = (ChatHistoryFragment) fragments[0];
                 chatHistoryFragment.refresh();
             }
+            */
                 }
             });//end of run ui thread
 

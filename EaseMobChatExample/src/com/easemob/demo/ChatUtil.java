@@ -15,7 +15,8 @@ import android.util.Log;
 
 
 import com.easemob.user.domain.EMUserBase;
-import com.easemob.user.domain.Message;
+import com.easemob.chat.EMChatDB;
+import com.easemob.chat.EMMessage;
 import com.easemob.chat.EaseMobChatConfig;
 import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
@@ -79,21 +80,21 @@ public class ChatUtil {
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
-                
-                
-                //Load chat history
-                if(EaseMobMsgDB.isTableExists(db, user.getUsername())){
-                	List<Message> chatHistory= EaseMobMsgDB.findAllMessages(ctx, user.getUsername());
-//                	List<Message> chatHistory= EaseMobMsgDB.findSpecifiedMessages(ctx, user.getUsername(), "0", ChatActivity.PAGE_SIZE);
-                	user.setMessages(chatHistory);
-                }          
-                
+                            
                 allUsers.put(user.getUsername(), user); 
             } while (cursor.moveToNext());
         }
 
         cursor.close();
 
+        //@todo load chat history. move this db read to another thread
+        List<String> userWithChat = EMChatDB.getInstance().findAllParticipants();
+        for (String username : userWithChat) {
+            DemoUser user = (DemoUser)allUsers.get(username);
+            List<EMMessage> chatHistory = EMChatDB.getInstance().findMessages(username);
+            user.setMessages(chatHistory);
+            Log.d("db", "load user " + username + " history msg:" + chatHistory.size());
+        }
         return allUsers;
     }
     
@@ -175,9 +176,9 @@ public class ChatUtil {
         //TODO: we only search against chat history stored in cache at the moment. We may need to search from message history files if necessary
         List<DemoUser> resultList = new ArrayList<DemoUser>();
         for(DemoUser user : allUsers) {
-            List<Message> history = user.getMessages();
-            for(Message m : history) {
-                if(m.getBody()!=null && m.getBody().contains(query)) {
+            List<EMMessage> history = user.getMessages();
+            for(EMMessage m : history) {
+                if(m.body!=null && m.body.toString().contains(query)) {
                     resultList.add(user);
                     break;
                 }
