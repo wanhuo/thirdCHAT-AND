@@ -100,6 +100,8 @@ public class MainActivity extends FragmentActivity {
 	
 	private ChatHistoryFragment chatHistoryFragment;
 	
+	private NewMessageBroadcastReceiver msgReceiver; 
+	
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,7 +134,11 @@ public class MainActivity extends FragmentActivity {
         String userName = Gl.getUserName();
         String password = Gl.getPassword();
         boolean loggedin = getIntent().getBooleanExtra("loggedin", false);
-        EMChatManager.getInstance().addMessageReciverListener(new AppMessageListener());
+        //EMChatManager.getInstance().addMessageReciverListener(new AppMessageListener());
+        msgReceiver = new NewMessageBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(EMChatManager.getInstance().getNewMessageBroadcastAction());
+        intentFilter.setPriority(3);
+        registerReceiver(msgReceiver, intentFilter);
         // if already login from LoginActivity, skip the login call below
         if (!loggedin) {
             EMUserManager.getInstance().login(userName, password, 
@@ -341,15 +347,14 @@ public class MainActivity extends FragmentActivity {
         //EaseMob.getInstance().removeContactListener(remoteContactListener);
         //EaseMob.getInstance().removeConnectionListener(remoteConnectionListener);
 
-        /*
-        if (chatBroadcastReceiver != null && isChatBroadcastReceiverRegistered) {
+        
+        if (msgReceiver != null) {
             try {
-                unregisterReceiver(chatBroadcastReceiver);
-                isChatBroadcastReceiverRegistered = false;
+                unregisterReceiver(msgReceiver);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }*/
+        }
         if (groupInvitedReceiver != null) {
             try {
                 unregisterReceiver(groupInvitedReceiver);
@@ -521,7 +526,8 @@ public class MainActivity extends FragmentActivity {
                 msg.msgTime = System.currentTimeMillis();
                 msg.setReceipt("xitong");
                 msg.dir = EMMessage.Dir.RECEIVE;
-                group.addMessage(msg, true);
+                //comment for sdk2.0 for now
+                //group.addMessage(msg, true);
                 updateUnreadLabel();
                 ChatHistoryFragment tmp = (ChatHistoryFragment) fragments[0];
                 if (tmp != null) {
@@ -562,12 +568,10 @@ public class MainActivity extends FragmentActivity {
 
     public int getUnreadMsgCountTotal() {
         int unreadMsgCountTotal = 0;
-        for (EMUserBase user : allUsers.values()) {
-            unreadMsgCountTotal += user.getUnreadMsgCount();
-        }
+        unreadMsgCountTotal = EMChatManager.getInstance().getUnreadMsgsCount();
         // also add unread count in groups
         for (EMUserBase group : Group.allGroups) {
-            unreadMsgCountTotal += group.getUnreadMsgCount();
+            //unreadMsgCountTotal += group.getUnreadMsgCount();
         }
         return unreadMsgCountTotal;
     }
@@ -800,7 +804,7 @@ public class MainActivity extends FragmentActivity {
         }
     }
     
-    
+    /*
     private class AppMessageListener implements MessageListener {
 
         @Override
@@ -823,7 +827,7 @@ public class MainActivity extends FragmentActivity {
             
             //@@@@ todo. move db operation to chatsdk
             //Save to db
-            rowId = tmpUser.addMessage(emMessage, true);
+            //rowId = tmpUser.addMessage(emMessage, true);
             //message.setRowId(rowId + "");
             //message.setBackReceive(true);
             
@@ -833,16 +837,32 @@ public class MainActivity extends FragmentActivity {
             System.err.println("!!! mainacttivy alluser:" + MainActivity.allUsers.size());
             System.err.println("main emusermanager allusers size:" + EMUserManager.getInstance().allUsers.size());
             
-            /*@todo, comment for NPE now. revisit!
+            //@todo, comment for NPE now. revisit!
             //Refresh ChatHistoryFragment
-            if (currentTabIndex == 0) {
-                ChatHistoryFragment chatHistoryFragment = (ChatHistoryFragment) fragments[0];
-                chatHistoryFragment.refresh();
-            }
-            */
+            //if (currentTabIndex == 0) {
+            //    ChatHistoryFragment chatHistoryFragment = (ChatHistoryFragment) fragments[0];
+            //    chatHistoryFragment.refresh();
+            //}
+            
                 }
             });//end of run ui thread
 
         }    
     }
+    */
+    
+    private class NewMessageBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("main", "new message received");
+            updateUnreadLabel();
+            /*
+            if (currentTabIndex == 0) {
+                ChatHistoryFragment chatHistoryFragment = (ChatHistoryFragment) fragments[0];
+                chatHistoryFragment.refresh();
+            }
+            */
+        }
+    }
+            
 }

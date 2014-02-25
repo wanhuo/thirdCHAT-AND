@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.easemob.user.domain.EMUserBase;
 import com.easemob.chat.EMChatDB;
+import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EaseMobChatConfig;
 import com.easemob.cloud.CloudOperationCallback;
@@ -87,14 +88,20 @@ public class ChatUtil {
 
         cursor.close();
 
+        Exception e = new Exception("need refactor, load from db called several times");
+        e.printStackTrace();
+        
+        /*
         //@todo load chat history. move this db read to another thread
         List<String> userWithChat = EMChatDB.getInstance().findAllParticipants();
         for (String username : userWithChat) {
             DemoUser user = (DemoUser)allUsers.get(username);
             List<EMMessage> chatHistory = EMChatDB.getInstance().findMessages(username);
-            user.setMessages(chatHistory);
+            //user.setMessages(chatHistory);
+            EMChat
             Log.d("db", "load user " + username + " history msg:" + chatHistory.size());
-        }
+        }*/
+        EMChatManager.getInstance().loadConversations();
         return allUsers;
     }
     
@@ -176,7 +183,8 @@ public class ChatUtil {
         //TODO: we only search against chat history stored in cache at the moment. We may need to search from message history files if necessary
         List<DemoUser> resultList = new ArrayList<DemoUser>();
         for(DemoUser user : allUsers) {
-            List<EMMessage> history = user.getMessages();
+            //List<EMMessage> history = user.getMessages();
+            List<EMMessage> history = EMChatManager.getInstance().getConversation(user.getUsername()).getMessages();
             for(EMMessage m : history) {
                 if(m.body!=null && m.body.toString().contains(query)) {
                     resultList.add(user);
