@@ -3,33 +3,24 @@ package com.easemob.demo;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 
 import com.easemob.user.EMUser;
-import com.easemob.chat.EMChatDB;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EaseMobChatConfig;
 import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
-import com.easemob.demo.db.Contract;
-import com.easemob.demo.db.DBOpenHelper;
-//import com.easemob.demo.domain.DemoUser;
-import com.easemob.ui.activity.ChatActivity;
 import com.easemob.user.AvatorUtils;
+import com.easemob.user.EMUserDB;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.UserUtil;
-import com.easemob.util.HanziToPinyin;
 
 
 public class ChatUtil {
@@ -41,119 +32,11 @@ public class ChatUtil {
     * @return Map<String, User>
     */
     public static Map<String, EMUser> loadAllUsers(Context ctx) {
-        Map<String, EMUser> allUsers = new HashMap<String, EMUser>();
-        
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-        Cursor cursor = db.query(Contract.UserTable.TABLE_NAME,
-                new String[] {
-                        Contract.UserTable.COLUMN_NAME_ID,
-                        Contract.UserTable.COLUMN_NAME_JID,
-                        Contract.UserTable.COLUMN_NAME_NICK,
-                        Contract.UserTable.COLUMN_NAME_HEADER,
-                        Contract.UserTable.COLUMN_NAME_SEX,
-                        Contract.UserTable.COLUMN_NAME_NOTE,
-                        Contract.UserTable.COLUMN_NAME_EMAIL,
-                        Contract.UserTable.COLUMN_NAME_ORGAINIZATION,
-                        Contract.UserTable.COLUMN_NAME_MOBILE,
-                        Contract.UserTable.COLUMN_NAME_WORKPHONE,
-                        Contract.UserTable.COLUMN_NAME_ADDRESS,
-                        Contract.UserTable.COLUMN_NAME_SIGNATURE,
-                        Contract.UserTable.COLUMN_NAME_FAVORITE,
-                        Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH}, null, null,
-                null, null, Contract.UserTable.COLUMN_NAME_ID + " COLLATE LOCALIZED ASC");
-        String myselfId = EMUserManager.getInstance().getCurrentUserName();
-        if (cursor.moveToFirst()) {
-            do {
-                //Do not include "myself" 
-                if(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ID)).equals(myselfId)) {
-                    continue;
-                }
-                EMUser user = new EMUser();
-                /*
-                user.setUsername(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ID)));
-                user.setJid(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_JID)));
-                user.setNick(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_NICK)));
-                user.setHeader(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_HEADER)));
-                user.setSex(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SEX)));
-                user.setEmail(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_EMAIL)));
-                user.setMobile(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_MOBILE)));
-                user.setWorkPhone(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_WORKPHONE)));
-                user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
-                user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
-                user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
-                  */          
-                allUsers.put(user.getUsername(), user); 
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-
-        Exception e = new Exception("need refactor, load from db called several times");
-        e.printStackTrace();
-        
-        /*
-        //@todo load chat history. move this db read to another thread
-        List<String> userWithChat = EMChatDB.getInstance().findAllParticipants();
-        for (String username : userWithChat) {
-            DemoUser user = (DemoUser)allUsers.get(username);
-            List<EMMessage> chatHistory = EMChatDB.getInstance().findMessages(username);
-            //user.setMessages(chatHistory);
-            EMChat
-            Log.d("db", "load user " + username + " history msg:" + chatHistory.size());
-        }*/
-        EMChatManager.getInstance().loadConversations();
-        return allUsers;
+        return EMUserDB.getInstance().loadAllUsers();
     }
     
     public static EMUser loadUser(Context ctx, String userId) {
-    	EMUser user = null;
-        
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-        Cursor cursor = db.query(Contract.UserTable.TABLE_NAME,
-                new String[] {
-                        Contract.UserTable.COLUMN_NAME_ID,
-                        Contract.UserTable.COLUMN_NAME_JID,
-                        Contract.UserTable.COLUMN_NAME_NICK,
-                        Contract.UserTable.COLUMN_NAME_HEADER,
-                        Contract.UserTable.COLUMN_NAME_SEX,
-                        Contract.UserTable.COLUMN_NAME_NOTE,
-                        Contract.UserTable.COLUMN_NAME_EMAIL,
-                        Contract.UserTable.COLUMN_NAME_ORGAINIZATION,
-                        Contract.UserTable.COLUMN_NAME_MOBILE,
-                        Contract.UserTable.COLUMN_NAME_WORKPHONE,
-                        Contract.UserTable.COLUMN_NAME_ADDRESS,
-                        Contract.UserTable.COLUMN_NAME_SIGNATURE,
-                        Contract.UserTable.COLUMN_NAME_FAVORITE,
-                        Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH}, 
-                        Contract.UserTable.COLUMN_NAME_ID + "=?", 
-                        new String[] { String.valueOf(userId) },
-                        null, null, null);
-        
-        if (cursor != null) {
-            if(cursor.moveToFirst()) {
-       /* 
-                user = new DemoUser();
-                user.setUsername(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ID)));
-                user.setJid(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_JID)));
-                user.setNick(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_NICK)));
-                user.setHeader(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_HEADER)));
-                user.setSex(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SEX)));
-                user.setEmail(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_EMAIL)));
-                user.setMobile(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_MOBILE)));
-                user.setWorkPhone(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_WORKPHONE)));
-                user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
-                user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
-                user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
-                */
-            //Load chat history
-/*            List<Message> chatHistory = loadChatHistory(user.getId());            
-            user.setMessages(chatHistory);  */     
-            }
-        
-            cursor.close();
-        }
-        
-        return user;
+        return EMUserDB.getInstance().loadUser(userId);
     }       
     
     /**
@@ -206,9 +89,10 @@ public class ChatUtil {
         updateUsers(ctx, remoteContactList);
         
         if (removeNonExistingUser) {
-            SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
+            
             Map<String, EMUser> allLocalUsers = loadAllUsers(ctx);
             String myselfId = EMUserManager.getInstance().getCurrentUserName();
+            
             for (String userId : allLocalUsers.keySet()) {
                 boolean found = false;
                 for (EMUser contact : remoteContactList) {
@@ -219,19 +103,15 @@ public class ChatUtil {
 
                 // This local user has been removed on remote (except myself)
                 if (!found && !userId.equals(myselfId)) {
-                    db.delete(Contract.UserTable.TABLE_NAME, Contract.UserTable.COLUMN_NAME_ID + " = ?",
-                            new String[] { String.valueOf(userId) });
+                    Log.d("db", "remove local user which doesn't exists on server");
+                    EMUserDB.getInstance().deleteUser(userId);
                 }
             }
-        }
-
-        //db.close();       
+        }       
     }
     
     //update or add user (if the user does not exist in db yet)
-    private static void updateUsers(Context ctx, List<EMUser> remoteContactList) {
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-        
+    private static void updateUsers(Context ctx, List<EMUser> remoteContactList) {        
         final HttpFileManager hfm = new HttpFileManager(EaseMobUserConfig.getInstance().applicationContext,
                 EaseMobChatConfig.getInstance().EASEMOB_STORAGE_URL);
         
@@ -243,7 +123,7 @@ public class ChatUtil {
             
             if(localUser == null) {
             	//DemoUser myUser = remoteContact.toType(DemoUser.class);
-                addDB(remoteContact, db);
+                EMUserDB.getInstance().saveUser(remoteContact);
                 
                 final String picture = remoteContact.getAvatorPath();
                 if(picture == null || picture.startsWith("http://www.gravatar.com")){
@@ -281,8 +161,7 @@ public class ChatUtil {
                 }).start();
             } else {
                 //Sync the existing local user with the remote user if necessary
-            	//DemoUser myUser = remoteContact.toType(DemoUser.class);
-                updateDB(remoteContact, db);
+                EMUserDB.getInstance().updateUser(remoteContact);
                 final String localFilePath = UserUtil.getThumbAvatorPath(username).getAbsolutePath();
                 
                 final String picture = remoteContact.getAvatorPath();
@@ -325,129 +204,25 @@ public class ChatUtil {
     * @param user 
     */
     public static void updateUser(Context ctx, EMUser user) {
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-     
-        updateDB(user, db); 
+        EMUserDB.getInstance().updateUser(user);
     }
-    
-    private static void updateDB(EMUser contact, SQLiteDatabase db) {
-        boolean updateDb = false;
-        /*
-        ContentValues values = new ContentValues();
-        if(contact.getJid() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_JID, contact.getJid());
-            updateDb =true;
-        }
-        if(contact.getNick() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_NICK, contact.getNick());
-            updateDb =true;
-        }
-        if(contact.getSex() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_SEX, contact.getSex());
-            updateDb =true;
-        }
-        if(contact.getEmail() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_EMAIL, contact.getEmail());
-            updateDb =true;
-        }
-        if(contact.getAddress() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_ADDRESS, contact.getAddress());
-            updateDb =true;
-        }
-        if(contact.getMobile() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_MOBILE, contact.getMobile());
-            updateDb =true;
-        }
-        if(contact.getWorkPhone() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_WORKPHONE, contact.getWorkPhone());
-            updateDb =true;
-        }
-        if(contact.getSignature() != null) {
-            values.put(Contract.UserTable.COLUMN_NAME_SIGNATURE, contact.getSignature());
-            updateDb =true;
-        }
-        if(contact.getPicture()!= null){
-        	values.put(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH, contact.getPicture());
-        	updateDb = true;
-        }
-              
-        if(updateDb) {
-            db.update(Contract.UserTable.TABLE_NAME, values, Contract.UserTable.COLUMN_NAME_ID + " = ?",
-                new String[] { String.valueOf(contact.getUsername())});
-        }        */
-    }
-    
+        
     /**
     * Add a user to DB
     * @param Context
     * @param userId 
     */
     public static void addUser(Context ctx, EMUser contact) {
-        /*
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-        
-        //Refactor: avoid unnecessary db access
-        Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
-        EMUserBase localUser = allLocalUsers.get(contact.getUsername());
-        
-        if(localUser !=null) {
-        	return;
-        	//REVISIT: shall we update the local user in this case?
-        }
-        
-        addDB(contact, db);
-        */
+        EMUserDB.getInstance().saveUser(contact);
     }
     
-    private static void addDB(EMUser contact, SQLiteDatabase db) {
-        /*
-        ContentValues values = new ContentValues();
-        values.put(Contract.UserTable.COLUMN_NAME_ID, contact.getUsername());
-        values.put(Contract.UserTable.COLUMN_NAME_JID, contact.getJid());
-        values.put(Contract.UserTable.COLUMN_NAME_NICK, contact.getNick());
-        if(contact.getNick() == null){
-        	values.put(Contract.UserTable.COLUMN_NAME_HEADER, " ");
-        }else{
-        	String nick = contact.getNick();
-        	if(nick == null || nick.isEmpty()){
-        		values.put(Contract.UserTable.COLUMN_NAME_HEADER, "Z");
-        	} else {
-        	    String header = HanziToPinyin.getInstance().get(contact.getNick().substring(0, 1)).get(0).target.substring(0, 1).toUpperCase();
-        	    char h = header.charAt(0);
-        	    if(h >= 65)
-        	        values.put(Contract.UserTable.COLUMN_NAME_HEADER, HanziToPinyin.getInstance().get(contact.getNick().substring(0, 1)).get(0).target.substring(0, 1).toUpperCase());
-        	    else
-        	        values.put(Contract.UserTable.COLUMN_NAME_HEADER, "Z");
-        	}
-        }
-        values.put(Contract.UserTable.COLUMN_NAME_SEX, contact.getSex());
-        values.put(Contract.UserTable.COLUMN_NAME_EMAIL, contact.getEmail());
-        values.put(Contract.UserTable.COLUMN_NAME_MOBILE, contact.getMobile());
-        values.put(Contract.UserTable.COLUMN_NAME_WORKPHONE, contact.getWorkPhone());
-        values.put(Contract.UserTable.COLUMN_NAME_SIGNATURE, contact.getSignature());
-        values.put(Contract.UserTable.COLUMN_NAME_ADDRESS, contact.getAddress());
-        values.put(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH, contact.getPicture());
-        
-        //values.put(Contract.UserTable.COLUMN_NAME_NOTE, "");  
-        
-        try {
-            db.insert(Contract.UserTable.TABLE_NAME, null, values);
-        } catch (Exception e) {
-            //catch errors. "column id is not unique" error. 
-            //if logic is correct, we should only add same user to db once, so this error shouldn't happen
-            e.printStackTrace();
-        }*/
-    }
-
     /**
     * Delete a user from DB
     * @param Context
     * @param userId 
     */
+    
     public static void deleteUser(Context ctx, String userId) {
-        SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-        
-        db.delete(Contract.UserTable.TABLE_NAME, Contract.UserTable.COLUMN_NAME_ID + " = ?",
-                new String[] { String.valueOf(userId) });
+        EMUserDB.getInstance().deleteUser(userId);
     }  
 }

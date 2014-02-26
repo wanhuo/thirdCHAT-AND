@@ -1,7 +1,7 @@
 package com.easemob.demo;
 
 import com.easemob.user.domain.Group;
-import com.easemob.demo.db.DBOpenHelper;
+//import com.easemob.demo.db.DBOpenHelper;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 
@@ -25,7 +25,7 @@ public class LogoutActivity extends Activity {
         Group.allGroups.clear();
         
         //close contact db
-        DBOpenHelper.closeDB();
+        //DBOpenHelper.closeDB();
 
         //reset password to null
         Gl.setPassword(null);
