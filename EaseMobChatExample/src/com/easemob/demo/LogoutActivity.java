@@ -21,7 +21,6 @@ public class LogoutActivity extends Activity {
 
 	public void logout(View view) {
         //clearn up global variables
-        MainActivity.allUsers.clear();
         Group.allGroups.clear();
         
         //close contact db

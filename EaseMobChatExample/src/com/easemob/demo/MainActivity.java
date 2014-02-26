@@ -82,7 +82,7 @@ public class MainActivity extends FragmentActivity {
 
     public static boolean isChat = false;
 
-    public static Map<String, EMUser> allUsers;
+    //public static Map<String, EMUser> allUsers;
 
     //MyConnectionListener remoteConnectionListener = new MyConnectionListener();
     //MyContactListener remoteContactListener = new MyContactListener();
@@ -185,15 +185,15 @@ public class MainActivity extends FragmentActivity {
 
         
         // Load all available users from local DB. This also load users' chat history
-        allUsers = ChatUtil.loadAllUsers(this);
+        //allUsers = ChatUtil.loadAllUsers(this);
         
         //@@@ need to find a way to hold and set all users, singleton
         //EaseMobUser.setAllUsers(allUsers);
-        EMUserManager.getInstance().setAllUsers(allUsers);
+        //EMUserManager.getInstance().setAllUsers(allUsers);
         
         // Load all available groups from local DB. 
         //Group.allGroups = EMUserDB.loadGroups(this);
-        
+        /*
         contactList = new ArrayList<EMUser>(allUsers.values());
         //排序
         Collections.sort(contactList, new Comparator<EMUser>() {
@@ -202,8 +202,18 @@ public class MainActivity extends FragmentActivity {
                 return (lhs.getHeader().compareTo(rhs.getHeader()));
             }
         });
+        */
+        contactList = new ArrayList<EMUser>(EMUserManager.getInstance().getAllUsers().values());
+        //排序
+        Collections.sort(contactList, new Comparator<EMUser>() {
+            @Override
+            public int compare(EMUser lhs, EMUser rhs) {
+                return (lhs.getHeader().compareTo(rhs.getHeader()));
+            }
+        });
         
-        contactFragment = new MyContactsListFragment(contactList, new MyContactListListener());
+        contactFragment = new MyContactsListFragment(contactList,
+                new MyContactListListener());
         groupFragment = new MyGroupListFragment(Group.allGroups, null/*new MyGroupListListener()*/);
         chatHistoryFragment = new ChatHistoryFragment();
         fragments = new Fragment[] {chatHistoryFragment, 
@@ -439,7 +449,7 @@ public class MainActivity extends FragmentActivity {
 				groupFragment.groupAdapter.notifyDataSetChanged();
             } else if(requestCode == REQUEST_CODE_CONTACT){
             	contactList.clear();
-				contactList.addAll(allUsers.values());
+				contactList.addAll(EMUserManager.getInstance().getAllUsers().values());
             	//排序
                 Collections.sort(contactList, new Comparator<EMUser>() {
                     @Override
@@ -688,10 +698,11 @@ public class MainActivity extends FragmentActivity {
                     }
                     ChatUtil.updateUsers(MainActivity.this, contacts, deleteNonExistingUsers);
 
-                    allUsers = ChatUtil.loadAllUsers(MainActivity.this);
+                    //allUsers = ChatUtil.loadAllUsers(MainActivity.this);
 
-                    
-                    EMUserManager.getInstance().setAllUsers(allUsers);
+                    System.err.println("???? why need to load user from db again here???");
+                    Map<String, EMUser> allUsers = EMUserManager.getInstance().getAllUsers();
+                    EMUserManager.getInstance().loadAllUsers();
                     System.err.println("app get contacts callback. users:" + allUsers.size());
 
                     // Refresh UI`

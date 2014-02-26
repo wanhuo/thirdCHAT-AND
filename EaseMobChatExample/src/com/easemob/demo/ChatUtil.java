@@ -31,9 +31,9 @@ public class ChatUtil {
     * @param ctx Contexts
     * @return Map<String, User>
     */
-    public static Map<String, EMUser> loadAllUsers(Context ctx) {
-        return EMUserDB.getInstance().loadAllUsers();
-    }
+    //public static Map<String, EMUser> loadAllUsers(Context ctx) {
+    //    return EMUserDB.getInstance().loadAllUsers();
+    //}
     
     public static EMUser loadUser(Context ctx, String userId) {
         return EMUserDB.getInstance().loadUser(userId);
@@ -89,8 +89,7 @@ public class ChatUtil {
         updateUsers(ctx, remoteContactList);
         
         if (removeNonExistingUser) {
-            
-            Map<String, EMUser> allLocalUsers = loadAllUsers(ctx);
+            Map<String, EMUser> allLocalUsers = EMUserManager.getInstance().getAllUsers();
             String myselfId = EMUserManager.getInstance().getCurrentUserName();
             
             for (String userId : allLocalUsers.keySet()) {
@@ -115,7 +114,7 @@ public class ChatUtil {
         final HttpFileManager hfm = new HttpFileManager(EaseMobUserConfig.getInstance().applicationContext,
                 EaseMobChatConfig.getInstance().EASEMOB_STORAGE_URL);
         
-        Map<String, EMUser> allLocalUsers = loadAllUsers(ctx);
+        Map<String, EMUser> allLocalUsers = EMUserManager.getInstance().getAllUsers();
         for(EMUser remoteContact : remoteContactList) {
             //userName is the primary key            
         	final String username = remoteContact.getUsername();   

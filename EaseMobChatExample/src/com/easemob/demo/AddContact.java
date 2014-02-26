@@ -183,7 +183,8 @@ public class AddContact extends Activity {
 		}
 		progressDialog.setMessage(getString(R.string.adding_contact));
 		progressDialog.show();
-		if (MainActivity.allUsers.containsKey(userName)) {
+		//if (MainActivity.allUsers.containsKey(userName)) {
+		if (EMUserManager.getInstance().hasUser(userName)) {
             startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.addcontact_user_exist_in_contacts)));
 			progressDialog.dismiss();
 			return;
