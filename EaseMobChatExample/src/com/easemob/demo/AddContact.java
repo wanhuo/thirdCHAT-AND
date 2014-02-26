@@ -21,9 +21,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.easemob.user.domain.EMUserBase;
+import com.easemob.user.EMUser;
 import com.easemob.chat.EaseMobChatConfig;
-import com.easemob.demo.domain.DemoUser;
+//import com.easemob.demo.domain.DemoUser;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
@@ -42,7 +42,7 @@ public class AddContact extends Activity {
 	private LinearLayout searchedUser;
 	private Button saveBtn;
 	private TextView textVName;
-	private DemoUser contact;
+	private EMUser contact;
 	private String userName;
 	private InputMethodManager inputMethodManager;
 	private ImageView avatar;
@@ -61,7 +61,7 @@ public class AddContact extends Activity {
 				if(msg.obj == null){
 					startActivity(new Intent(AddContact.this,AlertDialog.class).putExtra("msg", getString(R.string.addcontact_find_user_failed)));
 				} else {
-					final DemoUser user = (DemoUser) msg.obj;
+					final EMUser user = (EMUser) msg.obj;
 					
 					searchedUser.setVisibility(View.VISIBLE);
 					searchedUser.setOnClickListener(new OnClickListener() {
@@ -73,7 +73,7 @@ public class AddContact extends Activity {
                     });
 					textVName.setText(user.getNick());
 					//set avator,use EaseMob.APPKEY to download image
-    				AvatorUtils.setThumbAvatorBitmap(user.getUsername(), user.getPicture(), avatar, AddContact.this);
+    				AvatorUtils.setThumbAvatorBitmap(user.getUsername(), user.getAvatorPath(), avatar, AddContact.this);
     					
 				}
 				break;
@@ -140,17 +140,17 @@ public class AddContact extends Activity {
 			// check if user exists
 			EMUserManager.getInstance().getContactInBackground(userName, new GetContactCallback() {
 				@Override
-				public void onSuccess(EMUserBase contact) {
+				public void onSuccess(EMUser contact) {
 					progressDialog.dismiss();
 					if (contact == null) {
 						startActivity(new Intent(instance, AlertDialog.class).putExtra("msg",getString(R.string.addcontact_user_not_exist)));
 						return;
 					}
 					
-					DemoUser user = contact.toType(DemoUser.class);
+					//DemoUser user = contact.toType(DemoUser.class);
 					final Message msg = Message.obtain();
 					msg.what = 1;
-					msg.obj = user;
+					msg.obj = contact;
 					handler.sendMessage(msg);
 				}
 

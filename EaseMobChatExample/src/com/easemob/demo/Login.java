@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.easemob.demo.domain.DemoUser;
+//import com.easemob.demo.domain.DemoUser;
 import com.easemob.exceptions.EMAuthenticationException;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EMResourceNotExistException;
@@ -17,7 +17,7 @@ import com.easemob.ui.activity.AlertDialog;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 import com.easemob.user.callbacks.LoginCallBack;
-import com.easemob.user.domain.EMUserBase;
+import com.easemob.user.EMUser;
 
 public class Login extends Activity {
     private static final String TAG = Login.class.getSimpleName();
@@ -57,7 +57,8 @@ public class Login extends Activity {
     		EMUserManager.getInstance().login(userName, password, new LoginCallBack() {
                 @Override
                 public void onSuccess(Object user) {       
-                    DemoUser demoUser = ((EMUserBase)user).toType(DemoUser.class);
+                    //DemoUser demoUser = ((EMUserBase)user).toType(DemoUser.class);
+                    EMUser demoUser = ((EMUser)user);
                     Gl.setPassword(password);
                     
                     ChatUtil.addUser(Login.this, demoUser);

@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 
-import com.easemob.user.domain.EMUserBase;
+import com.easemob.user.EMUser;
 import com.easemob.chat.EMChatDB;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
@@ -23,13 +23,12 @@ import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
 import com.easemob.demo.db.Contract;
 import com.easemob.demo.db.DBOpenHelper;
-import com.easemob.demo.domain.DemoUser;
+//import com.easemob.demo.domain.DemoUser;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.user.AvatorUtils;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.UserUtil;
-import com.easemob.user.db.EaseMobMsgDB;
 import com.easemob.util.HanziToPinyin;
 
 
@@ -41,8 +40,8 @@ public class ChatUtil {
     * @param ctx Contexts
     * @return Map<String, User>
     */
-    public static Map<String, EMUserBase> loadAllUsers(Context ctx) {
-        Map<String, EMUserBase> allUsers = new HashMap<String, EMUserBase>();
+    public static Map<String, EMUser> loadAllUsers(Context ctx) {
+        Map<String, EMUser> allUsers = new HashMap<String, EMUser>();
         
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         Cursor cursor = db.query(Contract.UserTable.TABLE_NAME,
@@ -69,7 +68,8 @@ public class ChatUtil {
                 if(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ID)).equals(myselfId)) {
                     continue;
                 }
-                DemoUser user = new DemoUser();
+                EMUser user = new EMUser();
+                /*
                 user.setUsername(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ID)));
                 user.setJid(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_JID)));
                 user.setNick(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_NICK)));
@@ -81,7 +81,7 @@ public class ChatUtil {
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
-                            
+                  */          
                 allUsers.put(user.getUsername(), user); 
             } while (cursor.moveToNext());
         }
@@ -105,8 +105,8 @@ public class ChatUtil {
         return allUsers;
     }
     
-    public static DemoUser loadUser(Context ctx, String userId) {
-    	DemoUser user = null;
+    public static EMUser loadUser(Context ctx, String userId) {
+    	EMUser user = null;
         
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         Cursor cursor = db.query(Contract.UserTable.TABLE_NAME,
@@ -131,7 +131,7 @@ public class ChatUtil {
         
         if (cursor != null) {
             if(cursor.moveToFirst()) {
-        
+       /* 
                 user = new DemoUser();
                 user.setUsername(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ID)));
                 user.setJid(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_JID)));
@@ -144,6 +144,7 @@ public class ChatUtil {
                 user.setAddress(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_ADDRESS)));
                 user.setSignature(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_SIGNATURE)));
                 user.setPicture(cursor.getString(cursor.getColumnIndex(Contract.UserTable.COLUMN_NAME_REMOTEAVATARPATH)));
+                */
             //Load chat history
 /*            List<Message> chatHistory = loadChatHistory(user.getId());            
             user.setMessages(chatHistory);  */     
@@ -161,10 +162,10 @@ public class ChatUtil {
     * @param query the query string. Can be part of user name (user id or user nick), location, phone number etc
     * @return List<User>
     */
-    public static List<DemoUser> searchUsers(List<DemoUser> allUsers, String query) {
+    public static List<EMUser> searchUsers(List<EMUser> allUsers, String query) {
         //TODO: we only search against user name at the moment
-        List<DemoUser> resultList = new ArrayList<DemoUser>();
-        for(DemoUser user : allUsers) {
+        List<EMUser> resultList = new ArrayList<EMUser>();
+        for(EMUser user : allUsers) {
             if(user.getUsername().contains(query) || (user.getNick() != null && user.getNick().contains(query))) {
                 resultList.add(user);
             }
@@ -179,10 +180,10 @@ public class ChatUtil {
     * @param query the query string. Can be part of chat history
     * @return List<DemoUser>
     */
-    public static List<DemoUser> searchChatHistory(List<DemoUser> allUsers, String query) {
+    public static List<EMUser> searchChatHistory(List<EMUser> allUsers, String query) {
         //TODO: we only search against chat history stored in cache at the moment. We may need to search from message history files if necessary
-        List<DemoUser> resultList = new ArrayList<DemoUser>();
-        for(DemoUser user : allUsers) {
+        List<EMUser> resultList = new ArrayList<EMUser>();
+        for(EMUser user : allUsers) {
             //List<EMMessage> history = user.getMessages();
             List<EMMessage> history = EMChatManager.getInstance().getConversation(user.getUsername()).getMessages();
             for(EMMessage m : history) {
@@ -201,16 +202,16 @@ public class ChatUtil {
     * @param List<EMUserBase> remoteContactList
     * @param removeNonExistingUser Remove the local user from db if the user is not listed in remoteContactList, which means the user has been deleted on the remote server.
     */
-    public static void updateUsers(Context ctx, List<EMUserBase> remoteContactList, boolean removeNonExistingUser) {
+    public static void updateUsers(Context ctx, List<EMUser> remoteContactList, boolean removeNonExistingUser) {
         updateUsers(ctx, remoteContactList);
         
         if (removeNonExistingUser) {
             SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
-            Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
+            Map<String, EMUser> allLocalUsers = loadAllUsers(ctx);
             String myselfId = EMUserManager.getInstance().getCurrentUserName();
             for (String userId : allLocalUsers.keySet()) {
                 boolean found = false;
-                for (EMUserBase contact : remoteContactList) {
+                for (EMUser contact : remoteContactList) {
                     if (userId.equals(contact.getUsername())) {
                         found = true;
                     }
@@ -228,23 +229,23 @@ public class ChatUtil {
     }
     
     //update or add user (if the user does not exist in db yet)
-    private static void updateUsers(Context ctx, List<EMUserBase> remoteContactList) {
+    private static void updateUsers(Context ctx, List<EMUser> remoteContactList) {
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         
         final HttpFileManager hfm = new HttpFileManager(EaseMobUserConfig.getInstance().applicationContext,
                 EaseMobChatConfig.getInstance().EASEMOB_STORAGE_URL);
         
-        Map<String, EMUserBase> allLocalUsers = loadAllUsers(ctx);
-        for(EMUserBase remoteContact : remoteContactList) {
+        Map<String, EMUser> allLocalUsers = loadAllUsers(ctx);
+        for(EMUser remoteContact : remoteContactList) {
             //userName is the primary key            
         	final String username = remoteContact.getUsername();   
-        	EMUserBase localUser = allLocalUsers.get(username);
+        	EMUser localUser = allLocalUsers.get(username);
             
             if(localUser == null) {
-            	DemoUser myUser = remoteContact.toType(DemoUser.class);
-                addDB(myUser, db);
+            	//DemoUser myUser = remoteContact.toType(DemoUser.class);
+                addDB(remoteContact, db);
                 
-                final String picture = remoteContact.getPicture();
+                final String picture = remoteContact.getAvatorPath();
                 if(picture == null || picture.startsWith("http://www.gravatar.com")){
                     //No need to download avatar for this user
                     continue;
@@ -280,12 +281,12 @@ public class ChatUtil {
                 }).start();
             } else {
                 //Sync the existing local user with the remote user if necessary
-            	DemoUser myUser = remoteContact.toType(DemoUser.class);
-                updateDB(myUser, db);
+            	//DemoUser myUser = remoteContact.toType(DemoUser.class);
+                updateDB(remoteContact, db);
                 final String localFilePath = UserUtil.getThumbAvatorPath(username).getAbsolutePath();
                 
-                final String picture = remoteContact.getPicture();
-                if(picture == null || picture.equals(localUser.getPicture()) && new File(localFilePath).exists()){
+                final String picture = remoteContact.getAvatorPath();
+                if(picture == null || picture.equals(localUser.getAvatorPath()) && new File(localFilePath).exists()){
                     //No need to download avatar for this user
                     continue;
                 }
@@ -323,14 +324,15 @@ public class ChatUtil {
     * @param Context
     * @param user 
     */
-    public static void updateUser(Context ctx, DemoUser user) {
+    public static void updateUser(Context ctx, EMUser user) {
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
      
         updateDB(user, db); 
     }
     
-    private static void updateDB(DemoUser contact, SQLiteDatabase db) {
+    private static void updateDB(EMUser contact, SQLiteDatabase db) {
         boolean updateDb = false;
+        /*
         ContentValues values = new ContentValues();
         if(contact.getJid() != null) {
             values.put(Contract.UserTable.COLUMN_NAME_JID, contact.getJid());
@@ -372,7 +374,7 @@ public class ChatUtil {
         if(updateDb) {
             db.update(Contract.UserTable.TABLE_NAME, values, Contract.UserTable.COLUMN_NAME_ID + " = ?",
                 new String[] { String.valueOf(contact.getUsername())});
-        }        
+        }        */
     }
     
     /**
@@ -380,7 +382,8 @@ public class ChatUtil {
     * @param Context
     * @param userId 
     */
-    public static void addUser(Context ctx, DemoUser contact) {
+    public static void addUser(Context ctx, EMUser contact) {
+        /*
         SQLiteDatabase db = DBOpenHelper.getInstance(ctx).getWritableDatabase();
         
         //Refactor: avoid unnecessary db access
@@ -393,14 +396,11 @@ public class ChatUtil {
         }
         
         addDB(contact, db);
+        */
     }
     
-    private static void addDB(DemoUser contact, SQLiteDatabase db) {
-        
-/*        if (contact.getUsername() == User.getCurrentUserId()) {
-            Log.e(TAG, "contact has same id with current user:" + User.getCurrentUserId());
-            return;
-        }*/
+    private static void addDB(EMUser contact, SQLiteDatabase db) {
+        /*
         ContentValues values = new ContentValues();
         values.put(Contract.UserTable.COLUMN_NAME_ID, contact.getUsername());
         values.put(Contract.UserTable.COLUMN_NAME_JID, contact.getJid());
@@ -436,7 +436,7 @@ public class ChatUtil {
             //catch errors. "column id is not unique" error. 
             //if logic is correct, we should only add same user to db once, so this error shouldn't happen
             e.printStackTrace();
-        }
+        }*/
     }
 
     /**

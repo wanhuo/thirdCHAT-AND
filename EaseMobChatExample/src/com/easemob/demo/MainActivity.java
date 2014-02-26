@@ -40,14 +40,11 @@ import com.easemob.chat.EaseMobChat;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.MessageListener;
 import com.easemob.chat.TextMessageBody;
-import com.easemob.demo.domain.DemoUser;
-import com.easemob.user.domain.EMUserBase;
+import com.easemob.user.EMUser;
 import com.easemob.user.domain.Group;
-import com.easemob.user.domain.MessageFactory;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.group.EaseMobGroupManager;
-import com.easemob.notify.EMNotificationService;
 import com.easemob.ui.activity.AddGroup;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.ui.activity.ChatActivity;
@@ -56,12 +53,12 @@ import com.easemob.ui.activity.ContactsListFragment;
 import com.easemob.ui.activity.ContactsListFragment.ContactsListFragmentListener;
 import com.easemob.ui.activity.GroupListFragment;
 import com.easemob.ui.activity.GroupListFragment.GroupListFragmentListener;
+import com.easemob.user.EMUserDB;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.EaseMobUser;
 import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.callbacks.GetContactsCallback;
 import com.easemob.user.callbacks.LoginCallBack;
-import com.easemob.user.db.EaseMobMsgDB;
 
 public class MainActivity extends FragmentActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -85,14 +82,14 @@ public class MainActivity extends FragmentActivity {
 
     public static boolean isChat = false;
 
-    public static Map<String, EMUserBase> allUsers;
+    public static Map<String, EMUser> allUsers;
 
     //MyConnectionListener remoteConnectionListener = new MyConnectionListener();
     //MyContactListener remoteContactListener = new MyContactListener();
 
     public boolean wasPaused = false;
 
-	private List<EMUserBase> contactList;
+	private List<EMUser> contactList;
 
 	private MyContactsListFragment contactFragment;
 
@@ -195,13 +192,13 @@ public class MainActivity extends FragmentActivity {
         EMUserManager.getInstance().setAllUsers(allUsers);
         
         // Load all available groups from local DB. 
-        Group.allGroups = EaseMobMsgDB.loadGroups(this);
+        //Group.allGroups = EMUserDB.loadGroups(this);
         
-        contactList = new ArrayList<EMUserBase>(allUsers.values());
+        contactList = new ArrayList<EMUser>(allUsers.values());
         //排序
-        Collections.sort(contactList, new Comparator<EMUserBase>() {
+        Collections.sort(contactList, new Comparator<EMUser>() {
             @Override
-            public int compare(EMUserBase lhs, EMUserBase rhs) {
+            public int compare(EMUser lhs, EMUser rhs) {
                 return (lhs.getHeader().compareTo(rhs.getHeader()));
             }
         });
@@ -277,7 +274,7 @@ public class MainActivity extends FragmentActivity {
     //2. 重载“添加好友”按钮的处理。
     @SuppressLint("ValidFragment")
 	class MyContactsListFragment extends ContactsListFragment {
-		public MyContactsListFragment(List<EMUserBase> contactList, ContactsListFragmentListener listener) {
+		public MyContactsListFragment(List<EMUser> contactList, ContactsListFragmentListener listener) {
 			super(contactList, listener);
 		}
 		
@@ -322,7 +319,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        processMsgNotification();
         updateUnreadLabel();
 
         if (wasPaused) {
@@ -445,9 +441,9 @@ public class MainActivity extends FragmentActivity {
             	contactList.clear();
 				contactList.addAll(allUsers.values());
             	//排序
-                Collections.sort(contactList, new Comparator<EMUserBase>() {
+                Collections.sort(contactList, new Comparator<EMUser>() {
                     @Override
-                    public int compare(EMUserBase lhs, EMUserBase rhs) {
+                    public int compare(EMUser lhs, EMUser rhs) {
                         return lhs.getHeader().compareTo(rhs.getHeader());
 
                     }
@@ -570,7 +566,7 @@ public class MainActivity extends FragmentActivity {
         int unreadMsgCountTotal = 0;
         unreadMsgCountTotal = EMChatManager.getInstance().getUnreadMsgsCount();
         // also add unread count in groups
-        for (EMUserBase group : Group.allGroups) {
+        for (EMUser group : Group.allGroups) {
             //unreadMsgCountTotal += group.getUnreadMsgCount();
         }
         return unreadMsgCountTotal;
@@ -679,13 +675,13 @@ public class MainActivity extends FragmentActivity {
         public boolean setInitedAfterSuccess = false;
 
         @Override
-        public void onSuccess(final List<EMUserBase> contacts) {
+        public void onSuccess(final List<EMUser> contacts) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Iterator<EMUserBase> itor = contacts.iterator();
+                    Iterator<EMUser> itor = contacts.iterator();
                     while (itor.hasNext()) {
-                        EMUserBase user = itor.next();
+                        EMUser user = itor.next();
                         if (user.getUsername().equals(EMUserManager.getInstance().getCurrentUserName())) {
                             itor.remove();
                         }
@@ -708,9 +704,9 @@ public class MainActivity extends FragmentActivity {
                     	contactList.clear();
                     	contactList.addAll(allUsers.values());
                     	//排序
-                        Collections.sort(contactList, new Comparator<EMUserBase>() {
+                        Collections.sort(contactList, new Comparator<EMUser>() {
                             @Override
-                            public int compare(EMUserBase lhs, EMUserBase rhs) {
+                            public int compare(EMUser lhs, EMUser rhs) {
                                 return lhs.getHeader().compareTo(rhs.getHeader());
 
                             }
@@ -745,28 +741,7 @@ public class MainActivity extends FragmentActivity {
 
             Log.e(TAG, "GetContactsCallback failed: " + cause.getMessage());
         }
-    }
-
-    
-    private void processMsgNotification() {
-        Exception e = new Exception("!!!! check how to deal with notification in sdk2.0");
-        e.printStackTrace();
-        /*
-        try {
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            com.easemob.user.Message notificationMsg;
-            while ((notificationMsg = EMNotificationService.getInstance().getNextNotificationMsg()) != null) {
-                Message message = MessageFactory.createMsgFromNotification(notificationMsg);
-                EMUserBase tmpUser = MainActivity.allUsers.get(notificationMsg.getFrom());
-                tmpUser.addMessage(message, true);
-                updateUnreadLabel();
-                notificationManager.cancel(notificationMsg.getNotificationID());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-    }
-    
+    }    
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

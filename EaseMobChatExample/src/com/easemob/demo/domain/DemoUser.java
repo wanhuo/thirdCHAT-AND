@@ -1,5 +1,5 @@
 package com.easemob.demo.domain;
-
+/*
 import org.usergrid.java.client.utils.JsonUtils;
 
 
@@ -40,3 +40,4 @@ public class DemoUser extends EMUserBase {
         JsonUtils.setStringProperty(properties, PROPERTY_ADDRESS, address);
     }
 }
+*/

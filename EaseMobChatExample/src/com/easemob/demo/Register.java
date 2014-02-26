@@ -13,7 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.easemob.user.domain.EMUserBase;
+import com.easemob.user.EMUser;
 import com.easemob.exceptions.EMDuplicateResourceException;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
@@ -64,7 +64,7 @@ public class Register extends Activity {
 
 		    EMUserManager.getInstance().createAppUserInBackground(username, password, new CreateAccountCallBack() {
                 @Override
-                public void onSuccess(EMUserBase user) {
+                public void onSuccess(EMUser user) {
                     if (progressDialog != null) {
                         progressDialog.dismiss();
                     }
