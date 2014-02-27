@@ -27,9 +27,9 @@ public class LogoutActivity extends Activity {
         //DBOpenHelper.closeDB();
 
         //reset password to null
-        Gl.setPassword(null);
+        Gl.getInstance().setPassword(null);
         //reset inited so that the new user can retrieve contact list after login 
-        Gl.setInited(false);
+        Gl.getInstance().setInited(false);
         
         EMUserManager.getInstance().logout();
         finish();

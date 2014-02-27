@@ -15,7 +15,6 @@ import com.easemob.exceptions.EMResourceNotExistException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.user.EMUserManager;
-import com.easemob.user.EaseMobUser;
 import com.easemob.user.callbacks.LoginCallBack;
 import com.easemob.user.EMUser;
 
@@ -30,13 +29,13 @@ public class Login extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        if(Gl.getUserName() != null && Gl.getPassword() != null){
+        if(Gl.getInstance().getUserName() != null && Gl.getInstance().getPassword() != null){
             finish();
             startActivity(new Intent(this, MainActivity.class));
         } else {        
             usernameEditText = (EditText) findViewById(R.id.username);
             passwordEditText = (EditText) findViewById(R.id.password);
-            String userName = Gl.getUserName();
+            String userName = Gl.getInstance().getUserName();
             if (userName != null) {
                 usernameEditText.setText(userName);
             }
@@ -52,14 +51,14 @@ public class Login extends Activity {
             startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.login_input_pwd)));
         } else {
         	showLoginDialog();
-            Gl.setUserName(userName);
+            Gl.getInstance().setUserName(userName);
             
     		EMUserManager.getInstance().login(userName, password, new LoginCallBack() {
                 @Override
                 public void onSuccess(Object user) {       
                     //DemoUser demoUser = ((EMUserBase)user).toType(DemoUser.class);
                     EMUser demoUser = ((EMUser)user);
-                    Gl.setPassword(password);
+                    Gl.getInstance().setPassword(password);
                     
                     ChatUtil.addUser(Login.this, demoUser);
                     
@@ -106,8 +105,8 @@ public class Login extends Activity {
         super.onResume();
         
         //may back from register activity. refresh username if necessary
-        if (Gl.getUserName() != null) {
-            usernameEditText.setText(Gl.getUserName());
+        if (Gl.getInstance().getUserName() != null) {
+            usernameEditText.setText(Gl.getInstance().getUserName());
         }
 	}
        

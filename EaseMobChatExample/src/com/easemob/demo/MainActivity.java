@@ -127,8 +127,8 @@ public class MainActivity extends FragmentActivity {
 
         /******************************* EaseMob SDK Start ***********************************/
         /***** Use EaseMob SDK. Step 1: EaseMob.init() and EaseMob.login. ********************/
-        String userName = Gl.getUserName();
-        String password = Gl.getPassword();
+        String userName = Gl.getInstance().getUserName();
+        String password = Gl.getInstance().getPassword();
         boolean loggedin = getIntent().getBooleanExtra("loggedin", false);
         //EMChatManager.getInstance().addMessageReciverListener(new AppMessageListener());
         msgReceiver = new NewMessageBroadcastReceiver();
@@ -142,7 +142,7 @@ public class MainActivity extends FragmentActivity {
         } {
             //here, logined from login activity, try to get contacts if not inited;
             //@@@@ temp workaround. need to move contact db, sync to user sdk!!!
-            if (!Gl.getInited()) {
+            if (!Gl.getInstance().getInited()) {
                 GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
                 callback.deleteNonExistingUsers = true;
                 callback.setInitedAfterSuccess = true;
@@ -244,40 +244,7 @@ public class MainActivity extends FragmentActivity {
 		}
     	
     }
-    
-    /**
-     * grouplist监听事件
-     * @author Administrator
-     *
-     */
-    /*
-    class MyGroupListListener implements GroupListFragmentListener{
-
-		@Override
-		public void onListItemClickListener(int position) {
-			//点击新建群组按钮item
-		   if (position == groupFragment.groupAdapter.getCount() - 1) {
-               if (EaseMobService.isConnected()) {
-                   startActivityForResult(new Intent(MainActivity.this, AddGroup.class),REQUEST_CODE_GROUP);
-               } else {
-                   startActivity(new Intent(MainActivity.this, AlertDialog.class).putExtra(
-                           "msg", MainActivity.this.getString(R.string.network_unavailable)));
-               }
-           } else {//点击普通item进入群组聊天页面
-               Intent intent = new Intent(MainActivity.this,ChatActivity.class);
-               intent.putExtra("isChat", false);
-               //it is group chat
-               intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
-               intent.putExtra("position", position - 1);
-               intent.putExtra("groupId", groupFragment.groupAdapter.getItem(position-1).getGroupId());
-               startActivityForResult(intent, REQUEST_CODE_GROUP);
-           }
-			
-		}
-    	
-    }
-    */
-    
+        
 	//MyContactsListFragment继承了SDK中的ContactsListFragment（即联系人页面），做了以下改动：
     //1. ContactsListFragment缺省包含一个不可见的标题栏，标题栏右侧还有“添加好友”按钮。在MyContactsListFragment中我们将标题栏设为可见
     //2. 重载“添加好友”按钮的处理。
@@ -736,7 +703,7 @@ public class MainActivity extends FragmentActivity {
                     }
 
                     if (setInitedAfterSuccess) {
-                        Gl.setInited(true);
+                        Gl.getInstance().setInited(true);
                     }
                 }
             });
@@ -770,7 +737,7 @@ public class MainActivity extends FragmentActivity {
         @Override
         public void onSuccess(Object user) {
          // initialize the whole contact list only once
-            if (!Gl.getInited()) {
+            if (!Gl.getInstance().getInited()) {
                 GetContactsCallbackImpl callback = new GetContactsCallbackImpl();
                 callback.deleteNonExistingUsers = true;
                 callback.setInitedAfterSuccess = true;
