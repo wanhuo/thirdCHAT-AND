@@ -38,7 +38,6 @@ import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMSessionManager;
 import com.easemob.chat.EaseMobChat;
 import com.easemob.chat.ImageMessageBody;
-import com.easemob.chat.MessageListener;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.user.EMUser;
 import com.easemob.user.domain.Group;
