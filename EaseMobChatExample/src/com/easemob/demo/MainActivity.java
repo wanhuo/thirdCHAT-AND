@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,32 +29,21 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMSessionManager;
-import com.easemob.chat.EaseMobChat;
-import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.user.EMUser;
 import com.easemob.user.domain.Group;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
-import com.easemob.group.EaseMobGroupManager;
-import com.easemob.ui.activity.AddGroup;
-import com.easemob.ui.activity.AlertDialog;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.activity.ChatHistoryFragment;
 import com.easemob.ui.activity.ContactsListFragment;
 import com.easemob.ui.activity.ContactsListFragment.ContactsListFragmentListener;
 import com.easemob.ui.activity.GroupListFragment;
-import com.easemob.ui.activity.GroupListFragment.GroupListFragmentListener;
-import com.easemob.user.EMUserDB;
 import com.easemob.user.EMUserManager;
-import com.easemob.user.EaseMobUser;
-import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.callbacks.GetContactsCallback;
 import com.easemob.user.callbacks.LoginCallBack;
 
@@ -755,66 +743,12 @@ public class MainActivity extends FragmentActivity {
         public void onProgress(String progress) {
         }
     }
-    
-    /*
-    private class AppMessageListener implements MessageListener {
-
-        @Override
-        public void onMessageReceived(final EMMessage emMessage) {
-            Log.d("chatdemo", "received msg:" + emMessage.toString());
-            
-            runOnUiThread(new Runnable() {
-                public void run() {
-            //@todo deal with group msg later
-            EMUserBase tmpUser = null;
-            String from = emMessage.getFrom();
-            tmpUser = MainActivity.allUsers.get(from);
-            if (tmpUser == null) {
-                Log.e(TAG, "receive msg error, cant find user with name:" + from);
-                return;
-            }
-            
-            int rowId;
-            //Message message = MessageFactory.createMsgFromEMMsg(emMessage);
-            
-            //@@@@ todo. move db operation to chatsdk
-            //Save to db
-            //rowId = tmpUser.addMessage(emMessage, true);
-            //message.setRowId(rowId + "");
-            //message.setBackReceive(true);
-            
-            //Refresh UnreadLabel:
-            updateUnreadLabel();
-            
-            System.err.println("!!! mainacttivy alluser:" + MainActivity.allUsers.size());
-            System.err.println("main emusermanager allusers size:" + EMUserManager.getInstance().allUsers.size());
-            
-            //@todo, comment for NPE now. revisit!
-            //Refresh ChatHistoryFragment
-            //if (currentTabIndex == 0) {
-            //    ChatHistoryFragment chatHistoryFragment = (ChatHistoryFragment) fragments[0];
-            //    chatHistoryFragment.refresh();
-            //}
-            
-                }
-            });//end of run ui thread
-
-        }    
-    }
-    */
-    
+        
     private class NewMessageBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("main", "new message received");
-            updateUnreadLabel();
-            /*
-            if (currentTabIndex == 0) {
-                ChatHistoryFragment chatHistoryFragment = (ChatHistoryFragment) fragments[0];
-                chatHistoryFragment.refresh();
-            }
-            */
-        }
+            updateUnreadLabel();        }
     }
             
 }
