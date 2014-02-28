@@ -650,14 +650,8 @@ public class MainActivity extends FragmentActivity {
                             itor.remove();
                         }
                     }
-                    ChatUtil.updateUsers(MainActivity.this, contacts, deleteNonExistingUsers);
-
-                    //allUsers = ChatUtil.loadAllUsers(MainActivity.this);
-
-                    System.err.println("???? why need to load user from db again here???");
-                    Map<String, EMUser> allUsers = EMUserManager.getInstance().getAllUsers();
-                    EMUserManager.getInstance().loadAllUsers();
-                    System.err.println("app get contacts callback. users:" + allUsers.size());
+                    EMUserManager.getInstance().updateUsers(contacts);
+                    System.err.println("app get contacts callback. users:" + EMUserManager.getInstance().getAllUsers().size());
 
                     // Refresh UI`
                     switch (currentTabIndex) {
@@ -667,7 +661,7 @@ public class MainActivity extends FragmentActivity {
                     case 1: // when add a user these code be invoke twice?
                     	ContactsListFragment tmp = ((ContactsListFragment) fragments[1]);
                     	contactList.clear();
-                    	contactList.addAll(allUsers.values());
+                    	contactList.addAll(EMUserManager.getInstance().getAllUsers().values());
                     	//排序
                         Collections.sort(contactList, new Comparator<EMUser>() {
                             @Override

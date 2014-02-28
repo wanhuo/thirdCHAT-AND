@@ -60,7 +60,8 @@ public class Login extends Activity {
                     EMUser demoUser = ((EMUser)user);
                     Gl.getInstance().setPassword(password);
                     
-                    ChatUtil.addUser(Login.this, demoUser);
+                    //will move this add operation below to inside usersdk
+                    EMUserManager.getInstance().addUser(demoUser);
                     
                     closeLogingDialog();
                     startActivity(new Intent(Login.this, MainActivity.class).putExtra("loggedin", true));
