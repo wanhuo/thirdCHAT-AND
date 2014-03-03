@@ -62,18 +62,6 @@
                 android:textColor="@android:color/white"
                 android:textSize="12sp" />
             <Button
-                android:id="@+id/btn_groups"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:drawableTop="@drawable/tab_address_normal"
-                android:onClick="onTabClicked"
-                android:scaleType="matrix"
-                android:text="@string/group"
-                android:textColor="@android:color/white"
-                android:textSize="12sp" />
-            <Button
                 android:id="@+id/btn_settings"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

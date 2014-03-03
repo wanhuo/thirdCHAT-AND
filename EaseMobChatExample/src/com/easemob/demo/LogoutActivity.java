@@ -1,9 +1,6 @@
 package com.easemob.demo;
 
-import com.easemob.user.domain.Group;
-//import com.easemob.demo.db.DBOpenHelper;
 import com.easemob.user.EMUserManager;
-import com.easemob.user.EaseMobUser;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,21 +17,18 @@ public class LogoutActivity extends Activity {
 	}
 
 	public void logout(View view) {
-        //clearn up global variables
-        Group.allGroups.clear();
         
-        //close contact db
-        //DBOpenHelper.closeDB();
-
         //reset password to null
-        Gl.getInstance().setPassword(null);
+        ChatDemoApp.getInstance().setPassword(null);
         //reset inited so that the new user can retrieve contact list after login 
-        Gl.getInstance().setInited(false);
-        
+        ChatDemoApp.getInstance().setInited(false);
+
+        //退出sdk
         EMUserManager.getInstance().logout();
         finish();
+        
+        //重新显示登陆页面
         MainActivity.instance.finish();
-//        setResult(RESULT_OK);
         startActivity(new Intent(this, Login.class));
 	}
 

@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,13 +20,11 @@ import android.widget.TextView;
 
 import com.easemob.user.EMUser;
 import com.easemob.chat.EaseMobChatConfig;
-//import com.easemob.demo.domain.DemoUser;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.user.AvatorUtils;
 import com.easemob.user.EMUserManager;
-import com.easemob.user.EaseMobUserConfig;
 import com.easemob.user.callbacks.GenericCallBack;
 import com.easemob.user.callbacks.GetContactCallback;
 
@@ -147,7 +142,6 @@ public class AddContact extends Activity {
 						return;
 					}
 					
-					//DemoUser user = contact.toType(DemoUser.class);
 					final Message msg = Message.obtain();
 					msg.what = 1;
 					msg.obj = contact;

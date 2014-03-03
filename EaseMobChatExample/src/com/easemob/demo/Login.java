@@ -29,13 +29,13 @@ public class Login extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        if(Gl.getInstance().getUserName() != null && Gl.getInstance().getPassword() != null){
+        if(ChatDemoApp.getInstance().getUserName() != null && ChatDemoApp.getInstance().getPassword() != null){
             finish();
             startActivity(new Intent(this, MainActivity.class));
         } else {        
             usernameEditText = (EditText) findViewById(R.id.username);
             passwordEditText = (EditText) findViewById(R.id.password);
-            String userName = Gl.getInstance().getUserName();
+            String userName = ChatDemoApp.getInstance().getUserName();
             if (userName != null) {
                 usernameEditText.setText(userName);
             }
@@ -51,18 +51,16 @@ public class Login extends Activity {
             startActivity(new Intent(this, AlertDialog.class).putExtra("msg", getString(R.string.login_input_pwd)));
         } else {
         	showLoginDialog();
-            Gl.getInstance().setUserName(userName);
+            ChatDemoApp.getInstance().setUserName(userName);
             
+            
+            //登陆到easemob 用户服务器，同时会登陆聊天服务器
     		EMUserManager.getInstance().login(userName, password, new LoginCallBack() {
                 @Override
                 public void onSuccess(Object user) {       
-                    //DemoUser demoUser = ((EMUserBase)user).toType(DemoUser.class);
-                    EMUser demoUser = ((EMUser)user);
-                    Gl.getInstance().setPassword(password);
-                    
-                    //will move this add operation below to inside usersdk
-                    EMUserManager.getInstance().addUser(demoUser);
-                    
+                    //login 
+                    ChatDemoApp.getInstance().setPassword(password);
+                                        
                     closeLogingDialog();
                     startActivity(new Intent(Login.this, MainActivity.class).putExtra("loggedin", true));
                     finish();
@@ -105,9 +103,8 @@ public class Login extends Activity {
     protected void onResume() {
         super.onResume();
         
-        //may back from register activity. refresh username if necessary
-        if (Gl.getInstance().getUserName() != null) {
-            usernameEditText.setText(Gl.getInstance().getUserName());
+        if (ChatDemoApp.getInstance().getUserName() != null) {
+            usernameEditText.setText(ChatDemoApp.getInstance().getUserName());
         }
 	}
        

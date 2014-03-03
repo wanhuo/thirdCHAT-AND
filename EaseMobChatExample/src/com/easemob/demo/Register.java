@@ -19,7 +19,6 @@ import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
 import com.easemob.user.EMUserManager;
-import com.easemob.user.EaseMobUser;
 import com.easemob.user.callbacks.CreateAccountCallBack;
 
 public class Register extends Activity {
@@ -69,7 +68,7 @@ public class Register extends Activity {
                         progressDialog.dismiss();
                     }
 
-                    Gl.getInstance().setUserName(username);
+                    ChatDemoApp.getInstance().setUserName(username);
                     
                     Log.d("register", "create user successful: " + user.getUsername());                    
                     startActivityForResult(new Intent(getContext(), AlertDialog.class).putExtra("msg", getString(R.string.register_success)), REQUEST_CODE_REG_CONFIRM);

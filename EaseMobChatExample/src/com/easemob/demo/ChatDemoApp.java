@@ -10,14 +10,9 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-/**
- * Used to access global data like preference settings, permanent data and transient data  
- * It has a very short name 'Gl' abbreviated from Global.
- */
-public final class Gl extends Application {
+public final class ChatDemoApp extends Application {
 
 	private static final String VERSION = "20004";
-	//private static final String PREF_FILE_NAME = "EaseMob";
 	public static String chatdemo_cache = Environment.getExternalStorageDirectory() + "/Android/data/com.easemob.chatdemo/";
 	public static String image_cache = chatdemo_cache + "imageCache";
 	private Context appContext;
@@ -30,7 +25,7 @@ public final class Gl extends Application {
     private static final String PREF_PWD = "pwd";
     private String password = null;
 	
-    public static Gl instance = null;
+    public static ChatDemoApp instance = null;
     
     private static final String PREF_INITED = "easemob.contact.inited";
     private static Boolean inited = null;
@@ -42,9 +37,9 @@ public final class Gl extends Application {
 		appContext = this.getApplicationContext();
 		Log.d("app", "initialize EaseMob Chat Service");
         EaseMobChat.getInstance().setDebugMode(true);
-        //init chat sdk
+        //初始化  chat sdk
         EaseMobChat.getInstance().init(this.getApplicationContext());
-        //init user sdk
+        //初始化  user sdk
         EaseMobUser.getInstance().init(this.getApplicationContext());
 	}
 	
@@ -52,7 +47,7 @@ public final class Gl extends Application {
         super.onTerminate();
     }
 	
-	public static Gl getInstance() {
+	public static ChatDemoApp getInstance() {
         return instance;
     }
 	
