@@ -30,16 +30,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMSessionManager;
 import com.easemob.user.EMUser;
-import com.easemob.user.domain.Group;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.activity.ChatHistoryFragment;
 import com.easemob.ui.activity.ContactsListFragment;
 import com.easemob.ui.activity.ContactsListFragment.ContactsListFragmentListener;
-import com.easemob.ui.activity.GroupListFragment;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.callbacks.GetContactsCallback;
 import com.easemob.user.callbacks.LoginCallBack;
@@ -191,7 +188,7 @@ public class MainActivity extends FragmentActivity {
         if (wasPaused) {
             // 从后台返回后，检查网络状态。在错误信息提示栏显示“无法连接服务器信息”如果没有网络连接。
             wasPaused = false;
-            if (!EMSessionManager.getInstance(this.getApplicationContext()).isConnected()) {
+            if (!EMChatManager.getInstance().isConnected()) {
                 ChatHistoryFragment fragment1 = (ChatHistoryFragment) fragments[0];
                 fragment1.errorItem.setVisibility(View.VISIBLE);
             }
