@@ -104,7 +104,7 @@ public class AddContact extends Activity {
 		prompt = (TextView) findViewById(R.id.tv_prompt);
 		inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		
-        if(EaseMobChatConfig.getInstance().ACCEPT_INVITATION_ALWAYS){
+        if(EaseMobChatConfig.getInstance().getAcceptInvitation()){
             prompt.setText("当前为自动添加好友模式，如果对方在线，添加会自动成为好友并且添加到你的好友列表里");
         }
 //		inputMethodManager.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS );
