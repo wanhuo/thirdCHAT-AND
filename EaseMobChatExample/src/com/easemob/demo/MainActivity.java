@@ -416,6 +416,7 @@ public class MainActivity extends FragmentActivity {
             String msgBody = intent.getStringExtra("body");
             Log.d("main", "new message id:" + msgId + " from:" + msgFrom + " type:" + msgType + " body:" + msgBody);
             updateUnreadLabel();        }
+            }
     }
             
 }
