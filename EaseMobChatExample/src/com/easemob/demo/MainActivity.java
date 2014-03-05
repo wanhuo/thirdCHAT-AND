@@ -410,7 +410,11 @@ public class MainActivity extends FragmentActivity {
     private class NewMessageBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("main", "new message received");
+            String msgId = intent.getStringExtra("msgid");
+            String msgFrom = intent.getStringExtra("from");
+            int msgType = intent.getIntExtra("type", 0);
+            String msgBody = intent.getStringExtra("body");
+            Log.d("main", "new message id:" + msgId + " from:" + msgFrom + " type:" + msgType + " body:" + msgBody);
             updateUnreadLabel();        }
     }
             
