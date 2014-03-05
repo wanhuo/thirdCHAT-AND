@@ -415,7 +415,7 @@ public class MainActivity extends FragmentActivity {
             int msgType = intent.getIntExtra("type", 0);
             String msgBody = intent.getStringExtra("body");
             Log.d("main", "new message id:" + msgId + " from:" + msgFrom + " type:" + msgType + " body:" + msgBody);
-            updateUnreadLabel();        }
+            updateUnreadLabel();        
             }
     }
             
