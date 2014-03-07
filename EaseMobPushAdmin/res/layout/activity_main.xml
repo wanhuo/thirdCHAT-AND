@@ -9,18 +9,19 @@
     android:background="#FFFFFF"
     tools:context=".MainActivity">
     
+    
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical">
     
 
-    <ImageView
+    <!-- ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:scaleType="centerInside"
-                android:src="@drawable/easemob" />
+                android:src="@drawable/easemob" / -->
     
     <EditText
         android:id="@+id/et_appkey"
@@ -65,6 +66,40 @@
          android:text="List Node" />
     </LinearLayout>
     
+    
+    <EditText
+        android:id="@+id/et_jid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_margin="10dp"
+        android:hint="input jid"
+        android:singleLine="true"
+        android:ems="10" >
+    </EditText>
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <Button
+         android:id="@+id/btn_subscribe"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginLeft="10dp"
+         android:layout_weight="1"
+         android:onClick="onSubscribe"
+         android:text="Subscribe JID" />
+
+    <Button
+        android:id="@+id/btn_unsubscribe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:onClick="onUnsubscribe"
+        android:text="Unsubscribe JID" />
+    </LinearLayout>
     
     <EditText
         android:id="@+id/et_msg"

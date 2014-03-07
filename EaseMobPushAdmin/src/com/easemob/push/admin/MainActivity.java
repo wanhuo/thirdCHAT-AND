@@ -14,6 +14,7 @@ public class MainActivity extends Activity{
     private static MainActivity instance = null;
     private EditText tvAppKey;
     private EditText tvMsg;
+    private EditText tvJid;
     
     private PubSubPubClient client;
     
@@ -23,9 +24,11 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
         
         tvAppKey = (EditText)findViewById(R.id.et_appkey);
-        tvAppKey.setText("pushtest1");
+        tvAppKey.setText("pushtest");
         tvMsg = (EditText)findViewById(R.id.et_msg);
         tvMsg.setText("push test");
+        tvJid = (EditText)findViewById(R.id.et_jid);
+        tvJid.setText("pushtest_test1");
         instance = this;
         
         client = new PubSubPubClient();
@@ -52,11 +55,20 @@ public class MainActivity extends Activity{
         new SendTask().execute("notification");
     }
     
+    public void onSubscribe(View v) {
+        new SendTask().execute("subscribe");
+    }
+    
+    public void onUnsubscribe(View v) {
+        new SendTask().execute("unsubscribe");
+    }
+    
     private class SendTask extends AsyncTask<String, Void, Boolean> {
         
         protected Boolean doInBackground(String... args) {
             String appKey = tvAppKey.getText().toString();
             String message = tvMsg.getText().toString();
+            String jid = tvJid.getText().toString();
             String type = args[0];
             boolean result = false;
             if (type.equals("notification")) {
@@ -69,7 +81,11 @@ public class MainActivity extends Activity{
                 result = client.deletePubSubNode(appKey);
             } else if (type.equals("list")) {
                 result = client.listPubSubNode(appKey);
-            } 
+            } else if (type.equals("subscribe")) {
+                result = client.subscribeToNode(jid, appKey);
+            } else if (type.equals("unsubscribe")) {
+                result = client.unsubscribeToNode(jid, appKey);
+            }
             return new Boolean(result);
         }
 

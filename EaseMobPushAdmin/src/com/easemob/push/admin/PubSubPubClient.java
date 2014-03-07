@@ -49,15 +49,14 @@ import org.jivesoftware.smackx.pubsub.provider.SubscriptionProvider;
 import org.jivesoftware.smackx.pubsub.provider.SubscriptionsProvider;
 import org.jivesoftware.smackx.search.UserSearch;
 
-
 import android.os.Build;
 import android.util.Log;
 
 public class PubSubPubClient {
 
     //private static final String userName = "pushadmin";
-    private static final String userName = "admin"; 
-    private static final String password = "thepushbox";
+    private static String userName = "admin"; 
+    private static String password = "thepushbox";
     
     
     private ConnectionConfiguration connectionConfig = null;
@@ -181,7 +180,10 @@ public class PubSubPubClient {
             
             //connectionConfig = new ConnectionConfiguration("push.easemob.com", 5222, "ac2");
             //connectionConfig = new ConnectionConfiguration("223.202.120.14", 5222, "ac2");
-            connectionConfig = new ConnectionConfiguration("223.202.120.59", 5222, "ac2");
+            //connectionConfig = new ConnectionConfiguration("223.202.120.59", 5222, "ac2");
+            
+            //to connect to server running on localhost
+            connectionConfig = new ConnectionConfiguration("10.0.2.2", 5222, "ac2");
             
             connectionConfig.setRosterLoadedAtLogin(false);
             //NOTE: Setting to true or false has no effect on whether or not we can receive presence events from roster friends.
@@ -259,10 +261,12 @@ public class PubSubPubClient {
             Node n = mgr.createNode(node, f);
             
             Log.d("pubsub", "pubsub node created:" + node);
-            /*
+            
             Node createdNode = mgr.getNode(node);
-            createdNode.subscribe("pushtest1_test1@ac2");
-            */
+            createdNode.subscribe("pushtest_test1@ac2.com");
+            createdNode.subscribe("pushtest_test2@ac2.com");
+
+            
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -306,6 +310,52 @@ public class PubSubPubClient {
             
             DiscoverItems items = mgr.discoverNodes(null);
             Log.d("pubsub", "pubsub list node:" + items.toXML());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+	
+	public boolean subscribeToNode(String jid, String channel) {
+	    String curUserName = userName;
+	    String curPassword = password;
+	    userName = jid;
+	    password = "123456";
+	    XMPPConnection conn = createXmppConnection();
+        if (conn == null) {
+            return false;
+        }
+	    try {
+	        PubSubManager mgr = new PubSubManager(conn, "pubsub.ac2");
+	        Node node = mgr.getNode(channel);
+	        node.subscribe(jid);
+	        return true;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+            userName = curUserName;
+            password = curPassword;
+        }
+	}
+	
+	public boolean unsubscribeToNode(String jid, String channel) {
+        XMPPConnection conn = createXmppConnection();
+        if (conn == null) {
+            return false;
+        }
+        try {
+            PubSubManager mgr = new PubSubManager(conn, "pubsub.ac2");
+            Node node = mgr.getNode(channel);
+            node.unsubscribe(jid);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
