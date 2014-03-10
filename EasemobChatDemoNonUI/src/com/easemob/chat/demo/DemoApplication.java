@@ -17,7 +17,6 @@ public class DemoApplication extends Application {
          appContext = this;
          //初始化EaseMob Chat SDK
          Log.d("app", "initialize EaseMob Chat Service");
-         EaseMobChat.getInstance().setDebugMode(true);
          EaseMobChat.getInstance().init(appContext);
     }
 }
