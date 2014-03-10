@@ -106,7 +106,6 @@ public class MainActivity extends FragmentActivity {
         intentFilter.setPriority(3);
         registerReceiver(msgReceiver, intentFilter);
         // if already login from LoginActivity, skip the login call below
-        //sdk会自动判断是否登陆
         if (!loggedin) {
             EMUserManager.getInstance().login(userName, password, 
                     new MainLoginCallback());
