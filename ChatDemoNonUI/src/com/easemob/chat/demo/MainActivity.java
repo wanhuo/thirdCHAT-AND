@@ -1,29 +1,31 @@
 package com.easemob.chat.demo;
 
-import com.easemob.EMCallBack;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.TextMessageBody;
-
-import android.os.Bundle;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.easemob.EMCallBack;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.TextMessageBody;
+import com.easemob.exceptions.EaseMobException;
 
 public class MainActivity extends Activity {
 
     private EditText tvMsg;
     private TextView tvReceivedMsg;
     
-    private NewMessageBroadcastReceiver msgReceiver; 
+    private NewMessageBroadcastReceiver msgReceiver;
+	private ProgressDialog progressDialog; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,16 +40,11 @@ public class MainActivity extends Activity {
         registerReceiver(msgReceiver, intentFilter);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
     
     @Override
     protected void onResume() {
         super.onResume();
+        showLoginProgressDialog();
         //登录到聊天服务器
         EMChatManager.getInstance().login("test1", "123456", new EMCallBack() {
 
@@ -55,6 +52,7 @@ public class MainActivity extends Activity {
             public void onError(int arg0, final String errorMsg) {
                 runOnUiThread(new Runnable() {
                     public void run() {
+                    	closeLoginProgressDialog();
                         Toast.makeText(MainActivity.this, "登录聊天服务器失败：" + errorMsg, Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -68,6 +66,7 @@ public class MainActivity extends Activity {
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
                     public void run() {
+                    	closeLoginProgressDialog();
                         Toast.makeText(MainActivity.this, "登录聊天服务器成功", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -75,6 +74,27 @@ public class MainActivity extends Activity {
             }
         });
     }
+
+    /**
+     * 显示提示dialog
+     */
+	private void showLoginProgressDialog() {
+		if(progressDialog == null){
+        	progressDialog = new ProgressDialog(this); 
+        	progressDialog.setMessage("正在登陆...");
+        	progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
+	}
+	
+	/**
+	 * 关闭提示dialog
+	 */
+	private void closeLoginProgressDialog(){
+		if(progressDialog != null && progressDialog.isShowing()){
+			progressDialog.dismiss();
+		}
+	}
     
     @Override
     protected void onPause() {
@@ -95,6 +115,10 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
     
+    /**
+     * 发送消息
+     * @param view
+     */
     public void onSendTxtMsg(View view) {
         try {
             EMMessage msg = EMMessage.createSendMessage(EMMessage.Type.TXT);
@@ -106,11 +130,16 @@ public class MainActivity extends Activity {
             //send out msg
             EMChatManager.getInstance().sendMessage(msg);
             Log.d("chatdemo", "消息发送成功:" + msg.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (EaseMobException e) {
+            Toast.makeText(MainActivity.this, "消息发送失败:" + e.getMessage(),1).show();
         }
     }
     
+    /**
+     * 接收消息的BroadcastReceiver
+     * @author admin_new
+     *
+     */
     private class NewMessageBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -119,7 +148,7 @@ public class MainActivity extends Activity {
             int msgType = intent.getIntExtra("type", 0);
             String msgBody = intent.getStringExtra("body");
             Log.d("main", "new message id:" + msgId + " from:" + msgFrom + " type:" + msgType + " body:" + msgBody);
-            tvReceivedMsg.append("from:" + msgFrom + " body:" + msgBody + " \r");
+            tvReceivedMsg.append("from:" + msgFrom + " body:" + msgBody + " \n");
             }
     }
 
