@@ -130,7 +130,7 @@ public class MainActivity extends Activity {
             //send out msg
             EMChatManager.getInstance().sendMessage(msg);
             Log.d("chatdemo", "消息发送成功:" + msg.toString());
-        } catch (EaseMobException e) {
+        } catch (Exception e) {
             Toast.makeText(MainActivity.this, "消息发送失败:" + e.getMessage(),1).show();
         }
     }
