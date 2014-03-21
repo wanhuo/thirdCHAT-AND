@@ -15,8 +15,9 @@ public class DemoApplication extends Application {
     public void onCreate() {             
          super.onCreate();
          appContext = this;
-         //初始化EaseMob Chat SDK
-         Log.d("app", "initialize EaseMob Chat Service");
+         
+         //初始化易聊SDK
+         Log.d("EMChat Demo", "initialize EMChat SDK");
          EaseMobChat.getInstance().init(appContext);
     }
 }

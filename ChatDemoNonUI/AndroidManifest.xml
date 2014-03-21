@@ -39,7 +39,7 @@
             </intent-filter>
         </activity>
         
-        <!--  设置应用的 appkey -->
+        <!--  设置易聊SDK的appkey -->
         <meta-data android:name="EASEMOB_APPKEY"  android:value="chatdemo" />
     </application>
 

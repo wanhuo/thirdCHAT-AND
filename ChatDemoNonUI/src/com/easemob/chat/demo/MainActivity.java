@@ -17,7 +17,6 @@ import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
-import com.easemob.exceptions.EaseMobException;
 
 public class MainActivity extends Activity {
 
@@ -34,7 +33,7 @@ public class MainActivity extends Activity {
         tvMsg = (EditText)findViewById(R.id.et_msg);
         tvReceivedMsg = (TextView)findViewById(R.id.tv_receive_msg);
         
-        //注册messge receiver 接收消息
+        //注册message receiver， 接收聊天消息
         msgReceiver = new NewMessageBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter(EMChatManager.getInstance().getNewMessageBroadcastAction());
         registerReceiver(msgReceiver, intentFilter);
@@ -45,7 +44,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         showLoginProgressDialog();
-        //登录到聊天服务器
+        //登录到聊天服务器。此处使用了一个测试账号，用户名是test1，密码是123456。
         EMChatManager.getInstance().login("test1", "123456", new EMCallBack() {
 
             @Override
@@ -69,8 +68,7 @@ public class MainActivity extends Activity {
                     	closeLoginProgressDialog();
                         Toast.makeText(MainActivity.this, "登录聊天服务器成功", Toast.LENGTH_SHORT).show();
                     }
-                });
-                
+                });                
             }
         });
     }
@@ -99,12 +97,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        //登出聊天服务
+        //登出聊天服务器
         EMChatManager.getInstance().logout();
     }
     
     @Override
     public void onDestroy() {
+        //反注册接收聊天消息的message receiver
         if (msgReceiver != null) {
             try {
                 unregisterReceiver(msgReceiver);
@@ -116,40 +115,46 @@ public class MainActivity extends Activity {
     }
     
     /**
-     * 发送消息
+     * 发送消息。本demo是发送消息给测试机器人（其账号为"bot"）。该测试机器人接收到消息后会把接收的消息原封不动的自动发送回来
      * @param view
      */
     public void onSendTxtMsg(View view) {
         try {
+            //创建一个消息
             EMMessage msg = EMMessage.createSendMessage(EMMessage.Type.TXT);
-            //消息发送给测试机器人，bot 会把消息自动发送回来
+            //设置消息的接收方
             msg.setReceipt("bot");
+            //设置消息内容。本消息类型为文本消息。
             TextMessageBody body = new TextMessageBody(tvMsg.getText().toString());
             msg.addBody(body);
         
-            //send out msg
+            //发送消息
             EMChatManager.getInstance().sendMessage(msg);
-            Log.d("chatdemo", "消息发送成功:" + msg.toString());
+            Log.d("EMChat Demo", "消息发送成功:" + msg.toString());
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "消息发送失败:" + e.getMessage(),1).show();
+            Toast.makeText(MainActivity.this, "消息发送失败:" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
     
     /**
      * 接收消息的BroadcastReceiver
-     * @author admin_new
      *
      */
     private class NewMessageBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            //消息id
             String msgId = intent.getStringExtra("msgid");
+            //消息发送方
             String msgFrom = intent.getStringExtra("from");
+            //消息类型
             int msgType = intent.getIntExtra("type", 0);
+            //消息内容
             String msgBody = intent.getStringExtra("body");
-            Log.d("main", "new message id:" + msgId + " from:" + msgFrom + " type:" + msgType + " body:" + msgBody);
+            
+            Log.d("EMChat Demo", "new message id:" + msgId + " from:" + msgFrom + " type:" + msgType + " body:" + msgBody);
             tvReceivedMsg.append("from:" + msgFrom + " body:" + msgBody + " \n");
-            }
+        }
     }
 
 }
