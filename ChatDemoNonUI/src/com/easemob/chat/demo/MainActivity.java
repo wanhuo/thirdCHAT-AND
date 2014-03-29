@@ -128,6 +128,12 @@ public class MainActivity extends Activity {
             TextMessageBody body = new TextMessageBody(tvMsg.getText().toString());
             msg.addBody(body);
         
+            //下面的code 展示了如果添加扩展属性 
+            msg.setAttribute("extStringAttr", "String Test Value");
+            msg.setAttribute("extBoolTrue", true);
+            msg.setAttribute("extBoolFalse", false);
+            msg.setAttribute("extIntAttr", 100);
+            
             //发送消息
             EMChatManager.getInstance().sendMessage(msg);
             Log.d("EMChat Demo", "消息发送成功:" + msg.toString());
@@ -154,6 +160,10 @@ public class MainActivity extends Activity {
             
             Log.d("EMChat Demo", "new message id:" + msgId + " from:" + msgFrom + " type:" + msgType + " body:" + msgBody);
             tvReceivedMsg.append("from:" + msgFrom + " body:" + msgBody + " \n");
+            
+            //从SDK 根据消息ID 可以获得消息对象
+            EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+            
         }
     }
 
