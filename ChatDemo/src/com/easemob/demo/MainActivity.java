@@ -32,6 +32,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMContact;
+import com.easemob.chat.EMGroup;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.user.EMUser;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
@@ -46,7 +49,6 @@ import com.easemob.ui.activity.GroupListFragment;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.callbacks.GetContactsCallback;
 import com.easemob.user.callbacks.LoginCallBack;
-import com.easemob.user.domain.Group;
 
 public class MainActivity extends FragmentActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -73,7 +75,7 @@ public class MainActivity extends FragmentActivity {
 
     public boolean wasPaused = false;
 
-	private List<EMUser> contactList;
+	private List<EMContact> contactList;
 
 	private MyContactsListFragment contactFragment;
 	
@@ -135,19 +137,20 @@ public class MainActivity extends FragmentActivity {
             }
         }
 
-        contactList = new ArrayList<EMUser>(EMUserManager.getInstance().getAllUsers().values());
+        contactList = new ArrayList<EMContact>(EMUserManager.getInstance().getAllUsers().values());
         //排序
-        Collections.sort(contactList, new Comparator<EMUser>() {
+        Collections.sort(contactList, new Comparator<EMContact>() {
             @Override
-            public int compare(EMUser lhs, EMUser rhs) {
-                return (lhs.getHeader().compareTo(rhs.getHeader()));
+            public int compare(EMContact lhs, EMContact rhs) {
+                return (lhs.compare(rhs));
             }
         });
         
         contactFragment = new MyContactsListFragment(contactList,
                 new MyContactListListener());
         chatHistoryFragment = new ChatHistoryFragment();
-        groupFragment = new MyGroupListFragment(Group.allGroups, new MyGroupListListener());
+        List<EMGroup> groupList = EMGroupManager.getInstance().getAllGroups();
+        groupFragment = new MyGroupListFragment(groupList, new MyGroupListListener());
         fragments = new Fragment[] {chatHistoryFragment, 
         		contactFragment,
         		groupFragment,
@@ -195,7 +198,7 @@ public class MainActivity extends FragmentActivity {
                //it is group chat
                intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
                intent.putExtra("position", position - 1);
-               intent.putExtra("groupId", groupFragment.groupAdapter.getItem(position-1).getGroupId());
+               intent.putExtra("groupId", groupFragment.groupAdapter.getItem(position-1).getUsername());
                startActivityForResult(intent, REQUEST_CODE_GROUP);
            }
             
@@ -205,7 +208,7 @@ public class MainActivity extends FragmentActivity {
         
     @SuppressLint("ValidFragment")
 	class MyContactsListFragment extends ContactsListFragment {
-		public MyContactsListFragment(List<EMUser> contactList, ContactsListFragmentListener listener) {
+		public MyContactsListFragment(List<EMContact> contactList, ContactsListFragmentListener listener) {
 			super(contactList, listener);
 		}
 		
@@ -233,7 +236,7 @@ public class MainActivity extends FragmentActivity {
     @SuppressLint("ValidFragment")
     class MyGroupListFragment extends GroupListFragment {
 
-        public MyGroupListFragment(List<Group> grouplist, GroupListFragmentListener listener) {
+        public MyGroupListFragment(List<EMGroup> grouplist, GroupListFragmentListener listener) {
             super(grouplist, listener);
         }
         
@@ -348,10 +351,10 @@ public class MainActivity extends FragmentActivity {
             	contactList.clear();
 				contactList.addAll(EMUserManager.getInstance().getAllUsers().values());
             	//排序
-                Collections.sort(contactList, new Comparator<EMUser>() {
+                Collections.sort(contactList, new Comparator<EMContact>() {
                     @Override
-                    public int compare(EMUser lhs, EMUser rhs) {
-                        return lhs.getHeader().compareTo(rhs.getHeader());
+                    public int compare(EMContact lhs, EMContact rhs) {
+                        return lhs.compare(rhs);
 
                     }
                 });
@@ -411,10 +414,10 @@ public class MainActivity extends FragmentActivity {
                     	contactList.clear();
                     	contactList.addAll(EMUserManager.getInstance().getAllUsers().values());
                     	//排序
-                        Collections.sort(contactList, new Comparator<EMUser>() {
+                        Collections.sort(contactList, new Comparator<EMContact>() {
                             @Override
-                            public int compare(EMUser lhs, EMUser rhs) {
-                                return lhs.getHeader().compareTo(rhs.getHeader());
+                            public int compare(EMContact lhs, EMContact rhs) {
+                                return lhs.compare(rhs);
 
                             }
                         });
