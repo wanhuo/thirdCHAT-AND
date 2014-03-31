@@ -25,6 +25,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
@@ -33,13 +35,18 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.user.EMUser;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
+import com.easemob.ui.activity.AddGroup;
+import com.easemob.ui.activity.AlertDialog;
 import com.easemob.ui.activity.ChatActivity;
 import com.easemob.ui.activity.ChatHistoryFragment;
 import com.easemob.ui.activity.ContactsListFragment;
 import com.easemob.ui.activity.ContactsListFragment.ContactsListFragmentListener;
+import com.easemob.ui.activity.GroupListFragment.GroupListFragmentListener;
+import com.easemob.ui.activity.GroupListFragment;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.callbacks.GetContactsCallback;
 import com.easemob.user.callbacks.LoginCallBack;
+import com.easemob.user.domain.Group;
 
 public class MainActivity extends FragmentActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -47,6 +54,8 @@ public class MainActivity extends FragmentActivity {
     private static final int REQUEST_CODE_LOGOUT = 1;
     private static final int REQUEST_CODE_EXIT = 2;
 	private static final int REQUEST_CODE_CONTACT = 3;
+	private static final int REQUEST_CODE_GROUP = 4;
+    private static final int REQUEST_CODE_GROUPDETAIL = 10;
 
     public static MainActivity instance = null;
 
@@ -67,6 +76,8 @@ public class MainActivity extends FragmentActivity {
 	private List<EMUser> contactList;
 
 	private MyContactsListFragment contactFragment;
+	
+	private MyGroupListFragment groupFragment;
 
 	private ChatHistoryFragment chatHistoryFragment;
 	
@@ -78,6 +89,9 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Window win = getWindow();
+        win.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        
         inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         unreadLabel = (TextView) findViewById(R.id.unread_msg_number);
 
@@ -133,8 +147,10 @@ public class MainActivity extends FragmentActivity {
         contactFragment = new MyContactsListFragment(contactList,
                 new MyContactListListener());
         chatHistoryFragment = new ChatHistoryFragment();
+        groupFragment = new MyGroupListFragment(Group.allGroups, new MyGroupListListener());
         fragments = new Fragment[] {chatHistoryFragment, 
         		contactFragment,
+        		groupFragment,
         		new SettingFragment()};
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragments[0]).commit();
         
@@ -154,6 +170,37 @@ public class MainActivity extends FragmentActivity {
                     putExtra("userId", contactFragment.contactAdapter.getItem(position).getUsername()));
 		}
     	
+    }
+    
+    /**
+     * grouplist监听事件
+     * @author Administrator
+     *
+     */
+    class MyGroupListListener implements GroupListFragmentListener{
+
+        @Override
+        public void onListItemClickListener(int position) {
+            //点击新建群组按钮item
+           if (position == groupFragment.groupAdapter.getCount() - 1) {
+               if (EMChatManager.getInstance().isConnected()) {
+                   startActivityForResult(new Intent(MainActivity.this, AddGroup.class),REQUEST_CODE_GROUP);
+               } else {
+                   startActivity(new Intent(MainActivity.this, AlertDialog.class).putExtra(
+                           "msg", MainActivity.this.getString(R.string.network_unavailable)));
+               }
+           } else {//点击普通item进入群组聊天页面
+               Intent intent = new Intent(MainActivity.this,ChatActivity.class);
+               intent.putExtra("isChat", false);
+               //it is group chat
+               intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
+               intent.putExtra("position", position - 1);
+               intent.putExtra("groupId", groupFragment.groupAdapter.getItem(position-1).getGroupId());
+               startActivityForResult(intent, REQUEST_CODE_GROUP);
+           }
+            
+        }
+        
     }
         
     @SuppressLint("ValidFragment")
@@ -178,6 +225,26 @@ public class MainActivity extends FragmentActivity {
 				}
 			});
 		}
+    }
+    
+    //MyGroupListFragment继承了SDK中的GroupListFragment（即群组页面），做了以下改动：
+    //1. ContactsListFragment缺省包含一个不可见的标题栏，标题栏右侧还有“添加群组（添加公开群组）”按钮。在MyContactsListFragment中我们将标题栏设为可见
+    //2. 重载“添加群组”按钮的处理。
+    @SuppressLint("ValidFragment")
+    class MyGroupListFragment extends GroupListFragment {
+
+        public MyGroupListFragment(List<Group> grouplist, GroupListFragmentListener listener) {
+            super(grouplist, listener);
+        }
+        
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            //显示标题栏
+            titleLayout.setVisibility(View.VISIBLE);
+            //设置标题
+            title.setText("群组");
+        }       
     }
     
     @Override
@@ -227,8 +294,11 @@ public class MainActivity extends FragmentActivity {
         case R.id.btn_contacts:
             index = 1;
             break;
-        case R.id.btn_settings:
+        case R.id.btn_groups:
             index = 2;
+            break;
+        case R.id.btn_settings:
+            index = 3;
             break;
         default:
             break;
@@ -237,6 +307,8 @@ public class MainActivity extends FragmentActivity {
 
             FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
             trx.hide(fragments[currentTabIndex]);
+            System.err.println("!!!! index is:" + index);
+            System.err.println(" !!!! fragments size:" + fragments.length);
             if (!fragments[index].isAdded()) {
                 trx.add(R.id.fragment_container, fragments[index]);
             }
@@ -326,7 +398,7 @@ public class MainActivity extends FragmentActivity {
                             itor.remove();
                         }
                     }
-                    EMUserManager.getInstance().updateUsers(contacts);
+                    EMUserManager.getInstance().updateLocalUsers(contacts);
                     System.err.println("app get contacts callback. users:" + EMUserManager.getInstance().getAllUsers().size());
 
                     // Refresh UI`
