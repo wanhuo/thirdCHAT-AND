@@ -13,6 +13,7 @@ import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EMResourceNotExistException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
+import com.easemob.user.EMUser;
 import com.easemob.user.EMUserManager;
 import com.easemob.user.callbacks.LoginCallBack;
 
@@ -28,8 +29,8 @@ public class Login extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		if (ChatDemoApp.getInstance().getUserName() != null && ChatDemoApp.getInstance().getPassword() != null) {
-			finish();
 			startActivity(new Intent(this, MainActivity.class));
+			finish();
 		} else {
 			usernameEditText = (EditText) findViewById(R.id.username);
 			passwordEditText = (EditText) findViewById(R.id.password);
@@ -65,6 +66,17 @@ public class Login extends Activity {
 
 					closeLogingDialog();
 					startActivity(new Intent(Login.this, MainActivity.class).putExtra("loggedin", true));
+					//show how to update attributes
+					/*
+					try {
+					    EMUser currentUser = EMUserManager.getInstance().getUser(userName);
+					    currentUser.setProperty("ext_attr_string", "this is string value");
+					    currentUser.setProperty("ext_attr_int", 108);
+					} catch (Exception eee) {
+					    eee.printStackTrace();
+					}
+					*/
+					
 					finish();
 				}
 
