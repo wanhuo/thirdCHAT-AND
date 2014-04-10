@@ -99,10 +99,11 @@ public class MainActivity extends FragmentActivity {
 
         instance = this;
 
-        mTabs = new Button[3];
+        mTabs = new Button[4];
         mTabs[0] = (Button) findViewById(R.id.btn_conversations);
         mTabs[1] = (Button) findViewById(R.id.btn_contacts);
-        mTabs[2] = (Button) findViewById(R.id.btn_settings);
+        mTabs[2] = (Button) findViewById(R.id.btn_groups);
+        mTabs[3] = (Button) findViewById(R.id.btn_settings);
         selectedTabs = new Drawable[] { getResources().getDrawable(R.drawable.tab_weixin_pressed),
                 getResources().getDrawable(R.drawable.tab_find_frd_pressed),
                 getResources().getDrawable(R.drawable.tab_address_pressed),
@@ -210,6 +211,9 @@ public class MainActivity extends FragmentActivity {
 	class MyContactsListFragment extends ContactsListFragment {
 		public MyContactsListFragment(List<EMContact> contactList, ContactsListFragmentListener listener) {
 			super(contactList, listener);
+		}
+		
+		public MyContactsListFragment() {    
 		}
 		
 		@Override
