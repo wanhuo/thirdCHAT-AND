@@ -65,36 +65,37 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/btn_login"
+                android:id="@+id/btn_register"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:background="@color/btn_green_bg"
-                android:text="@string/btn_login"
+                android:text="@string/btn_register"
                 android:textColor="@color/text_white_bg"
                 android:textSize="16sp" />
 
             <Button
-                android:id="@+id/btn_register"
+                android:id="@+id/btn_login"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dip"
                 android:layout_weight="1"
                 android:background="@color/btn_green_bg"
-                android:text="@string/btn_register"
+                android:text="@string/btn_login"
                 android:textColor="@color/text_white_bg"
                 android:textSize="16sp" />
         </LinearLayout>
-        
-        <TextView 
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="bottom|center_horizontal"
             android:layout_marginBottom="@dimen/layout_height"
-            android:textColor="#ff0000"
-            android:text="点击注册，只需三秒钟即可为您自动生成一个账号！"/>
+            android:layout_marginTop="30dip"
+            android:gravity="center_horizontal"
+            android:text="点击生成测试账号按钮，自动生成登陆账号！"
+            android:textColor="#ff0000" />
     </LinearLayout>
 
 </LinearLayout>
