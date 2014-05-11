@@ -2,7 +2,7 @@ package com.easemob.chat.demo;
 
 
 
-import com.easemob.chat.EaseMobChat;
+import com.easemob.chat.EMChat;
 
 import android.app.Application;
 import android.content.Context;
@@ -18,6 +18,7 @@ public class DemoApplication extends Application {
          
          //初始化易聊SDK
          Log.d("EMChat Demo", "initialize EMChat SDK");
-         EaseMobChat.getInstance().init(appContext);
+         EMChat.getInstance().setDebugMode(true);
+         EMChat.getInstance().init(appContext);
     }
 }

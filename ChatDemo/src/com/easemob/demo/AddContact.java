@@ -19,7 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.easemob.user.EMUser;
-import com.easemob.chat.EaseMobChatConfig;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMChatOptions;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.ui.activity.AlertDialog;
@@ -104,7 +105,8 @@ public class AddContact extends Activity {
 		prompt = (TextView) findViewById(R.id.tv_prompt);
 		inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		
-        if(EaseMobChatConfig.getInstance().getAcceptInvitation()){
+		EMChatOptions chatOptions = EMChatManager.getInstance().getChatOptions();
+        if(chatOptions.getAcceptInvitationAlways()){
             prompt.setText("当前为自动添加好友模式，如果对方在线，添加会自动成为好友并且添加到你的好友列表里");
         }
 //		inputMethodManager.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS );

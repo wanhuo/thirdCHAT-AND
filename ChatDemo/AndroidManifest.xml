@@ -149,7 +149,7 @@
             android:value="chatdemo" />
         <meta-data
             android:name="EASEMOB_CHAT_ADDRESS"
-            android:value="push.easemob.com" />
+            android:value="chat.easemob.com" />
         <meta-data
             android:name="EASEMOB_CHAT_DOMAIN"
             android:value="ac2" />
@@ -166,9 +166,6 @@
         <meta-data
             android:name="EASEMOB_SERVER_DOMAIN"
             android:value="ac2" />
-        <meta-data
-            android:name="EASEMOB_ACCEPT_INVITATION_ALWAYS"
-            android:value="true" />
     </application>
 
 </manifest>

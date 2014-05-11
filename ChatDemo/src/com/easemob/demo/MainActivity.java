@@ -401,6 +401,9 @@ public class MainActivity extends FragmentActivity {
                     Iterator<EMUser> itor = contacts.iterator();
                     while (itor.hasNext()) {
                         EMUser user = itor.next();
+                        if (user == null) {
+                            continue;
+                        }
                         if (user.getUsername().equals(EMUserManager.getInstance().getCurrentUserName())) {
                             itor.remove();
                         }

@@ -1,6 +1,8 @@
 package com.easemob.demo;
 
-import com.easemob.chat.EaseMobChat;
+import com.easemob.chat.EMChat;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMChatOptions;
 import com.easemob.user.EaseMobUser;
 
 import android.app.Application;
@@ -36,11 +38,17 @@ public final class ChatDemoApp extends Application {
 		instance = this;
 		appContext = this.getApplicationContext();
 		Log.d("app", "initialize EaseMob Chat Service");
-        EaseMobChat.getInstance().setDebugMode(true);
+        EMChat.getInstance().setDebugMode(true);
+        
         //初始化  chat sdk
-        EaseMobChat.getInstance().init(this.getApplicationContext());
+        EMChat.getInstance().init(this.getApplicationContext());
         //初始化  user sdk
         EaseMobUser.getInstance().init(this.getApplicationContext());
+        
+        //根据营业需要，设置chat 相关配置
+        EMChatOptions chatOptions = new EMChatOptions();
+        chatOptions.setUseEncryption(true);
+        EMChatManager.getInstance().setChatOptions(chatOptions);
 	}
 	
 	public void onTerminate() {
