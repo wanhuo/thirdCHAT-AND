@@ -94,7 +94,7 @@ public class AddContactActivity extends Activity{
 							Toast.makeText(getApplicationContext(), "发送请求成功,等待对方验证", 1).show();
 						}
 					});
-				} catch (final EaseMobException e) {
+				} catch (final Exception e) {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();

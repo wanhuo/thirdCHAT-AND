@@ -70,7 +70,7 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 							try {
 								//看了大图后发个已读回执给对方
 								EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-							} catch (EaseMobException e) {
+							} catch (Exception e) {
 								e.printStackTrace();
 							}
 						}

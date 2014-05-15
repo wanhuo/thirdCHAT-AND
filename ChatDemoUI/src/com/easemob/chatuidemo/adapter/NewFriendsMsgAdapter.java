@@ -127,7 +127,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage>{
 							
 						}
 					});
-				} catch (final EaseMobException e) {
+				} catch (final Exception e) {
 					((Activity)context).runOnUiThread(new Runnable() {
 						
 						@Override

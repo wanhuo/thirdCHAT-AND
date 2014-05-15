@@ -156,7 +156,7 @@ public class ContactlistFragment extends Fragment{
 								
 							}
 						});
-					} catch (final EaseMobException e) {
+					} catch (final Exception e) {
 						getActivity().runOnUiThread(new Runnable() {
 							public void run() {
 								pd.dismiss();

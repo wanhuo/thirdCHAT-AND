@@ -58,7 +58,7 @@ public class RegisterActivity extends Activity{
 								finish();
 							}
 						});
-					} catch (final EaseMobException e) {
+					} catch (final Exception e) {
 						runOnUiThread(new Runnable() {
 							public void run() {
 								pd.dismiss();

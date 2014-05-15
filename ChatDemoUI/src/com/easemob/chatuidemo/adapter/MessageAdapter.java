@@ -729,7 +729,7 @@ public class MessageAdapter extends BaseAdapter {
 						message.isAcked = true;
 						try {
 							EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-						} catch (EaseMobException e) {
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}

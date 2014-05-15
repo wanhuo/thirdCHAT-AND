@@ -39,7 +39,7 @@
         </activity>
         <activity android:name="com.easemob.chat.demo.MainActivity" >
         </activity>
-        <!-- 设置应用的 appkey -->
+        <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="chatdemo" />

@@ -94,7 +94,7 @@ public class LoginActivity extends Activity {
 						//存入db
 						List<User> users = new ArrayList<User>(userlist.values());
 						dao.saveContactList(users);
-					} catch (EaseMobException e) {
+					} catch (Exception e) {
 					}
 					pd.dismiss();
 					//进入主页面
