@@ -791,4 +791,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	/**
+	 * 返回
+	 * @param view
+	 */
+	public void back(View view){
+		finish();
+	}
 }
