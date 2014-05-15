@@ -84,7 +84,7 @@ public class LoginActivity extends Activity {
 				account.setText(getAccount());
 				pwd.setText("123456");
 				CreateAccountTask task = new CreateAccountTask();
-				task.execute("chatdemo_" + account.getText().toString(), "123456");
+				task.execute("easemob-demo#chatdemo_" + account.getText().toString(), "123456");
 
 			}
 		});
