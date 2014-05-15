@@ -50,19 +50,17 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-
+		
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		// 登出聊天服务
-		EMChatManager.getInstance().logout();
 	}
 
 	@Override
 	public void onDestroy() {
-		// 反注册接收聊天消息的message receiver
+		// 注销接收聊天消息的message receiver
 		if (msgReceiver != null) {
 			try {
 				unregisterReceiver(msgReceiver);
