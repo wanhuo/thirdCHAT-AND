@@ -134,17 +134,6 @@ public class MainActivity extends Activity {
 				tvReceivedMsg.append("location message from:" + message.getFrom() + " address:" + locationBody.getAddress() + " \n\r");
 				break;
 			}
-			// String msgFrom = intent.getStringExtra("from"); // 消息发送方
-			// int msgType = intent.getIntExtra("type", 0);// 消息类型
-			// String msgBody = intent.getStringExtra("body");// 消息内容
-			// Log.d("main", "new message id:" + msgId + " from:" + msgFrom +
-			// " type:" + msgType + " body:" + msgBody);
-			// tvReceivedMsg.append("from:" + msgFrom + " body:" + msgBody +
-			// " \r\n\r");
-			//
-			// // 从SDK 根据消息ID 可以获得消息对象
-			// EMMessage message =
-			// EMChatManager.getInstance().getMessage(msgId);
 		}
 	}
 
