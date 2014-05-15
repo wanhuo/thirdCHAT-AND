@@ -44,6 +44,8 @@ public class LoginActivity extends Activity {
 				// TODO Auto-generated method stub
 				showLoginProgressDialog();
 				// 登录到聊天服务器
+				//5Iy82j671n
+
 				EMChatManager.getInstance().login(account.getText().toString(), pwd.getText().toString(), new EMCallBack() {
 
 					@Override
@@ -82,7 +84,7 @@ public class LoginActivity extends Activity {
 				account.setText(getAccount());
 				pwd.setText("123456");
 				CreateAccountTask task = new CreateAccountTask();
-				task.execute("chatdemo_" + account.getText().toString(), "123456", "chatdemo");
+				task.execute("chatdemo_" + account.getText().toString(), "123456");
 
 			}
 		});
@@ -92,7 +94,6 @@ public class LoginActivity extends Activity {
 		protected String doInBackground(String... args) {
 			String userid = args[0];
 			String pwd = args[1];
-			String channel = args[2];
 			try {
 				EMChatManager.getInstance().createAccountOnServer(userid, pwd);
 			} catch (Exception e) {

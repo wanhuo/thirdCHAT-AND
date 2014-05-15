@@ -79,22 +79,22 @@ public class MainActivity extends Activity {
 	 * @param view
 	 */
 	public void onSendTxtMsg(View view) {
+		EMMessage msg = EMMessage.createSendMessage(EMMessage.Type.TXT);
+		// 消息发送给测试机器人，bot 会把消息自动发送回来
+		msg.setReceipt("bot");
+		TextMessageBody body = new TextMessageBody(tvMsg.getText().toString());
+		msg.addBody(body);
+
+		// 下面的code 展示了如何添加扩展属性
+		msg.setAttribute("extStringAttr", "String Test Value");
+		// msg.setAttribute("extBoolTrue", true);
+		// msg.setAttribute("extBoolFalse", false);
+		// msg.setAttribute("extIntAttr", 100);
+
+		// send out msg
 		try {
-			EMMessage msg = EMMessage.createSendMessage(EMMessage.Type.TXT);
-			// 消息发送给测试机器人，bot 会把消息自动发送回来
-			msg.setReceipt("bot");
-			TextMessageBody body = new TextMessageBody(tvMsg.getText().toString());
-			msg.addBody(body);
-
-			// 下面的code 展示了如果添加扩展属性
-			msg.setAttribute("extStringAttr", "String Test Value");
-			msg.setAttribute("extBoolTrue", true);
-			msg.setAttribute("extBoolFalse", false);
-			msg.setAttribute("extIntAttr", 100);
-
-			// send out msg
 			EMChatManager.getInstance().sendMessage(msg);
-			Log.d("chatdemo", "消息发送成功:" + msg.toString());
+			// Log.d("chatdemo", "消息发送成功:" + msg.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -109,32 +109,42 @@ public class MainActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String msgId = intent.getStringExtra("msgid"); // 消息id
-	         // 从SDK 根据消息ID 可以获得消息对象
-            EMMessage message = EMChatManager.getInstance().getMessage(msgId);
-            
+			// 从SDK 根据消息ID 可以获得消息对象
+			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
 
-			Log.d("main", "new message id:" + msgId + " from:" + message.getFrom()
-			        + " type:" + message.getType() + " body:" + message.getBody());
+			Log.d("main",
+					"new message id:" + msgId + " from:" + message.getFrom() + " type:" + message.getType() + " body:" + message.getBody());
 			switch (message.getType()) {
 			case TXT:
-			    TextMessageBody txtBody = (TextMessageBody)message.getBody();
-			    tvReceivedMsg.append("text message from:" + message.getFrom() + " text:" + txtBody.getMessage() + " \n\r");
-			    break;
+				TextMessageBody txtBody = (TextMessageBody) message.getBody();
+				tvReceivedMsg.append("text message from:" + message.getFrom() + " text:" + txtBody.getMessage() + " \n\r");
+				break;
 			case IMAGE:
-			    ImageMessageBody imgBody = (ImageMessageBody)message.getBody();
-                tvReceivedMsg.append("img message from:" + message.getFrom() + " thumbnail:" + imgBody.getThumbnailUrl()
-                        + " remoteurl:" + imgBody.getRemoteUrl()+ " \n\r");
-                break;
+				ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
+				tvReceivedMsg.append("img message from:" + message.getFrom() + " thumbnail:" + imgBody.getThumbnailUrl() + " remoteurl:"
+						+ imgBody.getRemoteUrl() + " \n\r");
+				break;
 			case VOICE:
-                VoiceMessageBody voiceBody = (VoiceMessageBody)message.getBody();
-                tvReceivedMsg.append("voice message from:" + message.getFrom() + " length:" + voiceBody.getLength()
-                        + " remoteurl:" + voiceBody.getRemoteUrl()+ " \n\r");
-                break;
+				VoiceMessageBody voiceBody = (VoiceMessageBody) message.getBody();
+				tvReceivedMsg.append("voice message from:" + message.getFrom() + " length:" + voiceBody.getLength() + " remoteurl:"
+						+ voiceBody.getRemoteUrl() + " \n\r");
+				break;
 			case LOCATION:
-                LocationMessageBody locationBody = (LocationMessageBody)message.getBody();
-                tvReceivedMsg.append("location message from:" + message.getFrom() + " address:" + locationBody.getAddress() +" \n\r");
-                break;
+				LocationMessageBody locationBody = (LocationMessageBody) message.getBody();
+				tvReceivedMsg.append("location message from:" + message.getFrom() + " address:" + locationBody.getAddress() + " \n\r");
+				break;
 			}
+			// String msgFrom = intent.getStringExtra("from"); // 消息发送方
+			// int msgType = intent.getIntExtra("type", 0);// 消息类型
+			// String msgBody = intent.getStringExtra("body");// 消息内容
+			// Log.d("main", "new message id:" + msgId + " from:" + msgFrom +
+			// " type:" + msgType + " body:" + msgBody);
+			// tvReceivedMsg.append("from:" + msgFrom + " body:" + msgBody +
+			// " \r\n\r");
+			//
+			// // 从SDK 根据消息ID 可以获得消息对象
+			// EMMessage message =
+			// EMChatManager.getInstance().getMessage(msgId);
 		}
 	}
 
