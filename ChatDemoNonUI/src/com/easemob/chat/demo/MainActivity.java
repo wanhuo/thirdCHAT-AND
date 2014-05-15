@@ -2,7 +2,10 @@ package com.easemob.chat.demo;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.ImageMessageBody;
+import com.easemob.chat.LocationMessageBody;
 import com.easemob.chat.TextMessageBody;
+import com.easemob.chat.VoiceMessageBody;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -106,14 +109,32 @@ public class MainActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String msgId = intent.getStringExtra("msgid"); // 消息id
-			String msgFrom = intent.getStringExtra("from"); // 消息发送方
-			int msgType = intent.getIntExtra("type", 0);// 消息类型
-			String msgBody = intent.getStringExtra("body");// 消息内容
-			Log.d("main", "new message id:" + msgId + " from:" + msgFrom + " type:" + msgType + " body:" + msgBody);
-			tvReceivedMsg.append("from:" + msgFrom + " body:" + msgBody + " \r");
+	         // 从SDK 根据消息ID 可以获得消息对象
+            EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+            
 
-			// 从SDK 根据消息ID 可以获得消息对象
-			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+			Log.d("main", "new message id:" + msgId + " from:" + message.getFrom()
+			        + " type:" + message.getType() + " body:" + message.getBody());
+			switch (message.getType()) {
+			case TXT:
+			    TextMessageBody txtBody = (TextMessageBody)message.getBody();
+			    tvReceivedMsg.append("text message from:" + message.getFrom() + " text:" + txtBody.getMessage() + " \n\r");
+			    break;
+			case IMAGE:
+			    ImageMessageBody imgBody = (ImageMessageBody)message.getBody();
+                tvReceivedMsg.append("img message from:" + message.getFrom() + " thumbnail:" + imgBody.getThumbnailUrl()
+                        + " remoteurl:" + imgBody.getRemoteUrl()+ " \n\r");
+                break;
+			case VOICE:
+                VoiceMessageBody voiceBody = (VoiceMessageBody)message.getBody();
+                tvReceivedMsg.append("voice message from:" + message.getFrom() + " length:" + voiceBody.getLength()
+                        + " remoteurl:" + voiceBody.getRemoteUrl()+ " \n\r");
+                break;
+			case LOCATION:
+                LocationMessageBody locationBody = (LocationMessageBody)message.getBody();
+                tvReceivedMsg.append("location message from:" + message.getFrom() + " address:" + locationBody.getAddress() +" \n\r");
+                break;
+			}
 		}
 	}
 

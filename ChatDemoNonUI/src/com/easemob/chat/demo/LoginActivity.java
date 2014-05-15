@@ -94,7 +94,7 @@ public class LoginActivity extends Activity {
 			String pwd = args[1];
 			String channel = args[2];
 			try {
-				EMChatManager.getInstance().createAccountOnServer(userid, pwd, channel);
+				EMChatManager.getInstance().createAccountOnServer(userid, pwd);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
