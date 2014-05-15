@@ -12,7 +12,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public final class ChatDemoApp extends Application {
+public final class ChatDemoApp extends Application{
 
 	private static final String VERSION = "20004";
 	public static String chatdemo_cache = Environment.getExternalStorageDirectory() + "/Android/data/com.easemob.chatdemo/";
