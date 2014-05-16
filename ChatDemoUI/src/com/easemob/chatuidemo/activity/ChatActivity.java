@@ -1,7 +1,6 @@
 package com.easemob.chatuidemo.activity;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,25 +118,19 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private NewMessageBroadcastReceiver receiver;
 	// 给谁发送消息
 	private String toChatUsername;
-	private MicImageHandler micImageHandler;
 	private VoiceRecorder voiceRecorder;
 	private MessageAdapter adapter;
 	private File cameraFile;
 	static int resendPos;
 
-	private static class MicImageHandler extends Handler {
-		private WeakReference<ChatActivity> mActivity;
-
-		private MicImageHandler(ChatActivity activity) {
-			mActivity = new WeakReference<ChatActivity>(activity);
-		}
-
+	private Handler micImageHandler = new Handler(){
 		@Override
 		public void handleMessage(android.os.Message msg) {
 			// 切换msg切换图片
-			mActivity.get().micImage.setImageDrawable(mActivity.get().micImages[msg.what]);
+			micImage.setImageDrawable(micImages[msg.what]);
 		}
-	}
+	};
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -185,7 +178,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		views.add(gv2);
 		expressionViewpager.setAdapter(new ExpressionPagerAdapter(views));
 
-		micImageHandler = new MicImageHandler(this);
+		
 		voiceRecorder = new VoiceRecorder(micImageHandler);
 		buttonPressToSpeak.setOnTouchListener(new PressToSpeakListen());
 
