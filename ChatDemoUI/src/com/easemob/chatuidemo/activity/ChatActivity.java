@@ -327,7 +327,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 				} else {
 					Toast.makeText(this, "无法获取到您的位置信息！", 0).show();
 				}
-				// 重发消息
+			// 重发消息
 			} else if (requestCode == REQUEST_CODE_TEXT) {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_VOICE) {
@@ -779,6 +779,17 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 		return reslist;
 
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		//注销广播
+		try {
+			unregisterReceiver(receiver);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

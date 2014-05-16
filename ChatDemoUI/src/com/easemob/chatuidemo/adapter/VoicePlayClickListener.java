@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
@@ -12,6 +13,7 @@ import android.media.MediaPlayer;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.easemob.chat.EMChatDB;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.VoiceMessageBody;
@@ -106,6 +108,11 @@ class VoicePlayClickListener implements View.OnClickListener {
 			try {
 				if (!message.isAcked) {
 					message.isAcked = true;
+					if (iv_read_status != null && iv_read_status.getVisibility() == View.VISIBLE) {
+						iv_read_status.setVisibility(View.INVISIBLE);
+						EMChatDB.getInstance().updateMessageAck(message.getMsgId(), true);
+					}
+					//告知对方已读这条消息
 					EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
 				}
 			} catch (Exception e) {
@@ -129,15 +136,6 @@ class VoicePlayClickListener implements View.OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		if (iv_read_status != null && iv_read_status.getVisibility() == View.VISIBLE) {
-			iv_read_status.setVisibility(View.INVISIBLE);
-			// ContentValues values = new ContentValues();
-			// values.put(MessageTable.COLUMN_NAME_IS_READED,1);
-			// EaseMobMsgDB.updateMessage(context, user instanceof Group?
-			// ((Group) user).getGroupId() : user.getUsername(),
-			// message.getRowId(), values);
-			message.setAttribute("played", true);
-		}
 
 		if (isPlaying) {
 			currentPlayListener.stopPlayVoice();

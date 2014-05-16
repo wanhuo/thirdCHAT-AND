@@ -34,6 +34,7 @@ import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.LocationMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VoiceMessageBody;
+import com.easemob.chat.EMMessage.Type;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.AlertDialog;
 import com.easemob.chatuidemo.activity.ChatActivity;
@@ -214,8 +215,8 @@ public class MessageAdapter extends BaseAdapter {
 				}
 			}
 		} else {
-			// for incoming msg. if not send out ack before, need to send
-			if (!message.isAcked) {
+			//如果是文本消息，显示的时候给对方发送已读回执
+			if (message.getType() == Type.TXT && !message.isAcked) {
 				try {
 					// 发送已读回执
 					message.isAcked = true;
@@ -421,7 +422,8 @@ public class MessageAdapter extends BaseAdapter {
 		});
 
 		if (message.direct == EMMessage.Direct.RECEIVE) {
-			if (message.getBooleanAttribute("played", false)) {
+			if (message.isAcked) {
+				//隐藏语音未读标志
 				holder.iv_read_status.setVisibility(View.INVISIBLE);
 			} else {
 				holder.iv_read_status.setVisibility(View.VISIBLE);

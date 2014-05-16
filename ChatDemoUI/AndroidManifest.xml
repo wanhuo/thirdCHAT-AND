@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>  
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
@@ -24,69 +25,67 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+
     <application
         android:name="DemoApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
-        <activity android:name=".activity.MainActivity" 
-            android:theme="@style/horizontal_slide" 
-               android:windowSoftInputMode="adjustPan"
-               android:screenOrientation="portrait"
-            >
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            android:windowSoftInputMode="adjustPan" >
         </activity>
         <!-- 登陆 -->
         <activity
             android:name=".activity.LoginActivity"
-            android:theme="@style/horizontal_slide" 
-             android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-		
+
         <!-- 注册 -->
-        <activity android:name=".activity.RegisterActivity"
-            android:theme="@style/horizontal_slide"
-            >
-            
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:theme="@style/horizontal_slide" >
         </activity>
         <!-- 聊天页面 -->
-        <activity android:name=".activity.ChatActivity"
-            android:theme="@style/horizontal_slide"
-            >
+        <activity
+            android:name=".activity.ChatActivity"
+            android:theme="@style/horizontal_slide" >
         </activity>
         <!-- 添加好友 -->
-        <activity android:name=".activity.AddContactActivity"
-            android:theme="@style/horizontal_slide"
-            >
+        <activity
+            android:name=".activity.AddContactActivity"
+            android:theme="@style/horizontal_slide" >
         </activity>
-        <activity android:name=".activity.NewFriendsMsgActivity"
-            android:theme="@style/horizontal_slide"
-            >
+        <activity
+            android:name=".activity.NewFriendsMsgActivity"
+            android:theme="@style/horizontal_slide" >
         </activity>
         <!-- 自定义的contextmenu -->
-        <activity android:name=".activity.ContextMenu"
-            android:theme="@style/MyDialogStyle"
-            >
+        <activity
+            android:name=".activity.ContextMenu"
+            android:theme="@style/MyDialogStyle" >
         </activity>
         <!-- 自定义的alertdialog -->
-        <activity android:name=".activity.AlertDialog"
-            android:theme="@style/MyDialogStyle"
-            >
+        <activity
+            android:name=".activity.AlertDialog"
+            android:theme="@style/MyDialogStyle" >
         </activity>
-        <activity android:name=".activity.ShowBigImage"
-            android:theme="@style/horizontal_slide"
-            >
+        <activity
+            android:name=".activity.ShowBigImage"
+            android:theme="@style/horizontal_slide" >
         </activity>
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="easemob-demo#chatdemoui" />
-        
     </application>
 
 </manifest>
