@@ -363,8 +363,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		} else if (id == R.id.btn_picture) {
 			selectPicFromLocal(); // 点击图片图标
 		} else if (id == R.id.btn_location) {
-			// startActivityForResult(new Intent(this, BaiduMapActivity.class),
-			// REQUEST_CODE_GOOGLEMAP);
+			 startActivityForResult(new Intent(this, BaiduMapActivity.class),REQUEST_CODE_MAP);
 		} else if (id == R.id.btn_smile) { // 点击表情图标
 			onSendSmile();
 		}

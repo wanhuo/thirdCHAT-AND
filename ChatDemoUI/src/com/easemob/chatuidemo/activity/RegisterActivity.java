@@ -73,4 +73,8 @@ public class RegisterActivity extends Activity{
 		}
 	}
 	
+	public void back(View view){
+		finish();
+	}
+	
 }
