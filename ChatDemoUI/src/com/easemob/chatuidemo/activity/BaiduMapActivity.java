@@ -296,9 +296,8 @@ public class BaiduMapActivity extends Activity {
 		}
 	}
 
-	public void btn_back(View v) {
+	public void back(View v) {
 		finish();
-		overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}
 
 	public void sendLocation(View view) {
