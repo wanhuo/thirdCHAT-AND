@@ -35,6 +35,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -123,6 +124,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private MessageAdapter adapter;
 	private File cameraFile;
 	static int resendPos;
+	
+	private ImageView iv_emoticons_normal;
+	private ImageView iv_emoticons_checked;
+	private RelativeLayout edittext_layout;
+	
 
 	private Handler micImageHandler = new Handler(){
 		@Override
@@ -151,6 +157,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		listView = (ListView) findViewById(R.id.list);
 		mEditTextContent = (PasteEditText) findViewById(R.id.et_sendmessage);
 		buttonSetModeKeyboard = findViewById(R.id.btn_set_mode_keyboard);
+		edittext_layout=(RelativeLayout) findViewById(R.id.edittext_layout);
 		buttonSetModeVoice = findViewById(R.id.btn_set_mode_voice);
 		buttonSend = findViewById(R.id.btn_send);
 		buttonPressToSpeak = findViewById(R.id.btn_press_to_speak);
@@ -158,6 +165,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 		expressionContainer = (LinearLayout) findViewById(R.id.ll_face_container);
 		btnContainer = (LinearLayout) findViewById(R.id.ll_btn_container);
 		locationImgview = (ImageView) findViewById(R.id.btn_location);
+		iv_emoticons_normal=(ImageView) findViewById(R.id.iv_emoticons_normal);
+		iv_emoticons_checked=(ImageView) findViewById(R.id.iv_emoticons_checked);
+		iv_emoticons_normal.setVisibility(View.VISIBLE);
+		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		more = findViewById(R.id.more);
 
 		// 动画资源文件,用于录制语音时
@@ -211,7 +222,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	private void setUpView() {
-
+		iv_emoticons_normal.setOnClickListener(this);
+		iv_emoticons_checked.setOnClickListener(this);
 		// position = getIntent().getIntExtra("position", -1);
 		clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 		manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -367,6 +379,23 @@ public class ChatActivity extends Activity implements OnClickListener {
 			 startActivityForResult(new Intent(this, BaiduMapActivity.class),REQUEST_CODE_MAP);
 		} else if (id == R.id.btn_smile) { // 点击表情图标
 			onSendSmile();
+		}else if(id==R.id.iv_emoticons_normal)
+		{
+			more.setVisibility(View.VISIBLE);	
+			iv_emoticons_normal.setVisibility(View.INVISIBLE);
+			iv_emoticons_checked.setVisibility(View.VISIBLE);
+			btnContainer.setVisibility(View.GONE);
+			expressionContainer.setVisibility(View.VISIBLE);
+			hideKeyboard();
+		}else if(id==R.id.iv_emoticons_checked)
+		{
+			
+			iv_emoticons_normal.setVisibility(View.VISIBLE);
+			iv_emoticons_checked.setVisibility(View.INVISIBLE);
+			btnContainer.setVisibility(View.VISIBLE);
+		expressionContainer.setVisibility(View.GONE);
+		more.setVisibility(View.GONE);
+			
 		}
 	}
 
@@ -565,11 +594,12 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeVoice(View view) {
+		edittext_layout.setVisibility(View.GONE);
 		hideKeyboard();
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
 		buttonSetModeKeyboard.setVisibility(View.VISIBLE);
-		mEditTextContent.setVisibility(View.GONE);
+//		mEditTextContent.setVisibility(View.GONE);
 		// buttonSend.setVisibility(View.GONE);
 		buttonPressToSpeak.setVisibility(View.VISIBLE);
 
@@ -581,10 +611,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeKeyboard(View view) {
+		edittext_layout.setVisibility(View.VISIBLE);
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
 		buttonSetModeVoice.setVisibility(View.VISIBLE);
-		mEditTextContent.setVisibility(View.VISIBLE);
+//		mEditTextContent.setVisibility(View.VISIBLE);
 		mEditTextContent.requestFocus();
 		// buttonSend.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.GONE);
