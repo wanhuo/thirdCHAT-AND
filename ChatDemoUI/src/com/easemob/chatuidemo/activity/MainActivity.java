@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactListener;
@@ -32,6 +33,7 @@ import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
+import com.easemob.chatuidemo.utils.CommonUtils;
 
 public class MainActivity extends FragmentActivity {
 
@@ -297,6 +299,11 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		if(!CommonUtils.isNetWorkConnected(this)){
+			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
+		}
+		
 		updateUnreadLabel();
 	}
 	

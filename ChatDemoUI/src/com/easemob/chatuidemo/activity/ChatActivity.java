@@ -50,6 +50,7 @@ import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ExpressionAdapter;
 import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
 import com.easemob.chatuidemo.adapter.MessageAdapter;
+import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.chatuidemo.widget.PasteEditText;
@@ -660,11 +661,19 @@ public class ChatActivity extends Activity implements OnClickListener {
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				v.setPressed(true);
-				recordingContainer.setVisibility(View.VISIBLE);
-				recordingHint.setText(getString(R.string.move_up_to_cancel));
-				recordingHint.setBackgroundColor(Color.TRANSPARENT);
-				voiceRecorder.startRecording(null, toChatUsername, getApplicationContext());
+				try {
+					v.setPressed(true);
+					recordingContainer.setVisibility(View.VISIBLE);
+					recordingHint.setText(getString(R.string.move_up_to_cancel));
+					recordingHint.setBackgroundColor(Color.TRANSPARENT);
+					voiceRecorder.startRecording(null, toChatUsername, getApplicationContext());
+				} catch (Exception e) {
+					v.setPressed(false);
+					recordingContainer.setVisibility(View.INVISIBLE);
+					Toast.makeText(ChatActivity.this, R.string.recoding_fail, Toast.LENGTH_SHORT).show();
+					return false;
+				}
+				
 				return true;
 			case MotionEvent.ACTION_MOVE: {
 				if (event.getY() < 0) {
@@ -687,8 +696,12 @@ public class ChatActivity extends Activity implements OnClickListener {
 					// stop recording and send voice file
 					int length = voiceRecorder.stopRecoding();
 					if (length > 0) {
-						sendVoice(voiceRecorder.getVoiceFilePath(), voiceRecorder.getVoiceFileName(toChatUsername),
-								Integer.toString(length), false);
+						try {
+							sendVoice(voiceRecorder.getVoiceFilePath(), voiceRecorder.getVoiceFileName(toChatUsername),
+									Integer.toString(length), false);
+						} catch (Exception e) {
+							Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接", Toast.LENGTH_SHORT).show();
+						}
 					}
 				}
 				return true;

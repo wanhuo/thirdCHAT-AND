@@ -3,6 +3,8 @@
      <color name="common_top_bar_blue">#4ebcd3</color>
       <color name="btn_login_normal">#007086</color>
     <color name="btn_login_pressed">#303744</color>
+    <color name="btn_logout_normal">#d33f3f</color>
+    <color name="btn_logout_pressed">#DA5A4D</color>
     <color name="btn_register_normal">#c9caca</color>
     <color name="btn_register_pressed">#4ebcd3</color>
     <color name="common_bottom_bar_normal_bg">#2d2f31</color>

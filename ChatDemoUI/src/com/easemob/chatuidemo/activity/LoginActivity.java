@@ -21,6 +21,7 @@ import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
+import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.exceptions.EaseMobException;
 
 /**
@@ -52,6 +53,11 @@ public class LoginActivity extends Activity {
 	 * @param view
 	 */
 	public void login(View view) {
+		if(!CommonUtils.isNetWorkConnected(this))
+		{
+			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
+			return;
+		}
 		final String username = usernameEditText.getText().toString();
 		final String password = passwordEditText.getText().toString();
 		
