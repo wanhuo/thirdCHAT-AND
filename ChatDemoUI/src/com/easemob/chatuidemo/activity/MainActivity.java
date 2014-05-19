@@ -76,12 +76,13 @@ public class MainActivity extends FragmentActivity {
 		intentFilter.setPriority(3);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 		
-		//注册一个好友请求拒绝等的BroadcastReceiver
+		//注册一个好友请求同意好友请求等的BroadcastReceiver
 		IntentFilter inviteIntentFilter = new IntentFilter(EMChatManager.getInstance().getContactInviteEventBroadcastAction());
 		registerReceiver(contactInviteReceiver, inviteIntentFilter);
 		
 		//setContactListener监听联系人的变化等
 		EMContactManager.getInstance().setContactListener(new RemoteContactListener());
+		
 	}
 
 	/**
@@ -221,8 +222,10 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			//请求理由
 			final String reason = intent.getStringExtra("reason");
 			final boolean isResponse = intent.getBooleanExtra("isResponse", false);
+			//消息发送方username
 			final String from = intent.getStringExtra("username");
 			
 			InviteMessage msg = new InviteMessage();
@@ -235,7 +238,7 @@ public class MainActivity extends FragmentActivity {
 				msg.setStatus(InviteMesageStatus.NO_VALIDATION);
 				msg.setInviteFromMe(false);
 			}else{
-				//已同意
+				//对方已同意你的请求
 				msg.setStatus(InviteMesageStatus.AGREED);
 				msg.setInviteFromMe(true);
 			}

@@ -37,6 +37,7 @@ import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chat.EMMessage.Type;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.AlertDialog;
+import com.easemob.chatuidemo.activity.BaiduMapActivity;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.ContextMenu;
 import com.easemob.chatuidemo.activity.ShowBigImage;
@@ -202,11 +203,9 @@ public class MessageAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		if (message.direct == EMMessage.Direct.SEND) {
-			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
-		}
 		// 如果是发送的消息，显示已读textview
 		if (message.direct == EMMessage.Direct.SEND) {
+			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
 			if (holder.tv_ack != null) {
 				if (message.isAcked) {
 					holder.tv_ack.setVisibility(View.VISIBLE);
@@ -214,7 +213,7 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv_ack.setVisibility(View.INVISIBLE);
 				}
 			}
-		} else {
+		}else {
 			//如果是文本消息，显示的时候给对方发送已读回执
 			if (message.getType() == Type.TXT && !message.isAcked) {
 				try {
@@ -767,6 +766,9 @@ public class MessageAdapter extends BaseAdapter {
 		TextView tv_ack;
 	}
 	
+	/*
+	 * 点击地图消息listener
+	 */
 	class MapClickListener implements View.OnClickListener {
 
 		LatLng location;
@@ -780,12 +782,12 @@ public class MessageAdapter extends BaseAdapter {
 
 		@Override
 		public void onClick(View v) {
-			// Intent intent;
-			// intent = new Intent(context, BaiduMapActivity.class);
-			// intent.putExtra("latitude", location.latitude);
-			// intent.putExtra("longitude", location.longitude);
-			// intent.putExtra("address", address);
-			// activity.startActivity(intent);
+			 Intent intent;
+			 intent = new Intent(context, BaiduMapActivity.class);
+			 intent.putExtra("latitude", location.latitude);
+			 intent.putExtra("longitude", location.longitude);
+			 intent.putExtra("address", address);
+			 activity.startActivity(intent);
 		}
 
 	}
