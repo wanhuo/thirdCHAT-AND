@@ -98,7 +98,7 @@ public class MessageAdapter extends BaseAdapter {
 		return conversation.getMsgCount();
 	}
 
-	public Object getItem(int position) {
+	public EMMessage getItem(int position) {
 		return conversation.getMessage(position);
 	}
 
@@ -153,7 +153,7 @@ public class MessageAdapter extends BaseAdapter {
 
 	@SuppressLint("NewApi")
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		final EMMessage message = (EMMessage) getItem(position);
+		final EMMessage message = getItem(position);
 		final ViewHolder holder;
 		if (convertView == null) {
 			holder = new ViewHolder();

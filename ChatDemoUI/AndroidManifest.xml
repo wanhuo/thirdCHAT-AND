@@ -35,7 +35,9 @@
             android:name=".activity.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan" 
+            android:launchMode="singleTask"
+            >
         </activity>
         <!-- 登陆 -->
         <activity

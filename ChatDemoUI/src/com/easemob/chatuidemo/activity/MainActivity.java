@@ -181,7 +181,7 @@ public class MainActivity extends FragmentActivity {
 		public void onReceive(Context context, Intent intent) {
 			//消息id
 			String msgId = intent.getStringExtra("msgid");
-			//获取mesage对象
+			//获取mesage对象，需要注意的一个地方是
 			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
 			
 			//刷新bottom bar消息未读数
@@ -253,6 +253,7 @@ public class MainActivity extends FragmentActivity {
 			//刷新好友页面ui
 			if(currentTabIndex == 1)
 				contactListFragment.refresh();
+			abortBroadcast();
 		}
 		
 	};

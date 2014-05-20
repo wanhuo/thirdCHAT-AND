@@ -823,6 +823,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		//注销广播
 		try {
 			unregisterReceiver(receiver);
+			receiver = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
