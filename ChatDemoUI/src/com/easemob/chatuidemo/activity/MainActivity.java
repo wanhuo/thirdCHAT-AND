@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactListener;
 import com.easemob.chat.EMContactManager;
@@ -81,8 +82,9 @@ public class MainActivity extends FragmentActivity {
 		registerReceiver(contactInviteReceiver, inviteIntentFilter);
 		
 		//setContactListener监听联系人的变化等
-		EMContactManager.getInstance().setContactListener(new RemoteContactListener());
-		
+		EMContactManager.getInstance().setContactListener(new MyContactListener());
+		//注册一个监听连接状态的listener
+		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 	}
 
 	/**
@@ -260,7 +262,11 @@ public class MainActivity extends FragmentActivity {
 	private InviteMessgeDao inviteMessgeDao;
 	private UserDao userDao;
 	
-	class RemoteContactListener implements EMContactListener{
+	/***
+	 * 联系人变化listener
+	 *
+	 */
+	private class MyContactListener implements EMContactListener{
 
 		@Override
 		public void onContactAdded(List<String> usernameList) {
@@ -297,6 +303,34 @@ public class MainActivity extends FragmentActivity {
 			updateUnreadLabel();
 		}
 
+		
+	}
+	
+	private class MyConnectionListener implements ConnectionListener{
+
+		@Override
+		public void onConnected() {
+			chatHistoryFragment.errorItem.setVisibility(View.GONE);
+		}
+
+		@Override
+		public void onDisConnected(String errorString) {
+			chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
+			chatHistoryFragment.errorText.setText("不能连接到聊天服务器");
+		}
+
+		@Override
+		public void onReConnected() {
+			chatHistoryFragment.errorItem.setVisibility(View.GONE);
+		}
+
+		@Override
+		public void onReConnecting() {
+		}
+
+		@Override
+		public void onConnecting(String progress) {
+		}
 		
 	}
 	

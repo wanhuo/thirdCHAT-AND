@@ -214,8 +214,8 @@ public class MessageAdapter extends BaseAdapter {
 				}
 			}
 		}else {
-			//如果是文本消息，显示的时候给对方发送已读回执
-			if (message.getType() == Type.TXT && !message.isAcked) {
+			//如果是文本或者地图消息，显示的时候给对方发送已读回执
+			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked) {
 				try {
 					// 发送已读回执
 					message.isAcked = true;

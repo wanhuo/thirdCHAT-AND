@@ -29,6 +29,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
@@ -51,6 +53,8 @@ public class ChatHistoryFragment extends Fragment {
 	private ChatHistoryAdapter adapter;
 	private EditText query;
 	private ImageButton clearSearch;
+	public RelativeLayout errorItem;
+	public TextView errorText;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,6 +65,8 @@ public class ChatHistoryFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		errorItem = (RelativeLayout) getView().findViewById(R.id.rl_error_item);
+		errorText = (TextView) errorItem.findViewById(R.id.tv_connect_errormsg);
 		// contact list
 		contactList = DemoApplication.getInstance().getContactList();
 		listView = (ListView) getView().findViewById(R.id.list);

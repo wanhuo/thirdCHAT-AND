@@ -375,7 +375,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			selectPicFromCamera();// 点击照相图标
 		} else if (id == R.id.btn_picture) {
 			selectPicFromLocal(); // 点击图片图标
-		} else if (id == R.id.btn_location) {
+		} else if (id == R.id.btn_location) { //位置
 			 startActivityForResult(new Intent(this, BaiduMapActivity.class),REQUEST_CODE_MAP);
 		} else if (id == R.id.btn_smile) { // 点击表情图标
 			onSendSmile();
