@@ -347,8 +347,16 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bar_bottom"
         android:layout_below="@id/top_bar" >
-
+		<ProgressBar 
+		    android:visibility="gone"
+		    android:layout_width="28dp"
+		    android:layout_height="28dp"
+		    android:id="@+id/pb_load_more"
+		    android:layout_centerHorizontal="true"
+		    />
+        
         <ListView
+            android:layout_below="@id/pb_load_more"
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

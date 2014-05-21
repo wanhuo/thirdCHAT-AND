@@ -13,6 +13,7 @@ import android.util.Log;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
+import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
 
@@ -35,7 +36,7 @@ public class DemoApplication extends Application {
          applicationContext = this;
          instance = this;
          
-         //初始化易聊SDK,一定要先调用init()
+         //初始化聊天SDK,一定要先调用init()
          Log.d("EMChat Demo", "initialize EMChat SDK");
          EMChat.getInstance().init(applicationContext);
          //debugmode设为true后，就能看到sdk打印的log了
@@ -139,11 +140,12 @@ public class DemoApplication extends Application {
 	 * 退出登录,清空数据
 	 */
 	public void logout() {
+		//先调用sdk logout，在清理app中自己的数据
+		EMChatManager.getInstance().logout();
+		DbOpenHelper.getInstance(applicationContext).closeDB();
 		// reset password to null
 		setPassword(null);
 		setContactList(null);
-		// 退出sdk
-		EMChatManager.getInstance().logout();
 		
 	}
 }

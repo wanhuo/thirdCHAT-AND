@@ -59,7 +59,9 @@
         <!-- 聊天页面 -->
         <activity
             android:name=".activity.ChatActivity"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide" 
+            android:windowSoftInputMode="adjustResize"
+            >
         </activity>
         <!-- 添加好友 -->
         <activity

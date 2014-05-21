@@ -109,7 +109,6 @@ public class MainActivity extends Activity {
 			String msgId = intent.getStringExtra("msgid"); // 消息id
 			// 从SDK 根据消息ID 可以获得消息对象
 			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
-
 			Log.d("main",
 					"new message id:" + msgId + " from:" + message.getFrom() + " type:" + message.getType() + " body:" + message.getBody());
 			switch (message.getType()) {
