@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
@@ -51,8 +52,8 @@ import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ExpressionAdapter;
 import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
 import com.easemob.chatuidemo.adapter.MessageAdapter;
-import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
+import com.easemob.chatuidemo.view.ResizeRelativeLayout;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.chatuidemo.widget.PasteEditText;
 import com.easemob.util.PathUtil;
@@ -129,6 +130,42 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private ImageView iv_emoticons_checked;
 	private RelativeLayout edittext_layout;
 	
+	private static final int BIGGER=1;
+	private static final int SMALLER=2;
+	private static final int MSG_RESIZE=1;
+	/**
+	 * 监听软键盘操作
+	 */
+	private InputHandler mHandler=new InputHandler();
+	
+	class InputHandler extends Handler{
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case MSG_RESIZE:
+				if(msg.arg1==BIGGER)
+				{
+					//在这里可以监听到软键盘正在隐藏
+					
+				}else{
+					//在这里可以监听到软键盘正在弹出
+					more.setVisibility(View.GONE);
+					iv_emoticons_normal.setVisibility(View.VISIBLE);
+					iv_emoticons_checked.setVisibility(View.INVISIBLE);
+					expressionContainer.setVisibility(View.GONE);
+					btnContainer.setVisibility(View.GONE);
+				}
+				break;
+
+			default:
+				break;
+			}
+			super.handleMessage(msg);
+		}
+		 
+	}
+	
 
 	private Handler micImageHandler = new Handler(){
 		@Override
@@ -137,13 +174,26 @@ public class ChatActivity extends Activity implements OnClickListener {
 			micImage.setImageDrawable(micImages[msg.what]);
 		}
 	};
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat);
 		initView();
+		ResizeRelativeLayout layout=(ResizeRelativeLayout) findViewById(R.id.root_layout);
+		layout.setOnResizeListener(new ResizeRelativeLayout.OnResizeListener() { 
+            
+            public void OnResize(int w, int h, int oldw, int oldh) { 
+                int change = BIGGER; 
+                if (h < oldh) { 
+                    change = SMALLER; 
+                } 
+                Message msg = new Message(); 
+                msg.what = 1; 
+                msg.arg1 = change; 
+                mHandler.sendMessage(msg); 
+            } 
+        }); 
 		setUpView();
 	}
 
@@ -255,6 +305,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 			public boolean onTouch(View v, MotionEvent event) {
 				hideKeyboard();
 				more.setVisibility(View.GONE);
+				iv_emoticons_normal.setVisibility(View.VISIBLE);
+				iv_emoticons_checked.setVisibility(View.INVISIBLE);
+				expressionContainer.setVisibility(View.GONE);
+				btnContainer.setVisibility(View.GONE);
 				return false;
 			}
 		});
@@ -602,6 +656,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 //		mEditTextContent.setVisibility(View.GONE);
 		// buttonSend.setVisibility(View.GONE);
 		buttonPressToSpeak.setVisibility(View.VISIBLE);
+		iv_emoticons_normal.setVisibility(View.VISIBLE);
+		iv_emoticons_checked.setVisibility(View.INVISIBLE);
+		btnContainer.setVisibility(View.VISIBLE);
+		expressionContainer.setVisibility(View.GONE);
+		
 
 	}
 
@@ -640,14 +699,23 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 */
 	public void more(View view) {
 		if (more.getVisibility() == View.GONE) {
+			System.out.println("more gone");
 			hideKeyboard();
 			more.setVisibility(View.VISIBLE);
+			btnContainer.setVisibility(View.VISIBLE);
 		} else {
+			System.out.println("more visible");
 			if (btnContainer.getVisibility() == View.VISIBLE)
+			{
+				System.out.println("btnContainer visible");
 				more.setVisibility(View.GONE);
+			}
 			else {
+				System.out.println("btnContainer gone");
 				btnContainer.setVisibility(View.VISIBLE);
 				expressionContainer.setVisibility(View.GONE);
+				iv_emoticons_normal.setVisibility(View.VISIBLE);
+				iv_emoticons_checked.setVisibility(View.INVISIBLE);
 			}
 		}
 
@@ -846,4 +914,24 @@ public class ChatActivity extends Activity implements OnClickListener {
 	public void back(View view){
 		finish();
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

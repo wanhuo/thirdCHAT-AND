@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.easemob.chatuidemo.view.ResizeRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EFEFF4" >
+    android:background="#f2f0eb" >
 
     <RelativeLayout
         android:id="@+id/top_bar"
@@ -47,6 +48,8 @@
         android:id="@+id/bar_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="2dip"
+        android:paddingBottom="2dip"
         android:layout_alignParentBottom="true"
         android:orientation="vertical" >
 
@@ -62,8 +65,8 @@
 
 
             <Button
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
                 android:layout_marginLeft="6dp"
                 android:background="@drawable/type_select_btn"
                 android:onClick="more" />
@@ -146,8 +149,8 @@
             
             <Button
                 android:id="@+id/btn_set_mode_voice"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginRight="6dp"
                 android:background="@drawable/chatting_setmode_voice_btn"
                 android:onClick="setModeVoice"
@@ -155,8 +158,8 @@
 
             <Button
                 android:id="@+id/btn_set_mode_keyboard"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginRight="6dp"
                 android:background="@drawable/chatting_setmode_keyboard_btn"
                 android:onClick="setModeKeyboard"
@@ -385,4 +388,4 @@
                 android:textSize="10sp" />
         </RelativeLayout>
     </RelativeLayout>
-</RelativeLayout>
+</com.easemob.chatuidemo.view.ResizeRelativeLayout>

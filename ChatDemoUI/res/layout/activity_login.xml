@@ -113,7 +113,7 @@
             android:paddingBottom="7dp"
             android:paddingTop="7dp"
             android:gravity="center"
-            android:text="登陆"
+            android:text="登录"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
     </LinearLayout>
