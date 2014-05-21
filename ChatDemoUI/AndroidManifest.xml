@@ -24,8 +24,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    
 	<permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
-
+    <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
+        
     <application
         android:name="DemoApplication"
         android:allowBackup="true"
@@ -70,7 +72,7 @@
         </activity>
         <!-- 地图 -->
         <activity
-            android:name=".activity.BaiduMapActivity"
+            android:name="com.easemob.chatuidemo.activity.BaiduMapActivity"
             android:theme="@style/horizontal_slide" >
         </activity>
         
@@ -97,11 +99,11 @@
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="easemob-demo#chatdemoui" />
-        
-          <service
+                
+        <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
     </application>
-
+    
 </manifest>
