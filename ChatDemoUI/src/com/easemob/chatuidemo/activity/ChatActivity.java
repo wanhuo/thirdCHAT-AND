@@ -52,6 +52,7 @@ import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ExpressionAdapter;
 import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
 import com.easemob.chatuidemo.adapter.MessageAdapter;
+import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.chatuidemo.view.ResizeRelativeLayout;
 import com.easemob.chatuidemo.widget.ExpandGridView;
@@ -760,6 +761,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
+				if(!CommonUtils.isExitsSdcard())
+				{
+					Toast.makeText(ChatActivity.this, "发送语音需要sdcard支持！", Toast.LENGTH_SHORT).show();
+					return false;
+				}
 				try {
 					v.setPressed(true);
 					recordingContainer.setVisibility(View.VISIBLE);

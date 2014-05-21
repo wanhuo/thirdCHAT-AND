@@ -12,6 +12,7 @@ import com.easemob.chat.EMChatConfig;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
+import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 
 /**
@@ -62,7 +63,23 @@ public class RegisterActivity extends Activity{
 						runOnUiThread(new Runnable() {
 							public void run() {
 								pd.dismiss();
-								Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), 1).show();
+								if(e!=null&&e.getMessage()!=null)
+								{
+									String errorMsg=e.getMessage();
+									if(errorMsg.indexOf("EMNetworkUnconnectedException")!=-1)
+									{
+										Toast.makeText(getApplicationContext(), "网络异常，请检查网络！", 0).show();
+									}else if(errorMsg.indexOf("conflict")!=-1)
+									{
+										Toast.makeText(getApplicationContext(), "用户已存在！", 0).show();
+									}else{
+										Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), 1).show();
+									}
+									
+								}else{
+									Toast.makeText(getApplicationContext(), "注册失败: 未知异常", 1).show();
+									
+								}
 							}
 						});
 					}
