@@ -45,7 +45,7 @@ public class AlertDialog extends Activity {
 		boolean isCanceShow = getIntent().getBooleanExtra("cancel", false);
 		//是否显示文本编辑框
 		isEditextShow = getIntent().getBooleanExtra("editTextShow",false);
-		//转发的图片的path
+		//转发复制的图片的path
 		String path = getIntent().getStringExtra("forwardImage");
 		if(msg != null)
 		    ((TextView)findViewById(R.id.alert_message)).setText(msg);

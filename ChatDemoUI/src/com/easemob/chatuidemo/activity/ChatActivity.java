@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
@@ -138,7 +139,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private final int pagesize = 20;
 	private boolean haveMoreData = true;
 	
-	
 
 	private Handler micImageHandler = new Handler(){
 		@Override
@@ -204,7 +204,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 		voiceRecorder = new VoiceRecorder(micImageHandler);
 		buttonPressToSpeak.setOnTouchListener(new PressToSpeakListen());
 		
-		listView.setOnScrollListener(new ListScrollListener());
 		// 监听文字框
 		mEditTextContent.addTextChangedListener(new TextWatcher() {
 
@@ -252,6 +251,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 		// 显示消息
 		listView.setAdapter(adapter);
+		listView.setOnScrollListener(new ListScrollListener());
 		int count = listView.getCount();
 		if (count > 0) {
 			listView.setSelection(count - 1);
@@ -536,7 +536,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		adapter.notifyDataSetChanged();
 		listView.setSelection(listView.getCount() - 1);
 		setResult(RESULT_OK);
-		more(more);
+//		more(more);
 	}
 
 	/**
@@ -881,7 +881,19 @@ public class ChatActivity extends Activity implements OnClickListener {
 		finish();
 	}
 	
-	
+	/**
+	 * 覆盖手机返回键
+	 */
+	@Override
+	public void onBackPressed() {
+		if (more.getVisibility() == View.VISIBLE) {
+			more.setVisibility(View.GONE);
+			iv_emoticons_normal.setVisibility(View.VISIBLE);
+			iv_emoticons_checked.setVisibility(View.INVISIBLE);
+		} else {
+			super.onBackPressed();
+		}
+	}
 	/**
 	 * listview滑动监听listener
 	 *
@@ -898,6 +910,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 					//调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
 					List<EMMessage> messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
 					if(messages.size() != 0){
+						listView.setStackFromBottom(true);
 						adapter.notifyDataSetChanged();
 						if(messages.size() != pagesize)
 							haveMoreData = false;
@@ -918,4 +931,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 		
 	}
+	
+	
 }
