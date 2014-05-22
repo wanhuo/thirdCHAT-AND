@@ -17,8 +17,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
@@ -58,7 +56,6 @@ import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
 import com.easemob.chatuidemo.adapter.MessageAdapter;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
-import com.easemob.chatuidemo.view.ResizeRelativeLayout;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.chatuidemo.widget.PasteEditText;
 import com.easemob.util.PathUtil;
@@ -597,7 +594,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 		msg.status = EMMessage.Status.CREATE;
 
 		adapter.notifyDataSetChanged();
-		listView.setSelection(resendPos);
 	}
 
 	/**
@@ -682,6 +678,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 * @param v
 	 */
 	public void editClick(View v) {
+		listView.setSelection(listView.getCount() -1);
 		if (more.getVisibility() == View.VISIBLE) {
 			more.setVisibility(View.GONE);
 			iv_emoticons_normal.setVisibility(View.VISIBLE);
@@ -909,9 +906,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 					loadmorePB.setVisibility(View.VISIBLE);
 					//调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
 					List<EMMessage> messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+					}
 					if(messages.size() != 0){
-						listView.setStackFromBottom(true);
 						adapter.notifyDataSetChanged();
+						listView.setSelection(messages.size() - 1);
 						if(messages.size() != pagesize)
 							haveMoreData = false;
 					}else{
