@@ -39,8 +39,6 @@ public class DbOpenHelper extends SQLiteOpenHelper{
 	}
 	
 	private static String getUserDatabaseName() {
-		String name = DemoApplication.getInstance().getUserName();
-		System.out.println(name);
         return  DemoApplication.getInstance().getUserName() + "_demo.db";
     }
 	
@@ -54,6 +52,18 @@ public class DbOpenHelper extends SQLiteOpenHelper{
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		
+	}
+	
+	public void closeDB() {
+	    if (instance != null) {
+	        try {
+	            SQLiteDatabase db = instance.getWritableDatabase();
+	            db.close();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        instance = null;
+	    }
 	}
 	
 }

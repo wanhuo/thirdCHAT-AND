@@ -1,6 +1,5 @@
 package com.easemob.chatuidemo.activity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChatManager;
@@ -34,7 +32,6 @@ import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
-import com.easemob.chatuidemo.utils.CommonUtils;
 
 public class MainActivity extends FragmentActivity {
 
@@ -183,8 +180,8 @@ public class MainActivity extends FragmentActivity {
 		public void onReceive(Context context, Intent intent) {
 			//消息id
 			String msgId = intent.getStringExtra("msgid");
-			//获取mesage对象，需要注意的一个地方是
-			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+			//收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
+//			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
 			
 			//刷新bottom bar消息未读数
 			updateUnreadLabel();
@@ -216,7 +213,6 @@ public class MainActivity extends FragmentActivity {
 					msg.isAcked = true;
 				}
 			}
-			abortBroadcast();
 		}
 	};
 	
@@ -316,7 +312,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onDisConnected(String errorString) {
 			chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
-			chatHistoryFragment.errorText.setText("不能连接到聊天服务器");
+			chatHistoryFragment.errorText.setText("连接不到聊天服务器");
 		}
 
 		@Override
@@ -337,11 +333,6 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		if(!CommonUtils.isNetWorkConnected(this)){
-			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
-		}
-		
 		updateUnreadLabel();
 	}
 	

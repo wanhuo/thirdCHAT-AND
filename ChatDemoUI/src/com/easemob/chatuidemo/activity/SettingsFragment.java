@@ -30,7 +30,6 @@ public class SettingsFragment extends Fragment{
 			public void onClick(View v) {
 				DemoApplication.getInstance().logout();
 				// 重新显示登陆页面
-//				MainActivity.instance.finish();
 				((MainActivity)getActivity()).finish();
 				startActivity(new Intent(getActivity(), LoginActivity.class));
 			}

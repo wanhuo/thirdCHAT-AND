@@ -31,11 +31,14 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -130,6 +133,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private ImageView iv_emoticons_normal;
 	private ImageView iv_emoticons_checked;
 	private RelativeLayout edittext_layout;
+	private ProgressBar loadmorePB;
+	private boolean isloading;
+	private final int pagesize = 20;
+	private boolean haveMoreData = true;
 	
 	private static final int BIGGER=1;
 	private static final int SMALLER=2;
@@ -218,6 +225,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		locationImgview = (ImageView) findViewById(R.id.btn_location);
 		iv_emoticons_normal=(ImageView) findViewById(R.id.iv_emoticons_normal);
 		iv_emoticons_checked=(ImageView) findViewById(R.id.iv_emoticons_checked);
+		loadmorePB = (ProgressBar) findViewById(R.id.pb_load_more); 
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		more = findViewById(R.id.more);
@@ -244,7 +252,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 		
 		voiceRecorder = new VoiceRecorder(micImageHandler);
 		buttonPressToSpeak.setOnTouchListener(new PressToSpeakListen());
-
+		
+		listView.setOnScrollListener(new ListScrollListener());
 		// 监听文字框
 		mEditTextContent.addTextChangedListener(new TextWatcher() {
 
@@ -261,12 +270,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
 			}
-
 			@Override
 			public void afterTextChanged(Editable s) {
-
 			}
 		});
 
@@ -504,7 +510,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			TextMessageBody txtBody = new TextMessageBody(content);
 			//设置消息body
 			message.addBody(txtBody);
-			// if (chatType == CHATTYPE_GROUP) {
+			// if (chatType == CHATTYPE_GROUP) { //如果是群聊(待实现)
 			// message.setReceipt(group.getGroupId());
 			// } else {
 			//设置要发给谁
@@ -513,7 +519,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			conversation.addMessage(message);
 			// }
 
-			// UI中真正发消息靠的是这行代码，adpater根据加入的这条消息会调用sdk中发送消息的方法
+			// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
 			adapter.notifyDataSetChanged();
 			mEditTextContent.setText("");
 			listView.setSelection(listView.getCount() - 1);
@@ -743,9 +749,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 		public void onReceive(Context context, Intent intent) {
 			System.err.println("!!chatactivity receive msg. todo, support group new msg!!!");
 			String username = intent.getStringExtra("from");
+			String msgid = intent.getStringExtra("msgid");
+			//收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
+//			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
 			if (!username.equals(toChatUsername)) {
 				return; // it is not for the current chat, ignore
 			}
+			//通知adapter有新消息，更新ui
 			adapter.notifyDataSetChanged();
 			// 记得把广播给终结掉
 			abortBroadcast();
@@ -922,22 +932,40 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * listview滑动监听listener
+	 *
+	 */
+	private class ListScrollListener implements OnScrollListener{
+
+		@Override
+		public void onScrollStateChanged(AbsListView view, int scrollState) {
+			switch (scrollState) {
+			case OnScrollListener.SCROLL_STATE_IDLE:
+				if(view.getFirstVisiblePosition() == 0 && !isloading && haveMoreData){
+					//sdk初始化加载的聊天记录为20条，到顶时去db里获取更多
+					loadmorePB.setVisibility(View.VISIBLE);
+					//调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
+					List<EMMessage> messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
+					if(messages.size() != 0){
+						adapter.notifyDataSetChanged();
+						if(messages.size() != pagesize)
+							haveMoreData = false;
+					}else{
+						haveMoreData = false;
+					}
+					loadmorePB.setVisibility(View.GONE);
+					isloading = false;
+					
+				}
+				break;
+			}
+		}
+
+		@Override
+		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+			
+		}
+		
+	}
 }

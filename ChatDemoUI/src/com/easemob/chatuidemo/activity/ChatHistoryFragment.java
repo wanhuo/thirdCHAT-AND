@@ -55,6 +55,7 @@ public class ChatHistoryFragment extends Fragment {
 	private ImageButton clearSearch;
 	public RelativeLayout errorItem;
 	public TextView errorText;
+	private boolean hidden;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -214,6 +215,7 @@ public class ChatHistoryFragment extends Fragment {
 	@Override
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
+		this.hidden = hidden;
 		if (!hidden) {
 			refresh();
 		}
@@ -222,7 +224,9 @@ public class ChatHistoryFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		EMChatManager.getInstance().activityResumed();
-		refresh();
+		if(!hidden){
+			EMChatManager.getInstance().activityResumed();
+			refresh();
+		}
 	}
 }
