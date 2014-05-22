@@ -138,41 +138,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private final int pagesize = 20;
 	private boolean haveMoreData = true;
 	
-	private static final int BIGGER=1;
-	private static final int SMALLER=2;
-	private static final int MSG_RESIZE=1;
-	/**
-	 * 监听软键盘操作
-	 */
-	private InputHandler mHandler=new InputHandler();
-	
-	class InputHandler extends Handler{
-
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case MSG_RESIZE:
-				if(msg.arg1==BIGGER)
-				{
-					//在这里可以监听到软键盘正在隐藏
-					
-				}else{
-					//在这里可以监听到软键盘正在弹出
-					more.setVisibility(View.GONE);
-					iv_emoticons_normal.setVisibility(View.VISIBLE);
-					iv_emoticons_checked.setVisibility(View.INVISIBLE);
-					expressionContainer.setVisibility(View.GONE);
-					btnContainer.setVisibility(View.GONE);
-				}
-				break;
-
-			default:
-				break;
-			}
-			super.handleMessage(msg);
-		}
-		 
-	}
 	
 
 	private Handler micImageHandler = new Handler(){
@@ -188,20 +153,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat);
 		initView();
-		ResizeRelativeLayout layout=(ResizeRelativeLayout) findViewById(R.id.root_layout);
-		layout.setOnResizeListener(new ResizeRelativeLayout.OnResizeListener() { 
-            
-            public void OnResize(int w, int h, int oldw, int oldh) { 
-                int change = BIGGER; 
-                if (h < oldh) { 
-                    change = SMALLER; 
-                } 
-                Message msg = new Message(); 
-                msg.what = 1; 
-                msg.arg1 = change; 
-                mHandler.sendMessage(msg); 
-            } 
-        }); 
 		setUpView();
 	}
 
@@ -440,7 +391,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			 startActivityForResult(new Intent(this, BaiduMapActivity.class),REQUEST_CODE_MAP);
 		} else if (id == R.id.btn_smile) { // 点击表情图标
 			onSendSmile();
-		}else if(id==R.id.iv_emoticons_normal)
+		}else if(id==R.id.iv_emoticons_normal) //点击显示表情框
 		{
 			more.setVisibility(View.VISIBLE);	
 			iv_emoticons_normal.setVisibility(View.INVISIBLE);
@@ -448,7 +399,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			btnContainer.setVisibility(View.GONE);
 			expressionContainer.setVisibility(View.VISIBLE);
 			hideKeyboard();
-		}else if(id==R.id.iv_emoticons_checked)
+		}else if(id==R.id.iv_emoticons_checked) //点击隐藏表情框
 		{
 			
 			iv_emoticons_normal.setVisibility(View.VISIBLE);
@@ -710,20 +661,17 @@ public class ChatActivity extends Activity implements OnClickListener {
 			hideKeyboard();
 			more.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
+			expressionContainer.setVisibility(View.GONE);
 		} else {
-			System.out.println("more visible");
-			if (btnContainer.getVisibility() == View.VISIBLE)
-			{
-				System.out.println("btnContainer visible");
-				more.setVisibility(View.GONE);
-			}
-			else {
-				System.out.println("btnContainer gone");
-				btnContainer.setVisibility(View.VISIBLE);
+			if(expressionContainer.getVisibility() == View.VISIBLE){
 				expressionContainer.setVisibility(View.GONE);
+				btnContainer.setVisibility(View.VISIBLE);
 				iv_emoticons_normal.setVisibility(View.VISIBLE);
 				iv_emoticons_checked.setVisibility(View.INVISIBLE);
+			}else{
+				more.setVisibility(View.GONE);
 			}
+			
 		}
 
 	}
@@ -736,6 +684,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 	public void editClick(View v) {
 		if (more.getVisibility() == View.VISIBLE) {
 			more.setVisibility(View.GONE);
+			iv_emoticons_normal.setVisibility(View.VISIBLE);
+			iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		}
 
 	}
