@@ -5,7 +5,7 @@
     <color name="btn_login_pressed">#303744</color>
     <color name="btn_logout_normal">#d33f3f</color>
     <color name="btn_logout_pressed">#DA5A4D</color>
-    <color name="btn_register_normal">#c9caca</color>
+    <color name="btn_register_normal">#2dafa3</color>
     <color name="btn_register_pressed">#4ebcd3</color>
     <color name="common_bottom_bar_normal_bg">#2d2f31</color>
     <color name="common_bottom_bar_selected_bg">#161718</color>

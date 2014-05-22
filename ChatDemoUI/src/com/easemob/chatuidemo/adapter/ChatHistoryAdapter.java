@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
@@ -50,8 +51,17 @@ public class ChatHistoryAdapter extends ArrayAdapter<User> {
 			holder.time = (TextView) convertView.findViewById(R.id.time);
 			holder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
 			holder.msgState = convertView.findViewById(R.id.msg_state);
+			holder.list_item_layout=(RelativeLayout) convertView.findViewById(R.id.list_item_layout);
 			convertView.setTag(holder);
 		}
+		if(position%2==0)
+		{
+			holder.list_item_layout.setBackgroundResource(R.drawable.mm_listitem);
+		}else{
+			holder.list_item_layout.setBackgroundResource(R.drawable.mm_listitem_grey);
+		}
+		
+		
 		
 		User user = getItem(position);
 		String username = user.getUsername();
@@ -137,5 +147,9 @@ public class ChatHistoryAdapter extends ArrayAdapter<User> {
 		ImageView avatar;
 		/** 最后一条消息的发送状态 */
 		View msgState;
+		/**整个list中每一行总布局*/
+		RelativeLayout list_item_layout;
+		
+		
 	}
 }
