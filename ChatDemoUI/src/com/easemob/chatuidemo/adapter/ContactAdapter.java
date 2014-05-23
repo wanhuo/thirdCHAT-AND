@@ -1,11 +1,13 @@
 package com.easemob.chatuidemo.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,24 +18,30 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.domain.User;
+import com.easemob.chatuidemo.widget.Sidebar;
 
 /**
  * 简单的好友Adapter实现
  *
  */
-public class ContactAdapter extends ArrayAdapter<User>{
+public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexer{
 
 	private LayoutInflater layoutInflater;
 	private EditText query;
 	private ImageButton clearSearch;
+	private SparseIntArray positionOfSection;
+	private SparseIntArray sectionOfPosition;
+	private Sidebar sidebar;
 
-	public ContactAdapter(Context context, int textViewResourceId, List<User> objects) {
+	public ContactAdapter(Context context, int textViewResourceId, List<User> objects,Sidebar sidebar) {
 		super(context, textViewResourceId, objects);
+		this.sidebar=sidebar;
 		layoutInflater = LayoutInflater.from(context);
 	}
 	
@@ -59,8 +67,12 @@ public class ContactAdapter extends ArrayAdapter<User>{
 						getFilter().filter(s);
 						if (s.length() > 0) {
 							clearSearch.setVisibility(View.VISIBLE);
+							if (sidebar != null)
+								sidebar.setVisibility(View.GONE);
 						} else {
 							clearSearch.setVisibility(View.INVISIBLE);
+							if (sidebar != null)
+								sidebar.setVisibility(View.VISIBLE);
 						}
 					}
 	
@@ -90,10 +102,21 @@ public class ContactAdapter extends ArrayAdapter<User>{
 			ImageView avatar = (ImageView) convertView.findViewById(R.id.avatar);
 			TextView unreadMsgView = (TextView) convertView.findViewById(R.id.unread_msg_number);
 			TextView nameTextview = (TextView) convertView.findViewById(R.id.name);
+			TextView tvHeader = (TextView) convertView.findViewById(R.id.header);
 			User user = getItem(position);
 			//设置nick，demo里不涉及到完整user，用username代替nick显示
 			String username = user.getUsername();
-			
+			String header = user.getHeader();
+			if (position == 0 || header != null && !header.equals(getItem(position - 1).getHeader())) {
+				if ("".equals(header)) {
+					tvHeader.setVisibility(View.GONE);
+				} else {
+					tvHeader.setVisibility(View.VISIBLE);
+					tvHeader.setText(header);
+				}
+			} else {
+				tvHeader.setVisibility(View.GONE);
+			}
 			//显示新的朋友item
 			if(username.equals(Constant.NEW_FRIENDS_USERNAME)){
 				nameTextview.setText(user.getNick());
@@ -124,5 +147,37 @@ public class ContactAdapter extends ArrayAdapter<User>{
 		//有搜索框，cout+1
 		return super.getCount() + 1;
 	}
-	
+
+	public int getPositionForSection(int section) {
+		return positionOfSection.get(section);
+	}
+
+	public int getSectionForPosition(int position) {
+		return sectionOfPosition.get(position);
+	}
+
+	@Override
+	public Object[] getSections() {
+		positionOfSection = new SparseIntArray();
+		sectionOfPosition = new SparseIntArray();
+		int count = getCount();
+		List<String> list = new ArrayList<String>();
+		list.add(getContext().getString(R.string.search_header));
+		positionOfSection.put(0, 0);
+		sectionOfPosition.put(0, 0);
+		for (int i = 1; i < count; i++) {
+
+			String letter = getItem(i).getHeader();
+			System.err.println("contactadapter getsection getHeader:" + letter + " name:" + getItem(i).getUsername());
+			int section = list.size() - 1;
+			if (list.get(section) != null && !list.get(section).equals(letter)) {
+				list.add(letter);
+				section++;
+				positionOfSection.put(section, i);
+			}
+			sectionOfPosition.put(i, section);
+		}
+		return list.toArray(new String[list.size()]);
+	}
+
 }

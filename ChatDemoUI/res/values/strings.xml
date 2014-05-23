@@ -41,7 +41,7 @@
     <string name="button_save">保存</string>
     <string name="button_search">查找</string>
     <string name="button_add">添加</string>
-    
+    <string name="search_header">S</string>
     
     <string name="network_isnot_available">网络不可用</string>
     <string name="recoding_fail">录音失败，请重试！</string>

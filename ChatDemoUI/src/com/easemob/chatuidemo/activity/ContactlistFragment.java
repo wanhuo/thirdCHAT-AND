@@ -1,7 +1,6 @@
 package com.easemob.chatuidemo.activity;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -13,23 +12,20 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.method.HideReturnsTransformationMethod;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.easemob.chat.EMChatDB;
-import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.DemoApplication;
@@ -37,7 +33,7 @@ import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ContactAdapter;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
-import com.easemob.exceptions.EaseMobException;
+import com.easemob.chatuidemo.widget.Sidebar;
 
 /**
  * 联系人列表页
@@ -48,6 +44,7 @@ public class ContactlistFragment extends Fragment{
 	private List<User> contactList;
 	private ListView listView;
 	private boolean hidden;
+	private Sidebar sidebar;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,12 +55,13 @@ public class ContactlistFragment extends Fragment{
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		listView = (ListView) getView().findViewById(R.id.list);
+		sidebar = (Sidebar) getView().findViewById(R.id.sidebar);
+		sidebar.setListView(listView);
 		contactList = new ArrayList<User>();
 		//获取设置contactlist
 		getContactList();
-		
 		//设置adapter
-		adapter = new ContactAdapter(getActivity(), 1, contactList);
+		adapter = new ContactAdapter(getActivity(), 1, contactList,sidebar);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 

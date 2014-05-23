@@ -9,8 +9,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
+import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.domain.User;
+import com.easemob.util.HanziToPinyin;
 
 public class UserDao {
 	public static final String TABLE_NAME = "uers";
@@ -48,17 +51,36 @@ public class UserDao {
 	 * 
 	 * @return
 	 */
-	public Map<String,User> getContactList() {
+	public Map<String, User> getContactList() {
 		SQLiteDatabase db = dbHelper.getReadableDatabase();
-		Map<String,User> users = new HashMap<String, User>();
+		Map<String, User> users = new HashMap<String, User>();
 		if (db.isOpen()) {
-			Cursor cursor = db.rawQuery("select * from " + TABLE_NAME /*+ " desc"*/, null);
+			Cursor cursor = db.rawQuery("select * from " + TABLE_NAME /* + " desc" */, null);
 			while (cursor.moveToNext()) {
 				String username = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_ID));
 				String nick = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_NICK));
 				User user = new User();
 				user.setUsername(username);
 				user.setNick(nick);
+				String headerName = null;
+				if (!TextUtils.isEmpty(user.getNick())) {
+					headerName = user.getNick();
+				} else {
+					headerName = user.getUsername();
+				}
+				
+				if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
+					user.setHeader("");
+				} else if (Character.isDigit(headerName.charAt(0))) {
+					user.setHeader("#");
+				} else {
+					user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1))
+							.get(0).target.substring(0, 1).toUpperCase());
+					char header = user.getHeader().toLowerCase().charAt(0);
+					if (header < 'a' || header > 'z') {
+						user.setHeader("#");
+					}
+				}
 				users.put(username, user);
 			}
 			cursor.close();

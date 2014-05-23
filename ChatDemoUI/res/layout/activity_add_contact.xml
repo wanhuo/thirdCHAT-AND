@@ -45,6 +45,8 @@
         android:background="@drawable/button_normal_shape"
         android:hint="用户名"
         android:singleLine="true"
+        android:textColor="#b3b3b3"
+        android:textColorHint="#b3b3b3"
         android:textSize="18sp" />
 
     <LinearLayout
@@ -62,8 +64,8 @@
 
             <ImageView
                 android:id="@+id/avatar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="11dp"
                 android:scaleType="fitXY"

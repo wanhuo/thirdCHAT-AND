@@ -19,14 +19,14 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         android:background="@drawable/mm_listitem"
         android:duplicateParentState="true" >
 
         <ImageView
             android:id="@+id/avatar"
-            android:layout_width="43dp"
-            android:layout_height="43dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="11dp"
             android:scaleType="fitXY"

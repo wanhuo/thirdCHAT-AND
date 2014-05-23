@@ -25,7 +25,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/margin_chat_activity"
             android:scaleType="fitXY"
-            android:background="@drawable/default_avatar" />
+            android:background="@drawable/mini_avatar_shadow" />
         
         <RelativeLayout
             android:id="@+id/row_recv_pic"
