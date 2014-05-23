@@ -210,8 +210,12 @@ public class ChatActivity extends Activity implements OnClickListener {
 					buttonSetModeVoice.setVisibility(View.GONE);
 					buttonSend.setVisibility(View.VISIBLE);
 				} else {
-					buttonSetModeVoice.setVisibility(View.VISIBLE);
-					buttonSend.setVisibility(View.GONE);
+					if(buttonSetModeKeyboard.getVisibility()!=View.VISIBLE)
+					{
+						buttonSetModeVoice.setVisibility(View.VISIBLE);
+						buttonSend.setVisibility(View.GONE);
+					}
+					
 				}
 			}
 
@@ -609,6 +613,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		buttonSetModeKeyboard.setVisibility(View.VISIBLE);
 //		mEditTextContent.setVisibility(View.GONE);
 		// buttonSend.setVisibility(View.GONE);
+//		buttonSetModeVoice.setVisibility(View.GONE);
 		buttonPressToSpeak.setVisibility(View.VISIBLE);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
