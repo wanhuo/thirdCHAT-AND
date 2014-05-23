@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/confirm_dialog_top_bg"
+        android:background="@android:color/white"
         android:gravity="center_horizontal"
         android:orientation="vertical" >
 
@@ -19,17 +19,19 @@
             android:padding="5dp"
             android:text="@string/prompt"
             android:textColor="#333"
+            android:visibility="visible"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/alert_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center_horizontal"
             android:padding="5dp"
             android:textColor="#333"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
 
         <EditText
             android:id="@+id/edit"
@@ -52,30 +54,30 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/confirm_dialog_bottom_bg"
+        android:background="@android:color/white"
         android:gravity="center_horizontal"
         android:orientation="horizontal" >
 
         <Button
             android:id="@+id/btn_cancel"
             android:layout_width="match_parent"
-           android:layout_height="40dp"
+           android:layout_height="47dp"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:background="@drawable/btn_white_selector"
+            android:background="@drawable/btn_gray_selector"
             android:gravity="center"
             android:onClick="cancel"
             android:text="@string/cancel"
-            android:textColor="#000"
+            android:textColor="#666666"
             android:textSize="16sp"
             android:visibility="gone" />
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="47dp"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:background="@drawable/btn_green_selector"
+            android:background="@drawable/btn_blue_selector"
             android:gravity="center"
             android:onClick="ok"
             android:text="@string/ok"

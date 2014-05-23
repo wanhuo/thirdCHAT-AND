@@ -41,6 +41,8 @@ public class AlertDialog extends Activity {
 		String title = getIntent().getStringExtra("title");
 //		voicePath = getIntent().getStringExtra("voicePath");
 		position = getIntent().getIntExtra("position", -1);
+		//是否显示取消标题
+		boolean isCanceTitle=getIntent().getBooleanExtra("titleIsCancel", false);
 		//是否显示取消按钮
 		boolean isCanceShow = getIntent().getBooleanExtra("cancel", false);
 		//是否显示文本编辑框
@@ -51,6 +53,9 @@ public class AlertDialog extends Activity {
 		    ((TextView)findViewById(R.id.alert_message)).setText(msg);
 		if(title != null)
 			mTextView.setText(title);
+		if(isCanceTitle){
+			mTextView.setVisibility(View.GONE);
+		}
 		if(isCanceShow)
 			mButton.setVisibility(View.VISIBLE);
 		if(path != null){
