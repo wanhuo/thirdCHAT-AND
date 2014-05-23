@@ -912,10 +912,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 					//调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
 					List<EMMessage> messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
 					try {
-						Thread.sleep(200);
+						Thread.sleep(300);
 					} catch (InterruptedException e) {
 					}
 					if(messages.size() != 0){
+						//刷新ui
 						adapter.notifyDataSetChanged();
 						listView.setSelection(messages.size() - 1);
 						if(messages.size() != pagesize)

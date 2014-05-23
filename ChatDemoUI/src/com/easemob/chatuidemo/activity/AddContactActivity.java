@@ -21,6 +21,7 @@ import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatConfig;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
+import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
@@ -58,11 +59,14 @@ public class AddContactActivity extends Activity{
 		String saveText = searchBtn.getText().toString();
 		if (getString(R.string.button_search).equals(saveText)) {
 			toAddUsername = name;
-			if (TextUtils.isEmpty(name)) {
+			if(TextUtils.isEmpty(name)) {
 				startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "请输入用户名"));
 				return;
 			}
-
+			if(DemoApplication.getInstance().getContactList().containsKey(name)){
+				startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "此用户已是你的好友"));
+				return;
+			}
 			
 			// TODO 从服务器获取此contact,如果不存在提示不存在此用户
 			//服务器存在此用户，显示此用户和添加按钮

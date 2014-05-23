@@ -245,13 +245,13 @@ public class MainActivity extends FragmentActivity {
 			//未读数加1
 			User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 			user.setUnreadMsgCount(user.getUnreadMsgCount()+1);
-			EMNotifier notifier = new EMNotifier(MainActivity.this);
 			//提示有新消息
-			notifier.notifyOnNewMsg();
+			EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
 			//刷新好友页面ui
 			if(currentTabIndex == 1)
 				contactListFragment.refresh();
 			abortBroadcast();
+			
 		}
 		
 	};
