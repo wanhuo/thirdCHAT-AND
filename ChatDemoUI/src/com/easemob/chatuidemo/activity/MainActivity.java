@@ -37,6 +37,9 @@ public class MainActivity extends FragmentActivity {
 
 	// 未读消息textview
 	private TextView unreadLabel;
+	//未读通讯录textview
+	private TextView unreadAddressLable;
+	
 	private Button[] mTabs;
 	private ContactlistFragment contactListFragment;
 	private ChatHistoryFragment chatHistoryFragment;
@@ -89,7 +92,7 @@ public class MainActivity extends FragmentActivity {
 	 */
 	private void initView() {
 		unreadLabel = (TextView) findViewById(R.id.unread_msg_number);
-
+		unreadAddressLable=(TextView) findViewById(R.id.unread_address_number);
 		mTabs = new Button[3];
 		mTabs[0] = (Button) findViewById(R.id.btn_conversation);
 		mTabs[1] = (Button) findViewById(R.id.btn_address_list);
@@ -158,6 +161,33 @@ public class MainActivity extends FragmentActivity {
 			unreadLabel.setVisibility(View.INVISIBLE);
 		}
 	}
+	
+	/**
+	 * 刷新新的朋友消息数
+	 */
+	public void updateUnreadAddressLable(){
+		int count=getUnreadAddressCountTotal();
+		if(count>0)
+		{
+			unreadAddressLable.setText(String.valueOf(count));
+			unreadAddressLable.setVisibility(View.VISIBLE);
+		}else{
+			unreadAddressLable.setVisibility(View.INVISIBLE);
+		}
+		
+		
+	}
+	
+	/**
+	 * 获取未读新的朋友消息
+	 * @return
+	 */
+	public int getUnreadAddressCountTotal(){
+		int unreadAddressCountTotal=0;
+		unreadAddressCountTotal=DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME).getUnreadMsgCount();
+		return unreadAddressCountTotal;
+	}
+	
 	
 	/**
 	 * 获取未读消息数
@@ -247,6 +277,9 @@ public class MainActivity extends FragmentActivity {
 			user.setUnreadMsgCount(user.getUnreadMsgCount()+1);
 			//提示有新消息
 			EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
+			
+			//刷新bottom bar消息未读数
+			updateUnreadAddressLable();
 			//刷新好友页面ui
 			if(currentTabIndex == 1)
 				contactListFragment.refresh();
@@ -334,6 +367,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		updateUnreadLabel();
+		updateUnreadAddressLable();
 	}
 	
 	

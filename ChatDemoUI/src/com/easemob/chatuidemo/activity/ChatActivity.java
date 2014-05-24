@@ -121,6 +121,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private int chatType;
 	private EMConversation conversation;
 	private NewMessageBroadcastReceiver receiver;
+	public static ChatActivity activityInstance = null;
 	// 给谁发送消息
 	private String toChatUsername;
 	private VoiceRecorder voiceRecorder;
@@ -230,6 +231,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	private void setUpView() {
+		activityInstance=this;
 		iv_emoticons_normal.setOnClickListener(this);
 		iv_emoticons_checked.setOnClickListener(this);
 		// position = getIntent().getIntExtra("position", -1);
@@ -239,7 +241,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		// 判断单聊还是群聊
 		chatType = getIntent().getIntExtra("chatType", CHATTYPE_SINGLE);
-
+		
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
 			conversation = EMChatManager.getInstance().getConversation(toChatUsername);
@@ -278,6 +280,26 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// 直接显示消息，而不是提示消息未读
 		intentFilter.setPriority(5);
 		registerReceiver(receiver, intentFilter);
+		
+		// show forward message if the message is not null
+		String forward_msg_id = getIntent().getStringExtra("forward_msg_id");
+		if (forward_msg_id != null) {
+			EMMessage forward_msg = EMChatManager.getInstance().getMessage(forward_msg_id);
+			forward_msg.direct = EMMessage.Direct.SEND;
+			// forward_msg.setRowId("");
+			try {
+				forward_msg.setReceipt(toChatUsername);
+				if (forward_msg.getType() == EMMessage.Type.IMAGE) {
+					forward_msg.status = EMMessage.Status.CREATE;
+					// forward_msg.setBgSendAndShowChated(true);
+				}
+				conversation.addMessage(forward_msg);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			adapter.notifyDataSetChanged();
+			listView.setSelection(listView.getCount() - 1);
+		}
 
 	}
 
@@ -311,12 +333,12 @@ public class ChatActivity extends Activity implements OnClickListener {
 				break;
 
 			case RESULT_CODE_FORWARD: // 转发消息
-				// EMMessage forwardMsg = (EMMessage)
-				// adapter.getItem(data.getIntExtra("position", 0));
-				// Intent intent = new Intent(this,
-				// ForwardMessageActivity.class);
-				// intent.putExtra("forward_msg_id", forwardMsg.msgId);
-				// startActivity(intent);
+				EMMessage forwardMsg = (EMMessage) adapter.getItem(data.getIntExtra("position", 0));
+				Intent intent = new Intent(this, ForwardMessageActivity.class);
+				intent.putExtra("forward_msg_id", forwardMsg.getMsgId());
+				startActivity(intent);
+				
+				
 				break;
 
 			default:

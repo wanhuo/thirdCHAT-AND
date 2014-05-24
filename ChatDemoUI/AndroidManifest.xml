@@ -81,6 +81,10 @@
             android:name=".activity.NewFriendsMsgActivity"
             android:theme="@style/horizontal_slide" >
         </activity>
+        <!-- 转发消息用户列表页面 -->
+        <activity android:name=".activity.ForwardMessageActivity"
+            android:theme="@style/horizontal_slide"
+            ></activity>
         <!-- 自定义的contextmenu -->
         <activity
             android:name=".activity.ContextMenu"

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import com.easemob.chatuidemo.Constant;
+import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.NewFriendsMsgAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
@@ -26,7 +28,7 @@ public class NewFriendsMsgActivity extends Activity {
 		//设置adapter
 		NewFriendsMsgAdapter adapter = new NewFriendsMsgAdapter(this, 1, msgs); 
 		listView.setAdapter(adapter);
-		
+		DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME).setUnreadMsgCount(0);
 		
 	}
 

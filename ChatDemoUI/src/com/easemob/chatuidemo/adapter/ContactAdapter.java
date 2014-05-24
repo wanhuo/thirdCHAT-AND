@@ -59,7 +59,7 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (position == 0) {//搜索框
 			if(convertView == null){
-				convertView = layoutInflater.inflate(R.layout.search_bar, null);
+				convertView = layoutInflater.inflate(R.layout.search_bar_with_padding, null);
 				query = (EditText) convertView.findViewById(R.id.query);
 				clearSearch = (ImageButton) convertView.findViewById(R.id.search_clear);
 				query.addTextChangedListener(new TextWatcher() {

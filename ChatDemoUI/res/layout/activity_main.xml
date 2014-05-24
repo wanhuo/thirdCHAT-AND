@@ -67,6 +67,21 @@
                 android:text="通讯录"
                 android:textColor="@color/main_botton_text_color"
                 android:textSize="12sp" />
+            
+            <TextView
+                android:id="@+id/unread_address_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/tab_unread_bg"
+                android:gravity="center"
+                android:visibility="invisible"
+                android:text="7"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+            
+            
         </RelativeLayout>
 
         <RelativeLayout

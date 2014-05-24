@@ -6,7 +6,7 @@
     android:paddingRight="27dp"
      android:paddingTop="7dp"
     android:paddingBottom="7dp"
-    android:background="#C9CACA"
+    android:background="#ededed"
      >
 
     <EditText
