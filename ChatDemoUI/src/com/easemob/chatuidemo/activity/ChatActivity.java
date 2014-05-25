@@ -289,10 +289,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 			// forward_msg.setRowId("");
 			try {
 				forward_msg.setReceipt(toChatUsername);
-				if (forward_msg.getType() == EMMessage.Type.IMAGE) {
-					forward_msg.status = EMMessage.Status.CREATE;
-					// forward_msg.setBgSendAndShowChated(true);
-				}
+				forward_msg.status = EMMessage.Status.CREATE;
+//				if (forward_msg.getType() == EMMessage.Type.IMAGE) {
+//					
+//					// forward_msg.setBgSendAndShowChated(true);
+//				}
 				conversation.addMessage(forward_msg);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -620,6 +621,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		msg.status = EMMessage.Status.CREATE;
 
 		adapter.notifyDataSetChanged();
+		listView.setSelection(resendPos);
 	}
 
 	/**
