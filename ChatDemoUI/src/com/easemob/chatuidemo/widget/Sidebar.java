@@ -66,6 +66,11 @@ public class Sidebar extends View{
 	}
 	
 	private void setHeaderTextAndscroll(MotionEvent event){
+		 if (mListView == null) {
+		        //check the mListView to avoid NPE. but the mListView shouldn't be null
+		        //need to check the call stack later
+		        return;
+		    }
 		String headerString = sections[sectionForPoint(event.getY())];
 		header.setText(headerString);
 		ContactAdapter adapter = (ContactAdapter) mListView.getAdapter();

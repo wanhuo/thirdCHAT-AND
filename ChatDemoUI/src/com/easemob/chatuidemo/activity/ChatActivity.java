@@ -733,6 +733,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			}
 			//通知adapter有新消息，更新ui
 			adapter.notifyDataSetChanged();
+			listView.setSelection(listView.getCount() - 1);
 			// 记得把广播给终结掉
 			abortBroadcast();
 		}
