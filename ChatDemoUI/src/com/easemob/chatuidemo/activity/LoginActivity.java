@@ -23,6 +23,7 @@ import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.exceptions.EaseMobException;
+import com.easemob.util.HanziToPinyin;
 
 /**
  * 登陆页面
@@ -87,12 +88,31 @@ public class LoginActivity extends Activity {
 						for(String username : usernames){
 							User user = new User();
 							user.setUsername(username);
+							String headerName = null;
+							if (!TextUtils.isEmpty(user.getNick())) {
+								headerName = user.getNick();
+							} else {
+								headerName = user.getUsername();
+							}
+							if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
+								user.setHeader("");
+							} else if (Character.isDigit(headerName.charAt(0))) {
+								user.setHeader("#");
+							} else {
+								user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1))
+										.get(0).target.substring(0, 1).toUpperCase());
+								char header = user.getHeader().toLowerCase().charAt(0);
+								if (header < 'a' || header > 'z') {
+									user.setHeader("#");
+								}
+							}
 							userlist.put(username, user);
 						}
 						//添加user"新的朋友"
 						User newFriends = new User();
 						newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
 						newFriends.setNick("新的朋友");
+						newFriends.setHeader("");
 						userlist.put(Constant.NEW_FRIENDS_USERNAME,newFriends);
 						//存入内存
 						DemoApplication.getInstance().setContactList(userlist);
