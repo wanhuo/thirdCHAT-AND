@@ -558,7 +558,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			// 群聊
 		}
 		adapter.notifyDataSetChanged();
-		listView.setSelection(listView.getCount() - 1);
+		listView.setSelection(listView.getCount() - 1);	
 		setResult(RESULT_OK);
 //		more(more);
 	}
