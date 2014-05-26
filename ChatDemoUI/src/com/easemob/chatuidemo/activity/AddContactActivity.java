@@ -1,5 +1,9 @@
 package com.easemob.chatuidemo.activity;
 
+import org.jivesoftware.smack.PrivacyList;
+import org.jivesoftware.smack.PrivacyListManager;
+import org.jivesoftware.smack.packet.PrivacyItem.PrivacyRule;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -55,8 +59,9 @@ public class AddContactActivity extends Activity{
 	 * @param v
 	 */
 	public void searchContact(View v) {
-		String name = editText.getText().toString();
+		final String name = editText.getText().toString();
 		String saveText = searchBtn.getText().toString();
+		
 		if (getString(R.string.button_search).equals(saveText)) {
 			toAddUsername = name;
 			if(TextUtils.isEmpty(name)) {
