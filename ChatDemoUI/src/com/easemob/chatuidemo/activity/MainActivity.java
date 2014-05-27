@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -32,6 +33,7 @@ import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
+import com.easemob.util.HanziToPinyin;
 
 public class MainActivity extends FragmentActivity {
 
@@ -305,6 +307,24 @@ public class MainActivity extends FragmentActivity {
 			for(String username : usernameList){
 				User user = new User();
 				user.setUsername(username);
+				String headerName = null;
+				if (!TextUtils.isEmpty(user.getNick())) {
+					headerName = user.getNick();
+				} else {
+					headerName = user.getUsername();
+				}
+				if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
+					user.setHeader("");
+				} else if (Character.isDigit(headerName.charAt(0))) {
+					user.setHeader("#");
+				} else {
+					user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1))
+							.get(0).target.substring(0, 1).toUpperCase());
+					char header = user.getHeader().toLowerCase().charAt(0);
+					if (header < 'a' || header > 'z') {
+						user.setHeader("#");
+					}
+				} 
 				//暂时有个bug，添加好友时可能会回调added方法两次
 				if(!localUsers.containsKey(username)){
 					userDao.saveContact(user);
