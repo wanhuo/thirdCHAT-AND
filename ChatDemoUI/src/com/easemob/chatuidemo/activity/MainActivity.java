@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -37,6 +38,7 @@ import com.easemob.util.HanziToPinyin;
 
 public class MainActivity extends FragmentActivity {
 
+	protected static final String TAG = "MainActivity";
 	// 未读消息textview
 	private TextView unreadLabel;
 	//未读通讯录textview
@@ -262,12 +264,14 @@ public class MainActivity extends FragmentActivity {
 			msg.setFrom(from);
 			msg.setTime(System.currentTimeMillis());
 			msg.setReason(reason);		
-			
+			//sdk暂时只提供同意好友请求方法，不同意选项可以参考微信增加一个忽略按钮。
 			if(!isResponse){
+				Log.d(TAG, from + "请求加你为好友,reason: " + reason);
 				//设成未验证
 				msg.setStatus(InviteMesageStatus.NO_VALIDATION);
 				msg.setInviteFromMe(false);
 			}else{
+				Log.d(TAG, from + "同意了你的好友请求");
 				//对方已同意你的请求
 				msg.setStatus(InviteMesageStatus.AGREED);
 				msg.setInviteFromMe(true);
