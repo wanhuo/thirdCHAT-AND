@@ -57,6 +57,8 @@ public class PasteEditText extends EditText{
         return super.onTextContextMenuItem(id);
     }
     
+    
+    
     @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         if(!TextUtils.isEmpty(text) && text.toString().startsWith(ChatActivity.COPY_IMAGE)){
