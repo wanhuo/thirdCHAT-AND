@@ -57,25 +57,19 @@ public class DemoApplication extends Application {
         // debugmode设为true后，就能看到sdk打印的log了
         EMChat.getInstance().setDebugMode(true);
         
-        EMChatOptions options = new EMChatOptions();
+        EMChatOptions options = EMChatManager.getInstance().getChatOptions();
         // 默认添加好友时，是不需要验证的，改成需要验证
         options.setAcceptInvitationAlways(false);
-        
         //设置收到消息是否有新消息通知，默认为true
         options.setNotificationEnable(PreferenceUtils.getInstance(applicationContext).getSettingMsgNotification());
-        
         //设置收到消息是否有声音提示，默认为true
         options.setNoticeBySound(PreferenceUtils.getInstance(applicationContext).getSettingMsgSound());
-        
         //设置收到消息是否震动 默认为true
         options.setNoticedByVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgVibrate());
-        
         //设置语音消息播放是否设置为扬声器播放 默认为true
         options.setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker());
-        
-        
-        EMChatManager.getInstance().setChatOptions(options);
 
+               
         if (getUserName() != null && contactList == null) {
             UserDao dao = new UserDao(applicationContext);
             // 获取本地好友user list到内存,方便以后获取好友list
