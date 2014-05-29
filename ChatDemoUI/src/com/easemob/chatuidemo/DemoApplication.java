@@ -57,6 +57,7 @@ public class DemoApplication extends Application {
         // debugmode设为true后，就能看到sdk打印的log了
         EMChat.getInstance().setDebugMode(true);
         
+        //获取到EMChatOptions对象
         EMChatOptions options = EMChatManager.getInstance().getChatOptions();
         // 默认添加好友时，是不需要验证的，改成需要验证
         options.setAcceptInvitationAlways(false);

@@ -128,7 +128,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private MessageAdapter adapter;
 	private File cameraFile;
 	static int resendPos;
-	
+
 	private ImageView iv_emoticons_normal;
 	private ImageView iv_emoticons_checked;
 	private RelativeLayout edittext_layout;
@@ -136,9 +136,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private boolean isloading;
 	private final int pagesize = 20;
 	private boolean haveMoreData = true;
-	
 
-	private Handler micImageHandler = new Handler(){
+	private Handler micImageHandler = new Handler() {
 		@Override
 		public void handleMessage(android.os.Message msg) {
 			// 切换msg切换图片
@@ -164,7 +163,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		listView = (ListView) findViewById(R.id.list);
 		mEditTextContent = (PasteEditText) findViewById(R.id.et_sendmessage);
 		buttonSetModeKeyboard = findViewById(R.id.btn_set_mode_keyboard);
-		edittext_layout=(RelativeLayout) findViewById(R.id.edittext_layout);
+		edittext_layout = (RelativeLayout) findViewById(R.id.edittext_layout);
 		buttonSetModeVoice = findViewById(R.id.btn_set_mode_voice);
 		buttonSend = findViewById(R.id.btn_send);
 		buttonPressToSpeak = findViewById(R.id.btn_press_to_speak);
@@ -172,9 +171,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 		expressionContainer = (LinearLayout) findViewById(R.id.ll_face_container);
 		btnContainer = (LinearLayout) findViewById(R.id.ll_btn_container);
 		locationImgview = (ImageView) findViewById(R.id.btn_location);
-		iv_emoticons_normal=(ImageView) findViewById(R.id.iv_emoticons_normal);
-		iv_emoticons_checked=(ImageView) findViewById(R.id.iv_emoticons_checked);
-		loadmorePB = (ProgressBar) findViewById(R.id.pb_load_more); 
+		iv_emoticons_normal = (ImageView) findViewById(R.id.iv_emoticons_normal);
+		iv_emoticons_checked = (ImageView) findViewById(R.id.iv_emoticons_checked);
+		loadmorePB = (ProgressBar) findViewById(R.id.pb_load_more);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		more = findViewById(R.id.more);
@@ -198,10 +197,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 		views.add(gv2);
 		expressionViewpager.setAdapter(new ExpressionPagerAdapter(views));
 
-		
 		voiceRecorder = new VoiceRecorder(micImageHandler);
 		buttonPressToSpeak.setOnTouchListener(new PressToSpeakListen());
-		
+
 		// 监听文字框
 		mEditTextContent.addTextChangedListener(new TextWatcher() {
 
@@ -211,18 +209,18 @@ public class ChatActivity extends Activity implements OnClickListener {
 					buttonSetModeVoice.setVisibility(View.GONE);
 					buttonSend.setVisibility(View.VISIBLE);
 				} else {
-					if(buttonSetModeKeyboard.getVisibility()!=View.VISIBLE)
-					{
+					if (buttonSetModeKeyboard.getVisibility() != View.VISIBLE) {
 						buttonSetModeVoice.setVisibility(View.VISIBLE);
 						buttonSend.setVisibility(View.GONE);
 					}
-					
+
 				}
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 			}
+
 			@Override
 			public void afterTextChanged(Editable s) {
 			}
@@ -231,7 +229,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	private void setUpView() {
-		activityInstance=this;
+		activityInstance = this;
 		iv_emoticons_normal.setOnClickListener(this);
 		iv_emoticons_checked.setOnClickListener(this);
 		// position = getIntent().getIntExtra("position", -1);
@@ -241,7 +239,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		// 判断单聊还是群聊
 		chatType = getIntent().getIntExtra("chatType", CHATTYPE_SINGLE);
-		
+
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
 			conversation = EMChatManager.getInstance().getConversation(toChatUsername);
@@ -280,24 +278,19 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// 直接显示消息，而不是提示消息未读
 		intentFilter.setPriority(5);
 		registerReceiver(receiver, intentFilter);
-		
+
 		// show forward message if the message is not null
 		String forward_msg_id = getIntent().getStringExtra("forward_msg_id");
 		if (forward_msg_id != null) {
 			EMMessage forward_msg = EMChatManager.getInstance().getMessage(forward_msg_id);
 			forward_msg.direct = EMMessage.Direct.SEND;
+			forward_msg.setMsgId(null);
+			forward_msg.isAcked = false;
+			forward_msg.setMsgTime(System.currentTimeMillis());
 			// forward_msg.setRowId("");
-			try {
-				forward_msg.setReceipt(toChatUsername);
-				forward_msg.status = EMMessage.Status.CREATE;
-//				if (forward_msg.getType() == EMMessage.Type.IMAGE) {
-//					
-//					// forward_msg.setBgSendAndShowChated(true);
-//				}
-				conversation.addMessage(forward_msg);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			forward_msg.setReceipt(toChatUsername);
+			forward_msg.status = EMMessage.Status.CREATE;
+			conversation.addMessage(forward_msg);
 			adapter.notifyDataSetChanged();
 			listView.setSelection(listView.getCount() - 1);
 		}
@@ -338,8 +331,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 				Intent intent = new Intent(this, ForwardMessageActivity.class);
 				intent.putExtra("forward_msg_id", forwardMsg.getMsgId());
 				startActivity(intent);
-				
-				
+
 				break;
 
 			default:
@@ -369,7 +361,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 				} else {
 					Toast.makeText(this, "无法获取到您的位置信息！", 0).show();
 				}
-			// 重发消息
+				// 重发消息
 			} else if (requestCode == REQUEST_CODE_TEXT) {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_VOICE) {
@@ -379,11 +371,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 			} else if (requestCode == REQUEST_CODE_LOCATION) {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_COPY_AND_PASTE) {
-				//粘贴
+				// 粘贴
 				if (!TextUtils.isEmpty(clipboard.getText())) {
 					String pasteText = clipboard.getText().toString();
 					if (pasteText.startsWith(COPY_IMAGE)) {
-						//把图片前缀去掉，还原成正常的path
+						// 把图片前缀去掉，还原成正常的path
 						sendPicture(pasteText.replace(COPY_IMAGE, ""));
 					}
 
@@ -411,27 +403,27 @@ public class ChatActivity extends Activity implements OnClickListener {
 			selectPicFromCamera();// 点击照相图标
 		} else if (id == R.id.btn_picture) {
 			selectPicFromLocal(); // 点击图片图标
-		} else if (id == R.id.btn_location) { //位置
-			 startActivityForResult(new Intent(this, BaiduMapActivity.class),REQUEST_CODE_MAP);
+		} else if (id == R.id.btn_location) { // 位置
+			startActivityForResult(new Intent(this, BaiduMapActivity.class), REQUEST_CODE_MAP);
 		} else if (id == R.id.btn_smile) { // 点击表情图标
 			onSendSmile();
-		}else if(id==R.id.iv_emoticons_normal) //点击显示表情框
+		} else if (id == R.id.iv_emoticons_normal) // 点击显示表情框
 		{
-			more.setVisibility(View.VISIBLE);	
+			more.setVisibility(View.VISIBLE);
 			iv_emoticons_normal.setVisibility(View.INVISIBLE);
 			iv_emoticons_checked.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.GONE);
 			expressionContainer.setVisibility(View.VISIBLE);
 			hideKeyboard();
-		}else if(id==R.id.iv_emoticons_checked) //点击隐藏表情框
+		} else if (id == R.id.iv_emoticons_checked) // 点击隐藏表情框
 		{
-			
+
 			iv_emoticons_normal.setVisibility(View.VISIBLE);
 			iv_emoticons_checked.setVisibility(View.INVISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
-		expressionContainer.setVisibility(View.GONE);
-		more.setVisibility(View.GONE);
-			
+			expressionContainer.setVisibility(View.GONE);
+			more.setVisibility(View.GONE);
+
 		}
 	}
 
@@ -483,12 +475,12 @@ public class ChatActivity extends Activity implements OnClickListener {
 		if (content.length() > 0) {
 			EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
 			TextMessageBody txtBody = new TextMessageBody(content);
-			//设置消息body
+			// 设置消息body
 			message.addBody(txtBody);
 			// if (chatType == CHATTYPE_GROUP) { //如果是群聊(待实现)
 			// message.setReceipt(group.getGroupId());
 			// } else {
-			//设置要发给谁
+			// 设置要发给谁
 			message.setReceipt(toChatUsername);
 			// 把messgage加到conversation中
 			conversation.addMessage(message);
@@ -496,8 +488,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 			// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
 			adapter.notifyDataSetChanged();
-			mEditTextContent.setText("");
 			listView.setSelection(listView.getCount() - 1);
+			mEditTextContent.setText("");
 
 			setResult(RESULT_OK);
 
@@ -558,9 +550,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 			// 群聊
 		}
 		adapter.notifyDataSetChanged();
-		listView.setSelection(listView.getCount() - 1);	
+		listView.setSelection(listView.getCount() - 1);
 		setResult(RESULT_OK);
-//		more(more);
+		// more(more);
 	}
 
 	/**
@@ -635,15 +627,14 @@ public class ChatActivity extends Activity implements OnClickListener {
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
 		buttonSetModeKeyboard.setVisibility(View.VISIBLE);
-//		mEditTextContent.setVisibility(View.GONE);
+		// mEditTextContent.setVisibility(View.GONE);
 		// buttonSend.setVisibility(View.GONE);
-//		buttonSetModeVoice.setVisibility(View.GONE);
+		// buttonSetModeVoice.setVisibility(View.GONE);
 		buttonPressToSpeak.setVisibility(View.VISIBLE);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		btnContainer.setVisibility(View.VISIBLE);
 		expressionContainer.setVisibility(View.GONE);
-		
 
 	}
 
@@ -657,7 +648,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
 		buttonSetModeVoice.setVisibility(View.VISIBLE);
-//		mEditTextContent.setVisibility(View.VISIBLE);
+		// mEditTextContent.setVisibility(View.VISIBLE);
 		mEditTextContent.requestFocus();
 		// buttonSend.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.GONE);
@@ -671,7 +662,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 */
 	public void emptyHistory(View view) {
 		startActivityForResult(
-				new Intent(this, AlertDialog.class).putExtra("titleIsCancel",true).putExtra("msg", "是否清空所有聊天记录").putExtra("cancel", true),
+				new Intent(this, AlertDialog.class).putExtra("titleIsCancel", true).putExtra("msg", "是否清空所有聊天记录").putExtra("cancel", true),
 				REQUEST_CODE_EMPTY_HISTORY);
 	}
 
@@ -688,15 +679,15 @@ public class ChatActivity extends Activity implements OnClickListener {
 			btnContainer.setVisibility(View.VISIBLE);
 			expressionContainer.setVisibility(View.GONE);
 		} else {
-			if(expressionContainer.getVisibility() == View.VISIBLE){
+			if (expressionContainer.getVisibility() == View.VISIBLE) {
 				expressionContainer.setVisibility(View.GONE);
 				btnContainer.setVisibility(View.VISIBLE);
 				iv_emoticons_normal.setVisibility(View.VISIBLE);
 				iv_emoticons_checked.setVisibility(View.INVISIBLE);
-			}else{
+			} else {
 				more.setVisibility(View.GONE);
 			}
-			
+
 		}
 
 	}
@@ -707,7 +698,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 * @param v
 	 */
 	public void editClick(View v) {
-		listView.setSelection(listView.getCount() -1);
+		listView.setSelection(listView.getCount() - 1);
 		if (more.getVisibility() == View.VISIBLE) {
 			more.setVisibility(View.GONE);
 			iv_emoticons_normal.setVisibility(View.VISIBLE);
@@ -726,12 +717,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 			System.err.println("!!chatactivity receive msg. todo, support group new msg!!!");
 			String username = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
-			//收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
-//			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
+			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
+			// EMMessage message =
+			// EMChatManager.getInstance().getMessage(msgid);
 			if (!username.equals(toChatUsername)) {
 				return; // it is not for the current chat, ignore
 			}
-			//通知adapter有新消息，更新ui
+			// 通知adapter有新消息，更新ui
 			adapter.notifyDataSetChanged();
 			listView.setSelection(listView.getCount() - 1);
 			// 记得把广播给终结掉
@@ -748,8 +740,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				if(!CommonUtils.isExitsSdcard())
-				{
+				if (!CommonUtils.isExitsSdcard()) {
 					Toast.makeText(ChatActivity.this, "发送语音需要sdcard支持！", Toast.LENGTH_SHORT).show();
 					return false;
 				}
@@ -765,7 +756,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 					Toast.makeText(ChatActivity.this, R.string.recoding_fail, Toast.LENGTH_SHORT).show();
 					return false;
 				}
-				
+
 				return true;
 			case MotionEvent.ACTION_MOVE: {
 				if (event.getY() < 0) {
@@ -877,11 +868,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 		return reslist;
 
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//注销广播
+		// 注销广播
 		try {
 			unregisterReceiver(receiver);
 			receiver = null;
@@ -902,12 +893,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 	/**
 	 * 返回
+	 * 
 	 * @param view
 	 */
-	public void back(View view){
+	public void back(View view) {
 		finish();
 	}
-	
+
 	/**
 	 * 覆盖手机返回键
 	 */
@@ -921,37 +913,38 @@ public class ChatActivity extends Activity implements OnClickListener {
 			super.onBackPressed();
 		}
 	}
+
 	/**
 	 * listview滑动监听listener
-	 *
+	 * 
 	 */
-	private class ListScrollListener implements OnScrollListener{
+	private class ListScrollListener implements OnScrollListener {
 
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 			switch (scrollState) {
 			case OnScrollListener.SCROLL_STATE_IDLE:
-				if(view.getFirstVisiblePosition() == 0 && !isloading && haveMoreData){
-					//sdk初始化加载的聊天记录为20条，到顶时去db里获取更多
+				if (view.getFirstVisiblePosition() == 0 && !isloading && haveMoreData) {
+					// sdk初始化加载的聊天记录为20条，到顶时去db里获取更多
 					loadmorePB.setVisibility(View.VISIBLE);
-					//调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
+					// 调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
 					List<EMMessage> messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
 					try {
 						Thread.sleep(300);
 					} catch (InterruptedException e) {
 					}
-					if(messages.size() != 0){
-						//刷新ui
+					if (messages.size() != 0) {
+						// 刷新ui
 						adapter.notifyDataSetChanged();
 						listView.setSelection(messages.size() - 1);
-						if(messages.size() != pagesize)
+						if (messages.size() != pagesize)
 							haveMoreData = false;
-					}else{
+					} else {
 						haveMoreData = false;
 					}
 					loadmorePB.setVisibility(View.GONE);
 					isloading = false;
-					
+
 				}
 				break;
 			}
@@ -959,10 +952,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-			
+
 		}
-		
+
 	}
-	
-	
+
 }
