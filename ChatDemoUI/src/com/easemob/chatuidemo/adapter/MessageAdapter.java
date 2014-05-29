@@ -43,6 +43,7 @@ import com.easemob.chatuidemo.activity.ContextMenu;
 import com.easemob.chatuidemo.activity.ShowBigImage;
 import com.easemob.chatuidemo.task.LoadImageTask;
 import com.easemob.chatuidemo.utils.ImageCache;
+import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.util.DateUtils;
 import com.easemob.util.EMLog;
@@ -327,7 +328,7 @@ public class MessageAdapter extends BaseAdapter {
 				if (imgBody.getLocalUrl() != null) {
 					String filePath = imgBody.getLocalUrl();
 
-					String thumbnailPath = getThumbnailImagePath(filePath);
+					String thumbnailPath = ImageUtils.getThumbnailImagePath(filePath);
 					showImageView(thumbnailPath, holder.iv, filePath, imgBody.getRemoteUrl(), message);
 				}
 			}
@@ -342,7 +343,7 @@ public class MessageAdapter extends BaseAdapter {
 		if (new File(filePath).exists())
 			showImageView(filePath, holder.iv, filePath, null, message);
 		else {
-			showImageView(getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
+			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
 		}
 
 		switch (message.status) {
@@ -791,12 +792,6 @@ public class MessageAdapter extends BaseAdapter {
 
 	}
 
-	public String getThumbnailImagePath(String imagePath) {
-		String path = imagePath.substring(0, imagePath.lastIndexOf("/") + 1);
-		path += "th" + imagePath.substring(imagePath.lastIndexOf("/") + 1, imagePath.length());
-		EMLog.d("msg", "original image path:" + imagePath);
-		EMLog.d("msg", "thum image path:" + path);
-		return path;
-	}
+	
 
 }

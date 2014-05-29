@@ -55,6 +55,7 @@ import com.easemob.chatuidemo.adapter.ExpressionAdapter;
 import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
 import com.easemob.chatuidemo.adapter.MessageAdapter;
 import com.easemob.chatuidemo.utils.CommonUtils;
+import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.chatuidemo.widget.PasteEditText;
@@ -282,26 +283,40 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// show forward message if the message is not null
 		String forward_msg_id = getIntent().getStringExtra("forward_msg_id");
 		if (forward_msg_id != null) {
-			EMMessage forward_msg = EMChatManager.getInstance().getMessage(forward_msg_id);
-			try {
-				//克隆这个message，否则对这个消息的改动会影响原来的消息
-				EMMessage toSendMsg = (EMMessage) forward_msg.clone();
-				toSendMsg.direct = EMMessage.Direct.SEND;
-				toSendMsg.setMsgId(null);
-				toSendMsg.isAcked = false;
-				toSendMsg.setMsgTime(System.currentTimeMillis());
-				// forward_msg.setRowId("");
-				toSendMsg.setReceipt(toChatUsername);
-				toSendMsg.status = EMMessage.Status.CREATE;
-				conversation.addMessage(toSendMsg);
-				adapter.notifyDataSetChanged();
-				listView.setSelection(listView.getCount() - 1);
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
-			
+			//显示发送要转发的消息
+			forwardMessage(forward_msg_id);
 		}
 
+	}
+
+	/**
+	 * 转发消息
+	 * @param forward_msg_id
+	 */
+	protected void forwardMessage(String forward_msg_id) {
+		EMMessage forward_msg = EMChatManager.getInstance().getMessage(forward_msg_id);
+		EMMessage.Type type = forward_msg.getType();
+		switch (type) {
+		case TXT:
+			//获取消息内容，发送消息
+			String content = ((TextMessageBody)forward_msg.getBody()).getMessage();
+			sendText(content);
+			break;
+		case IMAGE:
+			//发送图片
+			String filePath = ((ImageMessageBody)forward_msg.getBody()).getLocalUrl();
+			if(filePath != null){
+				File file = new File(filePath);
+				if(!file.exists()){
+					//不存在大图发送缩略图
+					filePath = ImageUtils.getThumbnailImagePath(filePath);
+				}
+				sendPicture(filePath);
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 	/**
