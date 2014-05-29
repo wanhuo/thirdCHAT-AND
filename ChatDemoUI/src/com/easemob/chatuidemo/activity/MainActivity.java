@@ -215,7 +215,7 @@ public class MainActivity extends FragmentActivity {
 			//消息id
 			String msgId = intent.getStringExtra("msgid");
 			//收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
-//			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
 			
 			//刷新bottom bar消息未读数
 			updateUnreadLabel();

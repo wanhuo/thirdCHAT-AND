@@ -283,16 +283,23 @@ public class ChatActivity extends Activity implements OnClickListener {
 		String forward_msg_id = getIntent().getStringExtra("forward_msg_id");
 		if (forward_msg_id != null) {
 			EMMessage forward_msg = EMChatManager.getInstance().getMessage(forward_msg_id);
-			forward_msg.direct = EMMessage.Direct.SEND;
-			forward_msg.setMsgId(null);
-			forward_msg.isAcked = false;
-			forward_msg.setMsgTime(System.currentTimeMillis());
-			// forward_msg.setRowId("");
-			forward_msg.setReceipt(toChatUsername);
-			forward_msg.status = EMMessage.Status.CREATE;
-			conversation.addMessage(forward_msg);
-			adapter.notifyDataSetChanged();
-			listView.setSelection(listView.getCount() - 1);
+			try {
+				//克隆这个message，否则对这个消息的改动会影响原来的消息
+				EMMessage toSendMsg = (EMMessage) forward_msg.clone();
+				toSendMsg.direct = EMMessage.Direct.SEND;
+				toSendMsg.setMsgId(null);
+				toSendMsg.isAcked = false;
+				toSendMsg.setMsgTime(System.currentTimeMillis());
+				// forward_msg.setRowId("");
+				toSendMsg.setReceipt(toChatUsername);
+				toSendMsg.status = EMMessage.Status.CREATE;
+				conversation.addMessage(toSendMsg);
+				adapter.notifyDataSetChanged();
+				listView.setSelection(listView.getCount() - 1);
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+			
 		}
 
 	}
