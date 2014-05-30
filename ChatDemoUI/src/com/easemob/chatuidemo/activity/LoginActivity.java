@@ -88,24 +88,7 @@ public class LoginActivity extends Activity {
 						for(String username : usernames){
 							User user = new User();
 							user.setUsername(username);
-							String headerName = null;
-							if (!TextUtils.isEmpty(user.getNick())) {
-								headerName = user.getNick();
-							} else {
-								headerName = user.getUsername();
-							}
-							if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
-								user.setHeader("");
-							} else if (Character.isDigit(headerName.charAt(0))) {
-								user.setHeader("#");
-							} else {
-								user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1))
-										.get(0).target.substring(0, 1).toUpperCase());
-								char header = user.getHeader().toLowerCase().charAt(0);
-								if (header < 'a' || header > 'z') {
-									user.setHeader("#");
-								}
-							}
+							setUserHearder(username, user);
 							userlist.put(username, user);
 						}
 						//添加user"新的朋友"
@@ -113,11 +96,12 @@ public class LoginActivity extends Activity {
 						newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
 						newFriends.setNick("新的朋友");
 						newFriends.setHeader("");
+						//把newFriends这个user放入到map中
 						userlist.put(Constant.NEW_FRIENDS_USERNAME,newFriends);
 						//存入内存
 						DemoApplication.getInstance().setContactList(userlist);
-						UserDao dao = new UserDao(LoginActivity.this);
 						//存入db
+						UserDao dao = new UserDao(LoginActivity.this);
 						List<User> users = new ArrayList<User>(userlist.values());
 						dao.saveContactList(users);
 					} catch (Exception e) {
@@ -127,6 +111,7 @@ public class LoginActivity extends Activity {
 					startActivity(new Intent(LoginActivity.this, MainActivity.class));
 					finish();
 				}
+
 				
 				@Override
 				public void onProgress(int progress, String status) {
@@ -162,6 +147,32 @@ public class LoginActivity extends Activity {
 
 		if (DemoApplication.getInstance().getUserName() != null) {
 			usernameEditText.setText(DemoApplication.getInstance().getUserName());
+		}
+	}
+	
+	/**
+	 * 设置hearder属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人
+	 * @param username
+	 * @param user
+	 */
+	protected void setUserHearder(String username, User user) {
+		String headerName = null;
+		if (!TextUtils.isEmpty(user.getNick())) {
+			headerName = user.getNick();
+		} else {
+			headerName = user.getUsername();
+		}
+		if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
+			user.setHeader("");
+		} else if (Character.isDigit(headerName.charAt(0))) {
+			user.setHeader("#");
+		} else {
+			user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1))
+					.get(0).target.substring(0, 1).toUpperCase());
+			char header = user.getHeader().toLowerCase().charAt(0);
+			if (header < 'a' || header > 'z') {
+				user.setHeader("#");
+			}
 		}
 	}
 }
