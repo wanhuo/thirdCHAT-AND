@@ -9,7 +9,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,20 +35,41 @@ import com.easemob.util.HanziToPinyin;
 public class LoginActivity extends Activity {
 	private EditText usernameEditText;
 	private EditText passwordEditText;
+	private CharSequence len;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		
+
 		usernameEditText = (EditText) findViewById(R.id.username);
 		passwordEditText = (EditText) findViewById(R.id.password);
-		//如果用户名密码都有，直接进入主页面
+		// 如果用户名密码都有，直接进入主页面
 		if (DemoApplication.getInstance().getUserName() != null && DemoApplication.getInstance().getPassword() != null) {
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
 		}
-		
+		// 如果用户名改变，清空密码
+		usernameEditText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				if (!s.equals(len)) {
+					passwordEditText.setText(null);
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				len = s;
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+
+			}
+		});
+
 	}
 
 	/**
@@ -54,26 +78,24 @@ public class LoginActivity extends Activity {
 	 * @param view
 	 */
 	public void login(View view) {
-		if(!CommonUtils.isNetWorkConnected(this))
-		{
+		if (!CommonUtils.isNetWorkConnected(this)) {
 			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		final String username = usernameEditText.getText().toString();
 		final String password = passwordEditText.getText().toString();
-		
-		
-		if(!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)){
+
+		if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
 			final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
 			pd.setCanceledOnTouchOutside(false);
 			pd.setMessage("正在登陆...");
 			pd.show();
-			//调用sdk登陆方法登陆聊天服务器
+			// 调用sdk登陆方法登陆聊天服务器
 			EMChatManager.getInstance().login(username, password, new EMCallBack() {
-				
+
 				@Override
 				public void onSuccess() {
-					//登陆成功，保存用户名密码
+					// 登陆成功，保存用户名密码
 					DemoApplication.getInstance().setUserName(username);
 					DemoApplication.getInstance().setPassword(password);
 					runOnUiThread(new Runnable() {
@@ -82,49 +104,48 @@ public class LoginActivity extends Activity {
 						}
 					});
 					try {
-						//demo中简单的处理成每次登陆都去获取好友username，开发者自己根据情况而定
+						// demo中简单的处理成每次登陆都去获取好友username，开发者自己根据情况而定
 						List<String> usernames = EMChatManager.getInstance().getContactUserNames();
-						Map<String,User> userlist = new HashMap<String, User>();
-						for(String username : usernames){
+						Map<String, User> userlist = new HashMap<String, User>();
+						for (String username : usernames) {
 							User user = new User();
 							user.setUsername(username);
 							setUserHearder(username, user);
 							userlist.put(username, user);
 						}
-						//添加user"新的朋友"
+						// 添加user"新的朋友"
 						User newFriends = new User();
 						newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
 						newFriends.setNick("新的朋友");
 						newFriends.setHeader("");
-						//把newFriends这个user放入到map中
-						userlist.put(Constant.NEW_FRIENDS_USERNAME,newFriends);
-						//存入内存
+						// 把newFriends这个user放入到map中
+						userlist.put(Constant.NEW_FRIENDS_USERNAME, newFriends);
+						// 存入内存
 						DemoApplication.getInstance().setContactList(userlist);
-						//存入db
+						// 存入db
 						UserDao dao = new UserDao(LoginActivity.this);
 						List<User> users = new ArrayList<User>(userlist.values());
 						dao.saveContactList(users);
 					} catch (Exception e) {
 					}
 					pd.dismiss();
-					//进入主页面
+					// 进入主页面
 					startActivity(new Intent(LoginActivity.this, MainActivity.class));
 					finish();
 				}
 
-				
 				@Override
 				public void onProgress(int progress, String status) {
-					
+
 				}
-				
+
 				@Override
 				public void onError(int code, final String message) {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
 							Toast.makeText(getApplicationContext(), "登录失败: " + message, 0).show();
-							
+
 						}
 					});
 				}
@@ -138,9 +159,9 @@ public class LoginActivity extends Activity {
 	 * @param view
 	 */
 	public void register(View view) {
-		 startActivityForResult(new Intent(this, RegisterActivity.class), 0);
+		startActivityForResult(new Intent(this, RegisterActivity.class), 0);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -149,9 +170,10 @@ public class LoginActivity extends Activity {
 			usernameEditText.setText(DemoApplication.getInstance().getUserName());
 		}
 	}
-	
+
 	/**
 	 * 设置hearder属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人
+	 * 
 	 * @param username
 	 * @param user
 	 */
@@ -167,8 +189,7 @@ public class LoginActivity extends Activity {
 		} else if (Character.isDigit(headerName.charAt(0))) {
 			user.setHeader("#");
 		} else {
-			user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1))
-					.get(0).target.substring(0, 1).toUpperCase());
+			user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1).toUpperCase());
 			char header = user.getHeader().toLowerCase().charAt(0);
 			if (header < 'a' || header > 'z') {
 				user.setHeader("#");
