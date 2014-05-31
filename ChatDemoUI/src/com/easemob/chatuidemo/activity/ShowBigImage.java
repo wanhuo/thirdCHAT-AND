@@ -1,6 +1,8 @@
 package com.easemob.chatuidemo.activity;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -9,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -56,9 +59,10 @@ public class ShowBigImage extends Activity {
 		showAvator = getIntent().getBooleanExtra("showAvator", false);
 		username = getIntent().getStringExtra("username");
 		deleteAfterDownload = getIntent().getBooleanExtra("delete", false);
-
+		
 		Uri uri = getIntent().getParcelableExtra("uri");
 		String remotepath = getIntent().getExtras().getString("remotepath");
+		String secret=getIntent().getExtras().getString("secret");
 		System.err.println("show big image uri:" + uri + " remotepath:" + remotepath);
 
 		if (uri != null && new File(uri.getPath()).exists()) {
@@ -81,7 +85,14 @@ public class ShowBigImage extends Activity {
 			}
 		} else if (remotepath != null) {
 			System.err.println("download remote image");
-			downloadImage(remotepath);
+			Map<String,String> maps=new HashMap<String,String>();
+			maps.put("Authorization", "Bearer "+EMChatConfig.getInstance().AccessToken);
+			if(!TextUtils.isEmpty(secret))
+			{
+				maps.put("share-secret", secret);
+			}
+			maps.put("Accept", "application/octet-stream");
+			downloadImage(remotepath,maps);
 		} else {
 			image.setImageResource(default_res);
 		}
@@ -99,7 +110,7 @@ public class ShowBigImage extends Activity {
 	 * 
 	 * @param remoteFilePath
 	 */
-	private void downloadImage(final String remoteFilePath) {
+	private void downloadImage(final String remoteFilePath,final Map<String,String> headers) {
 		pd = new ProgressDialog(this);
 		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pd.setCanceledOnTouchOutside(false);
@@ -121,7 +132,7 @@ public class ShowBigImage extends Activity {
 		}
 		final HttpFileManager httpFileMgr = new HttpFileManager(this, EMChatConfig.getInstance().getStorageUrl());
 		final CloudOperationCallback callback = new CloudOperationCallback() {
-			public void onSuccess() {
+			public void onSuccess(String resultMsg) {
 
 				runOnUiThread(new Runnable() {
 					@Override
@@ -176,7 +187,7 @@ public class ShowBigImage extends Activity {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				httpFileMgr.downloadFile(remoteFilePath, localFilePath, EMChatConfig.getInstance().APPKEY, null, callback);
+				httpFileMgr.downloadFile(remoteFilePath, localFilePath, EMChatConfig.getInstance().APPKEY,null,headers,callback);
 			}
 		}).start();
 

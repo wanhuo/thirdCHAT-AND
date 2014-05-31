@@ -226,6 +226,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void afterTextChanged(Editable s) {
+				 
+				
 			}
 		});
 
@@ -340,6 +342,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 					// 加上一个特定前缀，粘贴时知道这是要粘贴一个图片
 					clipboard.setText(COPY_IMAGE + imageBody.getLocalUrl());
 				} else {
+//					clipboard.setText(SmileUtils.getSmiledText(ChatActivity.this, ((TextMessageBody) copyMsg.getBody()).getMessage()));
 					clipboard.setText(((TextMessageBody) copyMsg.getBody()).getMessage());
 				}
 				break;

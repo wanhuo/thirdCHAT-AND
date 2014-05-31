@@ -33,6 +33,7 @@ import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.Type;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.LocationMessageBody;
+import com.easemob.chat.MessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.R;
@@ -724,6 +725,9 @@ public class MessageAdapter extends BaseAdapter {
 						// The local full size pic does not exist yet.
 						// ShowBigImage needs to download it from the server
 						// first
+//						intent.putExtra("", message.get);
+						ImageMessageBody body = (ImageMessageBody) message.getBody();
+						intent.putExtra("secret", body.getSecret());
 						intent.putExtra("remotepath", remote);
 					}
 					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked) {
