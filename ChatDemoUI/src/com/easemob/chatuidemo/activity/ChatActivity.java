@@ -21,6 +21,7 @@ import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -34,6 +35,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView.BufferType;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -799,15 +801,19 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 				} else {
 					// stop recording and send voice file
-					int length = voiceRecorder.stopRecoding();
-					if (length > 0) {
-						try {
-							sendVoice(voiceRecorder.getVoiceFilePath(), voiceRecorder.getVoiceFileName(toChatUsername),
+					try {
+						int length = voiceRecorder.stopRecoding();
+						if (length > 0) {
+							sendVoice(voiceRecorder.getVoiceFilePath(),
+									voiceRecorder.getVoiceFileName(toChatUsername),
 									Integer.toString(length), false);
-						} catch (Exception e) {
-							Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接", Toast.LENGTH_SHORT).show();
 						}
+					} catch (Exception e) {
+						Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接", Toast.LENGTH_SHORT)
+								.show();
 					}
+					
+					
 				}
 				return true;
 			default:
