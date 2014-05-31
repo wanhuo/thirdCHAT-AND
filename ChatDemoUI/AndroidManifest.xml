@@ -70,6 +70,38 @@
             android:name=".activity.AddContactActivity"
             android:theme="@style/horizontal_slide" >
         </activity>
+        <!-- 群组详情 -->
+        <activity
+            android:name=".activity.GroupDetailsActivity"
+            android:theme="@style/horizontal_slide" >
+        </activity>
+        <!-- 群组列表 -->
+        <activity
+            android:name=".activity.GroupsActivity"
+            android:theme="@style/horizontal_slide" 
+            android:windowSoftInputMode="adjustPan"
+            >
+        </activity>
+        <!-- 新建群组 -->
+        <activity
+            android:name=".activity.NewGroupActivity"
+            android:theme="@style/horizontal_slide" 
+            android:windowSoftInputMode="adjustPan"
+            >
+        </activity>
+        <!-- 退出群组提示框 -->
+        <activity
+            android:name=".activity.ExitGroupDialog"
+            android:theme="@style/MyDialogStyleBottom" 
+            >
+        </activity>
+        <!-- 群组选人 -->
+        <activity
+            android:name=".activity.GroupPickContactsActivity"
+            android:theme="@style/horizontal_slide" 
+            android:windowSoftInputMode="adjustPan"
+            >
+        </activity>
         <!-- 地图 -->
         <activity
             android:name="com.easemob.chatuidemo.activity.BaiduMapActivity"
@@ -97,6 +129,7 @@
             android:name=".activity.AlertDialog"
             android:theme="@style/MyDialogStyle" >
         </activity>
+        <!-- 显示下载大图页面 -->
         <activity
             android:name=".activity.ShowBigImage"
             android:theme="@style/horizontal_slide" >

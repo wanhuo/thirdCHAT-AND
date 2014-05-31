@@ -104,7 +104,7 @@ public class DemoApplication extends Application {
 
 
 	/**
-	 * 获取用户名
+	 * 获取当前登陆用户名
 	 * 
 	 * @return
 	 */

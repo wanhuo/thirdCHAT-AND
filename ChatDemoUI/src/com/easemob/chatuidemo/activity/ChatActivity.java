@@ -46,6 +46,8 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroup;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.LocationMessageBody;
@@ -98,9 +100,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 	public static final int RESULT_CODE_DWONLOAD = 5;
 	public static final int RESULT_CODE_TO_CLOUD = 6;
 	public static final int RESULT_CODE_EXIT_GROUP = 7;
-	public static final int REQUEST_CODE_ADD_USER = 8;
 
-	public static final int CHATTYPE_SINGLE = 0;
+	public static final int CHATTYPE_SINGLE = 1;
+	public static final int CHATTYPE_GROUP = 2;
+	
 	public static final String COPY_IMAGE = "EASEMOBIMG";
 	private View recordingContainer;
 	private ImageView micImage;
@@ -147,6 +150,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			micImage.setImageDrawable(micImages[msg.what]);
 		}
 	};
+	private EMGroup group;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -247,14 +251,19 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
-			conversation = EMChatManager.getInstance().getConversation(toChatUsername);
-			// 把此会话的未读数置为0
-			conversation.resetUnsetMsgCount();
-			adapter = new MessageAdapter(this, toChatUsername, chatType);
 			((TextView) findViewById(R.id.name)).setText(toChatUsername);
 		} else {
-			// 群聊，暂无
+			// 群聊
+			findViewById(R.id.container_to_group).setVisibility(View.VISIBLE);
+			findViewById(R.id.container_remove).setVisibility(View.GONE);
+			toChatUsername = getIntent().getStringExtra("groupId");
+			group = EMGroupManager.getInstance().getGroup(toChatUsername);
+			((TextView) findViewById(R.id.name)).setText(group.getGroupName());
 		}
+		conversation = EMChatManager.getInstance().getConversation(toChatUsername);
+		// 把此会话的未读数置为0
+		conversation.resetUnsetMsgCount();
+		adapter = new MessageAdapter(this, toChatUsername, chatType);
 		// 显示消息
 		listView.setAdapter(adapter);
 		listView.setOnScrollListener(new ListScrollListener());
@@ -287,7 +296,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// show forward message if the message is not null
 		String forward_msg_id = getIntent().getStringExtra("forward_msg_id");
 		if (forward_msg_id != null) {
-			//显示发送要转发的消息
+			// 显示发送要转发的消息
 			forwardMessage(forward_msg_id);
 		}
 
@@ -295,6 +304,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 	/**
 	 * 转发消息
+	 * 
 	 * @param forward_msg_id
 	 */
 	protected void forwardMessage(String forward_msg_id) {
@@ -302,17 +312,17 @@ public class ChatActivity extends Activity implements OnClickListener {
 		EMMessage.Type type = forward_msg.getType();
 		switch (type) {
 		case TXT:
-			//获取消息内容，发送消息
-			String content = ((TextMessageBody)forward_msg.getBody()).getMessage();
+			// 获取消息内容，发送消息
+			String content = ((TextMessageBody) forward_msg.getBody()).getMessage();
 			sendText(content);
 			break;
 		case IMAGE:
-			//发送图片
-			String filePath = ((ImageMessageBody)forward_msg.getBody()).getLocalUrl();
-			if(filePath != null){
+			// 发送图片
+			String filePath = ((ImageMessageBody) forward_msg.getBody()).getLocalUrl();
+			if (filePath != null) {
 				File file = new File(filePath);
-				if(!file.exists()){
-					//不存在大图发送缩略图
+				if (!file.exists()) {
+					// 不存在大图发送缩略图
 					filePath = ImageUtils.getThumbnailImagePath(filePath);
 				}
 				sendPicture(filePath);
@@ -694,6 +704,14 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	/**
+	 * 点击进入群组详情
+	 * @param view
+	 */
+	public void toGroupDetails(View view){
+		startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername)),0);
+	}
+	
+	/**
 	 * 显示或隐藏图标按钮页
 	 * 
 	 * @param view
@@ -903,6 +921,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		activityInstance = null;
 		// 注销广播
 		try {
 			unregisterReceiver(receiver);
@@ -959,7 +978,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 					// sdk初始化加载的聊天记录为20条，到顶时去db里获取更多
 					loadmorePB.setVisibility(View.VISIBLE);
 					// 调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
-					List<EMMessage> messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
+					List<EMMessage> messages;
+					try {
+						messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
+					} catch (Exception e1) {
+						loadmorePB.setVisibility(View.GONE);
+						return;
+					}
 					try {
 						Thread.sleep(300);
 					} catch (InterruptedException e) {
@@ -987,5 +1012,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 
 	}
+	
+	
 
 }

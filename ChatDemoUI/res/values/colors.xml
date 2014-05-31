@@ -26,4 +26,6 @@
     <color name="btn_blue_normal">#1e90ff</color>
     <color name="btn_blue_pressed">#0066FF</color>
      <color name="orange">#FFA500</color>
+     <color name="gray_pressed">#b5b5b6</color>
+     <color name="gray_normal">#666667</color>
 </resources>

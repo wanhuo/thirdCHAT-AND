@@ -40,18 +40,33 @@
                 android:src="@drawable/mm_title_remove" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/container_to_group"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/common_tab_bg"
+            android:onClick="toGroupDetails"
+            android:visibility="gone" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:scaleType="centerInside"
+                android:src="@drawable/to_group_details_normal" />
+        </RelativeLayout>
     </RelativeLayout>
 
-   
-    
     <LinearLayout
         android:id="@+id/bar_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="2dip"
-        android:paddingBottom="2dip"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingBottom="2dip"
+        android:paddingTop="2dip" >
 
         <LinearLayout
             android:id="@+id/rl_bottom"
@@ -63,7 +78,6 @@
             android:paddingBottom="4dp"
             android:paddingTop="4dp" >
 
-
             <Button
                 android:layout_width="32dip"
                 android:layout_height="32dip"
@@ -72,81 +86,72 @@
                 android:onClick="more" />
 
             <LinearLayout
+                android:id="@+id/btn_press_to_speak"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
                 android:layout_weight="1"
                 android:background="@drawable/chat_press_speak_btn"
-                  android:id="@+id/btn_press_to_speak"
-                  android:visibility="gone"
-                android:gravity="center" >
-
+                android:gravity="center"
+                android:visibility="gone" >
 
                 <TextView
-                    android:layout_marginLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:text="@string/button_pushtotalk"
                     android:textColor="#fff"
                     android:textSize="18sp" />
             </LinearLayout>
 
-            
-<RelativeLayout 
-    android:id="@+id/edittext_layout"
-    android:layout_width="0dp"
+            <RelativeLayout
+                android:id="@+id/edittext_layout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
                 android:layout_weight="1"
-                android:background="@drawable/edit_text_bg"
-    
-    
-    >
-    <com.easemob.chatuidemo.widget.PasteEditText
-                android:id="@+id/et_sendmessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="35dip"
-                android:background="@null"
-                android:maxLines="3"
-                android:minHeight="40dp"
-                android:onClick="editClick"
-                android:padding="5dp"
-                android:textSize="18sp"
-                 >
-            </com.easemob.chatuidemo.widget.PasteEditText>
-    
-    <ImageView 
-                android:id="@+id/iv_emoticons_normal"
-                android:layout_width="25dip"
-                android:layout_height="25dip"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="center_vertical|right"
-                android:layout_centerVertical="true"
-                android:layout_margin="5dip"
-                android:scaleType="fitCenter"
-                android:src="@drawable/chatting_biaoqing_btn_normal"
-                android:visibility="visible"
-                />
-     <ImageView 
-                android:id="@+id/iv_emoticons_checked"
-                android:layout_width="25dip"
-                android:layout_height="25dip"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="center_vertical|right"
-                android:layout_centerVertical="true"
-                android:layout_margin="5dip"
-                android:scaleType="fitCenter"
-                android:src="@drawable/chatting_biaoqing_btn_enable"
-                android:visibility="invisible"
-                />
-</RelativeLayout>
-            
-            
-            
-            
+                android:background="@drawable/edit_text_bg" >
+
+                <com.easemob.chatuidemo.widget.PasteEditText
+                    android:id="@+id/et_sendmessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="35dip"
+                    android:background="@null"
+                    android:maxLines="3"
+                    android:minHeight="40dp"
+                    android:onClick="editClick"
+                    android:padding="5dp"
+                    android:textSize="18sp" >
+                </com.easemob.chatuidemo.widget.PasteEditText>
+
+                <ImageView
+                    android:id="@+id/iv_emoticons_normal"
+                    android:layout_width="25dip"
+                    android:layout_height="25dip"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_margin="5dip"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/chatting_biaoqing_btn_normal"
+                    android:visibility="visible" />
+
+                <ImageView
+                    android:id="@+id/iv_emoticons_checked"
+                    android:layout_width="25dip"
+                    android:layout_height="25dip"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_margin="5dip"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/chatting_biaoqing_btn_enable"
+                    android:visibility="invisible" />
+            </RelativeLayout>
+
             <Button
                 android:id="@+id/btn_set_mode_voice"
                 android:layout_width="32dp"
@@ -277,7 +282,7 @@
                             android:textColor="#727171" />
                     </LinearLayout>
 
-<LinearLayout
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -306,13 +311,14 @@
                             android:text="@string/attach_location"
                             android:textColor="#727171" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:visibility="gone"
-                        android:orientation="vertical" >
+                        android:orientation="vertical"
+                        android:visibility="gone" >
 
                         <RelativeLayout
                             android:layout_width="64dp"
@@ -337,7 +343,6 @@
                             android:textColor="#727171" />
                     </LinearLayout>
                 </LinearLayout>
-
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -347,26 +352,25 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bar_bottom"
         android:layout_below="@id/top_bar" >
-		<ProgressBar 
-		    android:visibility="gone"
-		    android:layout_width="28dp"
-		    android:layout_height="28dp"
-		    android:id="@+id/pb_load_more"
-		    android:layout_centerHorizontal="true"
-		    />
-        
+
+        <ProgressBar
+            android:id="@+id/pb_load_more"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone" />
+
         <ListView
-            android:layout_below="@id/pb_load_more"
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@id/pb_load_more"
             android:cacheColorHint="#00000000"
             android:divider="@null"
             android:dividerHeight="5dp"
             android:listSelector="#00000000"
-            android:scrollbarStyle="outsideOverlay" 
-            android:transcriptMode="normal"
-            />
+            android:scrollbarStyle="outsideOverlay"
+            android:transcriptMode="normal" />
 
         <RelativeLayout
             android:id="@+id/recording_container"
@@ -396,4 +400,5 @@
                 android:textSize="10sp" />
         </RelativeLayout>
     </RelativeLayout>
+
 </RelativeLayout>

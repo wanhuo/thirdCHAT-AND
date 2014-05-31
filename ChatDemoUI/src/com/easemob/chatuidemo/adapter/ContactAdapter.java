@@ -38,9 +38,11 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 	private SparseIntArray positionOfSection;
 	private SparseIntArray sectionOfPosition;
 	private Sidebar sidebar;
+	private int res;
 
-	public ContactAdapter(Context context, int textViewResourceId, List<User> objects,Sidebar sidebar) {
-		super(context, textViewResourceId, objects);
+	public ContactAdapter(Context context, int resource, List<User> objects,Sidebar sidebar) {
+		super(context, resource, objects);
+		this.res = resource;
 		this.sidebar=sidebar;
 		layoutInflater = LayoutInflater.from(context);
 	}
@@ -89,14 +91,14 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 						if (((Activity) getContext()).getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 							manager.hideSoftInputFromWindow(((Activity) getContext()).getCurrentFocus().getWindowToken(),
 									InputMethodManager.HIDE_NOT_ALWAYS);
-						//清楚搜索框文字
+						//清除搜索框文字
 						query.getText().clear();
 					}
 				});
 			}
 		}else{
 			if(convertView == null){
-				convertView = layoutInflater.inflate(R.layout.row_contact, null);
+				convertView = layoutInflater.inflate(res, null);
 			}
 			
 			ImageView avatar = (ImageView) convertView.findViewById(R.id.avatar);
@@ -127,9 +129,14 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 				}else{
 					unreadMsgView.setVisibility(View.INVISIBLE);
 				}
+			}else if(username.equals(Constant.GROUP_USERNAME)){
+				//群聊item
+				nameTextview.setText(user.getNick());
+				avatar.setImageResource(R.drawable.groups_icon);
 			}else{
 				nameTextview.setText(username);
-				unreadMsgView.setVisibility(View.INVISIBLE);
+				if(unreadMsgView != null)
+					unreadMsgView.setVisibility(View.INVISIBLE);
 				avatar.setImageResource(R.drawable.default_avatar);
 			}
 		}
