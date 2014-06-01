@@ -260,6 +260,14 @@ public class MainActivity extends FragmentActivity {
 			//消息发送方username
 			final String from = intent.getStringExtra("username");
 			
+			//接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所有客户端不要重复提醒
+			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
+			for(InviteMessage inviteMessage : msgs){
+				if(inviteMessage.getFrom().equals(from)){
+					return;
+				}
+			}
+			
 			InviteMessage msg = new InviteMessage();
 			msg.setFrom(from);
 			msg.setTime(System.currentTimeMillis());
