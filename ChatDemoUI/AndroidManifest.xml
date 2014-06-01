@@ -138,7 +138,7 @@
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="easemob-demo#chatdemoui" />
-                
+        <service android:name="com.easemob.chat.EMChatService" />
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
