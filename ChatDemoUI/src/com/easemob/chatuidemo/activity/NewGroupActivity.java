@@ -61,7 +61,7 @@ public class NewGroupActivity extends Activity{
 					String groupName = groupNameEditText.getText().toString().trim();
 					String desc = introductionEditText.getText().toString();
 					String[] members = data.getStringArrayExtra("newmembers");
-					try {
+					//try {
 						EMGroupManager.getInstance().createGroup(groupName, desc, members);
 						runOnUiThread(new Runnable() {
 							public void run() {
@@ -70,14 +70,14 @@ public class NewGroupActivity extends Activity{
 								finish();
 							}
 						});
-					} catch (final EaseMobException e) {
+/*					} catch (final EaseMobException e) {
 						runOnUiThread(new Runnable() {
 							public void run() {
 								progressDialog.dismiss();
 								Toast.makeText(NewGroupActivity.this, "创建群组失败:" + e.getLocalizedMessage(), 1).show();
 							}
 						});
-					}
+					}*/
 					
 
 				}
