@@ -13,7 +13,7 @@ import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.exceptions.EaseMobException;
 
-public class NewGroupActivity extends Activity{
+public class NewGroupActivity extends Activity {
 	private EditText groupNameEditText;
 	private ProgressDialog progressDialog;
 	private EditText introductionEditText;
@@ -25,10 +25,10 @@ public class NewGroupActivity extends Activity{
 		groupNameEditText = (EditText) findViewById(R.id.edit_group_name);
 		introductionEditText = (EditText) findViewById(R.id.edit_group_introduction);
 	}
-	
-	
+
 	/**
 	 * 创建群组
+	 * 
 	 * @param v
 	 */
 	public void save(View v) {
@@ -38,13 +38,11 @@ public class NewGroupActivity extends Activity{
 			intent.putExtra("msg", "群组名称不能为空");
 			startActivity(intent);
 		} else {
-			//进通讯录选人
+			// 进通讯录选人
 			startActivityForResult(new Intent(this, GroupPickContactsActivity.class).putExtra("groupName", name), 0);
 		}
 	}
-	
-	
-	 
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -57,36 +55,33 @@ public class NewGroupActivity extends Activity{
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					//调用sdk创建群组方法
+					// 调用sdk创建群组方法
 					String groupName = groupNameEditText.getText().toString().trim();
 					String desc = introductionEditText.getText().toString();
 					String[] members = data.getStringArrayExtra("newmembers");
-					//try {
-						EMGroupManager.getInstance().createGroup(groupName, desc, members);
-						runOnUiThread(new Runnable() {
-							public void run() {
-								progressDialog.dismiss();
-								setResult(RESULT_OK);
-								finish();
-							}
-						});
-/*					} catch (final EaseMobException e) {
-						runOnUiThread(new Runnable() {
-							public void run() {
-								progressDialog.dismiss();
-								Toast.makeText(NewGroupActivity.this, "创建群组失败:" + e.getLocalizedMessage(), 1).show();
-							}
-						});
-					}*/
-					
+					// try {
+					EMGroupManager.getInstance().createGroup(groupName, desc, members);
+					runOnUiThread(new Runnable() {
+						public void run() {
+							progressDialog.dismiss();
+							setResult(RESULT_OK);
+							finish();
+						}
+					});
+					/*
+					 * } catch (final EaseMobException e) { runOnUiThread(new
+					 * Runnable() { public void run() {
+					 * progressDialog.dismiss();
+					 * Toast.makeText(NewGroupActivity.this, "创建群组失败:" +
+					 * e.getLocalizedMessage(), 1).show(); } }); }
+					 */
 
 				}
 			}).start();
 		}
 	}
-	
-	
-	public void back(View view){
+
+	public void back(View view) {
 		finish();
 	}
 }

@@ -103,7 +103,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 	public static final int CHATTYPE_SINGLE = 1;
 	public static final int CHATTYPE_GROUP = 2;
-	
+
 	public static final String COPY_IMAGE = "EASEMOBIMG";
 	private View recordingContainer;
 	private ImageView micImage;
@@ -230,8 +230,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				 
-				
+
 			}
 		});
 
@@ -272,6 +271,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			listView.setSelection(count - 1);
 		}
 
+		listView.setEnabled(false);
 		listView.setOnTouchListener(new OnTouchListener() {
 
 			@Override
@@ -352,7 +352,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 					// 加上一个特定前缀，粘贴时知道这是要粘贴一个图片
 					clipboard.setText(COPY_IMAGE + imageBody.getLocalUrl());
 				} else {
-//					clipboard.setText(SmileUtils.getSmiledText(ChatActivity.this, ((TextMessageBody) copyMsg.getBody()).getMessage()));
+					// clipboard.setText(SmileUtils.getSmiledText(ChatActivity.this,
+					// ((TextMessageBody) copyMsg.getBody()).getMessage()));
 					clipboard.setText(((TextMessageBody) copyMsg.getBody()).getMessage());
 				}
 				break;
@@ -705,12 +706,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 	/**
 	 * 点击进入群组详情
+	 * 
 	 * @param view
 	 */
-	public void toGroupDetails(View view){
-		startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername)),0);
+	public void toGroupDetails(View view) {
+		startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername)), 0);
 	}
-	
+
 	/**
 	 * 显示或隐藏图标按钮页
 	 * 
@@ -825,16 +827,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 					try {
 						int length = voiceRecorder.stopRecoding();
 						if (length > 0) {
-							sendVoice(voiceRecorder.getVoiceFilePath(),
-									voiceRecorder.getVoiceFileName(toChatUsername),
+							sendVoice(voiceRecorder.getVoiceFilePath(), voiceRecorder.getVoiceFileName(toChatUsername),
 									Integer.toString(length), false);
 						}
 					} catch (Exception e) {
-						Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接", Toast.LENGTH_SHORT)
-								.show();
+						Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接", Toast.LENGTH_SHORT).show();
 					}
-					
-					
+
 				}
 				return true;
 			default:
@@ -1012,7 +1011,5 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 
 	}
-	
-	
 
 }

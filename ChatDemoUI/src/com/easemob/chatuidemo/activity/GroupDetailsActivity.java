@@ -92,12 +92,11 @@ public class GroupDetailsActivity extends Activity {
 		});
 	}
 
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
-			if (progressDialog == null) { 
+			if (progressDialog == null) {
 				progressDialog = new ProgressDialog(GroupDetailsActivity.this);
 				progressDialog.setMessage("正在添加...");
 				progressDialog.setCanceledOnTouchOutside(false);
@@ -107,13 +106,13 @@ public class GroupDetailsActivity extends Activity {
 			case REQUEST_CODE_ADD_USER:// 添加群成员
 				final String[] newmembers = data.getStringArrayExtra("newmembers");
 				addMembersToGroup(newmembers);
-				
+
 				break;
-			case REQUEST_CODE_EXIT: //退出群
+			case REQUEST_CODE_EXIT: // 退出群
 				progressDialog.setMessage("正在退出群...");
 				exitGrop();
 				break;
-			case REQUEST_CODE_EXIT_DELETE: //解散群
+			case REQUEST_CODE_EXIT_DELETE: // 解散群
 				progressDialog.setMessage("正在解散群...");
 				deleteGrop();
 				break;
@@ -123,9 +122,10 @@ public class GroupDetailsActivity extends Activity {
 			}
 		}
 	}
-	
+
 	/**
 	 * 点击退出群组按钮
+	 * 
 	 * @param view
 	 */
 	public void exitGroup(View view) {
@@ -135,6 +135,7 @@ public class GroupDetailsActivity extends Activity {
 
 	/**
 	 * 点击解散群组按钮
+	 * 
 	 * @param view
 	 */
 	public void exitDeleteGroup(View view) {
@@ -142,7 +143,7 @@ public class GroupDetailsActivity extends Activity {
 				REQUEST_CODE_EXIT_DELETE);
 
 	}
-	
+
 	/**
 	 * 退出群组
 	 * 
@@ -151,24 +152,22 @@ public class GroupDetailsActivity extends Activity {
 	private void exitGrop() {
 		new Thread(new Runnable() {
 			public void run() {
-				//try {
-					EMGroupManager.getInstance().exitFromGroup(groupId, EMChatManager.getInstance().getCurrentUser());
-					runOnUiThread(new Runnable() {
-						public void run() {
-							progressDialog.dismiss();
-							setResult(RESULT_OK);
-							finish();
-							ChatActivity.activityInstance.finish();
-						}
-					});
-/*				} catch (final EaseMobException e) {
-					runOnUiThread(new Runnable() {
-						public void run() {
-							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "退出群聊失败: "+e.getMessage(), 1).show();
-						}
-					});
-				}*/
+				// try {
+				EMGroupManager.getInstance().exitFromGroup(groupId, EMChatManager.getInstance().getCurrentUser());
+				runOnUiThread(new Runnable() {
+					public void run() {
+						progressDialog.dismiss();
+						setResult(RESULT_OK);
+						finish();
+						ChatActivity.activityInstance.finish();
+					}
+				});
+				/*
+				 * } catch (final EaseMobException e) { runOnUiThread(new
+				 * Runnable() { public void run() { progressDialog.dismiss();
+				 * Toast.makeText(getApplicationContext(),
+				 * "退出群聊失败: "+e.getMessage(), 1).show(); } }); }
+				 */
 			}
 		}).start();
 	}
@@ -181,56 +180,52 @@ public class GroupDetailsActivity extends Activity {
 	private void deleteGrop() {
 		new Thread(new Runnable() {
 			public void run() {
-				//try {
-					EMGroupManager.getInstance().exitAndDeleteGroup(groupId);
-					runOnUiThread(new Runnable() {
-						public void run() {
-							progressDialog.dismiss();
-							setResult(RESULT_OK);
-							finish();
-							ChatActivity.activityInstance.finish();
-						}
-					});
-/*				} catch (final EaseMobException e) {
-					runOnUiThread(new Runnable() {
-						public void run() {
-							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "解散群聊失败: "+e.getMessage(), 1).show();
-						}
-					});
-				}*/
+				// try {
+				EMGroupManager.getInstance().exitAndDeleteGroup(groupId);
+				runOnUiThread(new Runnable() {
+					public void run() {
+						progressDialog.dismiss();
+						setResult(RESULT_OK);
+						finish();
+						ChatActivity.activityInstance.finish();
+					}
+				});
+				/*
+				 * } catch (final EaseMobException e) { runOnUiThread(new
+				 * Runnable() { public void run() { progressDialog.dismiss();
+				 * Toast.makeText(getApplicationContext(), "解散群聊失败: " +
+				 * e.getMessage(), 1).show(); } }); }
+				 */
 			}
 		}).start();
 	}
-	
+
 	/**
 	 * 增加群成员
+	 * 
 	 * @param newmembers
 	 */
 	private void addMembersToGroup(final String[] newmembers) {
 		new Thread(new Runnable() {
 			public void run() {
-				//try {
-					EMGroupManager.getInstance().addUsersToGroup(groupId, newmembers);
-					runOnUiThread(new Runnable() {
-						public void run() {
-							progressDialog.dismiss();
-							adapter.notifyDataSetChanged();
-						}
-					});
-/*				} catch (final EaseMobException e) {
-					runOnUiThread(new Runnable() {
-						public void run() {
-							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "添加群成员失败: "+e.getMessage(), 1).show();
-						}
-					});
-				}*/
+				// try {
+				EMGroupManager.getInstance().addUsersToGroup(groupId, newmembers);
+				runOnUiThread(new Runnable() {
+					public void run() {
+						progressDialog.dismiss();
+						adapter.notifyDataSetChanged();
+					}
+				});
+				/*
+				 * } catch (final EaseMobException e) { runOnUiThread(new
+				 * Runnable() { public void run() { progressDialog.dismiss();
+				 * Toast.makeText(getApplicationContext(), "添加群成员失败: " +
+				 * e.getMessage(), 1).show(); } }); }
+				 */
 			}
 		}).start();
 	}
 
-	
 	/**
 	 * 群组成员gridadapter
 	 * 
