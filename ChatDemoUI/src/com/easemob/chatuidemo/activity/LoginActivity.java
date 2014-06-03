@@ -101,7 +101,7 @@ public class LoginActivity extends Activity {
 					DemoApplication.getInstance().setPassword(password);
 					runOnUiThread(new Runnable() {
 						public void run() {
-							pd.setMessage("正在获取好友和群聊列表");
+							pd.setMessage("正在获取好友列表...");
 						}
 					});
 					try {
@@ -119,13 +119,13 @@ public class LoginActivity extends Activity {
 						newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
 						newFriends.setNick("新的朋友");
 						newFriends.setHeader("");
-						//添加"群聊"
-						User groupUser = new User();
-						groupUser.setUsername(Constant.GROUP_USERNAME);
-						groupUser.setNick("群聊");
-						groupUser.setHeader("");
 						userlist.put(Constant.NEW_FRIENDS_USERNAME,newFriends);
-						userlist.put(Constant.GROUP_USERNAME, groupUser);
+						//添加"群聊"
+//						User groupUser = new User();
+//						groupUser.setUsername(Constant.GROUP_USERNAME);
+//						groupUser.setNick("群聊");
+//						groupUser.setHeader("");
+//						userlist.put(Constant.GROUP_USERNAME, groupUser);
 						
 						//存入内存
 						DemoApplication.getInstance().setContactList(userlist);
@@ -135,7 +135,7 @@ public class LoginActivity extends Activity {
 						dao.saveContactList(users);
 						
 						//获取群聊列表,sdk会把群组存入到EMGroupManager和db中
-						EMGroupManager.getInstance().getGroupsFromServer();
+//						EMGroupManager.getInstance().getGroupsFromServer();
 					} catch (Exception e) {
 					}
 					pd.dismiss();
