@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMContact;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.ImageMessageBody;
@@ -28,11 +29,11 @@ import com.easemob.util.EasyUtils;
  * 聊天记录adpater
  * 
  */
-public class ChatHistoryAdapter extends ArrayAdapter<User> {
+public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 
 	private LayoutInflater inflater;
 
-	public ChatHistoryAdapter(Context context, int textViewResourceId, List<User> objects) {
+	public ChatHistoryAdapter(Context context, int textViewResourceId, List<EMContact> objects) {
 		super(context, textViewResourceId, objects);
 		inflater = LayoutInflater.from(context);
 	}
@@ -62,12 +63,11 @@ public class ChatHistoryAdapter extends ArrayAdapter<User> {
 		}
 		
 		
-		
-		User user = getItem(position);
+		EMContact user = getItem(position);
 		String username = user.getUsername();
-		// 获取与此用户的会话
+		// 获取与此用户/群组的会话
 		EMConversation conversation = EMChatManager.getInstance().getConversation(username);
-		holder.name.setText(username);
+		holder.name.setText(user.getNick() != null ? user.getNick() : username);
 		if (conversation.getUnreadMsgCount() > 0) {
 			// 显示与此用户的消息未读数
 			holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));

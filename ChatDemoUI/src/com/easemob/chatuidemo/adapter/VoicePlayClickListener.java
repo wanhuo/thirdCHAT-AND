@@ -123,7 +123,8 @@ class VoicePlayClickListener implements View.OnClickListener {
 						EMChatDB.getInstance().updateMessageAck(message.getMsgId(), true);
 					}
 					//告知对方已读这条消息
-					EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+					if(chatType != ChatActivity.CHATTYPE_GROUP)
+						EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
 				}
 			} catch (Exception e) {
 				message.isAcked = false;

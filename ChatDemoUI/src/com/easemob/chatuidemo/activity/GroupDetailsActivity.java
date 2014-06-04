@@ -63,6 +63,7 @@ public class GroupDetailsActivity extends Activity {
 		// 获取传过来的groupid
 		groupId = getIntent().getStringExtra("groupId");
 		group = EMGroupManager.getInstance().getGroup(groupId);
+
 		// 如果自己是群主，显示解散按钮
 		if (group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
 			exitBtn.setVisibility(View.GONE);
@@ -71,6 +72,10 @@ public class GroupDetailsActivity extends Activity {
 		((TextView) findViewById(R.id.group_name)).setText(group.getGroupName());
 		adapter = new GridAdapter(this, R.layout.grid, group.getMembers());
 		userGridview.setAdapter(adapter);
+
+		// 保证每次进详情看到的都是最新的group
+		updateGroup();
+
 		// 设置OnTouchListener
 		userGridview.setOnTouchListener(new OnTouchListener() {
 
@@ -91,6 +96,8 @@ public class GroupDetailsActivity extends Activity {
 			}
 		});
 	}
+
+	
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -166,7 +173,7 @@ public class GroupDetailsActivity extends Activity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "退出群聊失败: "+e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), "退出群聊失败: " + e.getMessage(), 1).show();
 						}
 					});
 				}
@@ -196,7 +203,7 @@ public class GroupDetailsActivity extends Activity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "解散群聊失败: "+e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), "解散群聊失败: " + e.getMessage(), 1).show();
 						}
 					});
 				}
@@ -224,7 +231,7 @@ public class GroupDetailsActivity extends Activity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "添加群成员失败: "+e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), "添加群成员失败: " + e.getMessage(), 1).show();
 						}
 					});
 				}
@@ -393,7 +400,31 @@ public class GroupDetailsActivity extends Activity {
 		}
 	}
 	
-	public void back(View view){
+	protected void updateGroup() {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					EMGroupManager.getInstance().getGroupFromServer(groupId);
+					runOnUiThread(new Runnable() {
+						public void run() {
+							loadingPB.setVisibility(View.INVISIBLE);
+//							group = EMGroupManager.getInstance().getGroup(groupId);
+							adapter.notifyDataSetChanged();
+						}
+					});
+
+				} catch (EaseMobException e) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							loadingPB.setVisibility(View.INVISIBLE);
+						}
+					});
+				}
+			}
+		}).start();
+	}
+
+	public void back(View view) {
 		finish();
 	}
 }

@@ -24,8 +24,10 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactListener;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMNotifier;
+import com.easemob.chat.GroupChangeListener;
 import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
@@ -89,6 +91,8 @@ public class MainActivity extends FragmentActivity {
 		EMContactManager.getInstance().setContactListener(new MyContactListener());
 		//注册一个监听连接状态的listener
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
+		//addGroupChangeListener
+//		EMGroupManager.getInstance().addGroupChangeListener();
 	}
 
 	/**
@@ -395,6 +399,10 @@ public class MainActivity extends FragmentActivity {
 		}
 		
 	}
+	
+//	private class MyGroupChangeListener implements GroupChangeListener {
+//		
+//	}
 	
 	@Override
 	protected void onResume() {

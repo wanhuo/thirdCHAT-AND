@@ -172,4 +172,8 @@ public class GroupPickContactsActivity extends Activity {
 		}
 	}
 
+	public void back(View view){
+		finish();
+	}
+	
 }

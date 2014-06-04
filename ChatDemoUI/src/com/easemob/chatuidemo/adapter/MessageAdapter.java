@@ -69,15 +69,13 @@ public class MessageAdapter extends BaseAdapter {
 	private String username;
 	private LayoutInflater inflater;
 	private Activity activity;
-	private Bitmap headBp;
-	private Bitmap otherHead;
 
 	// reference to conversation object in chatsdk
 	private EMConversation conversation;
 
-	// if it is single chat, we will delete pic,audio files on service once
-	// downloaded
-	// for groupchat, leave for server side scripts to clean up old files
+	/**
+	 * 单聊or群聊类型
+	 */
 	private int chatType = ChatActivity.CHATTYPE_SINGLE;
 
 	private Context context;
@@ -202,8 +200,8 @@ public class MessageAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		// 如果是发送的消息，显示已读textview
-		if (message.direct == EMMessage.Direct.SEND) {
+		// 如果是发送的消息并且不是群聊消息，显示已读textview
+		if (message.direct == EMMessage.Direct.SEND && chatType != ChatActivity.CHATTYPE_GROUP) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
 			if (holder.tv_ack != null) {
 				if (message.isAcked) {
@@ -213,8 +211,8 @@ public class MessageAdapter extends BaseAdapter {
 				}
 			}
 		} else {
-			// 如果是文本或者地图消息，显示的时候给对方发送已读回执
-			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked) {
+			// 如果是文本或者地图消息并且不是group messgae，显示的时候给对方发送已读回执
+			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked && chatType != ChatActivity.CHATTYPE_GROUP) {
 				try {
 					// 发送已读回执
 					message.isAcked = true;
@@ -753,7 +751,7 @@ public class MessageAdapter extends BaseAdapter {
 						intent.putExtra("secret", body.getSecret());
 						intent.putExtra("remotepath", remote);
 					}
-					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked) {
+					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked && chatType != ChatActivity.CHATTYPE_GROUP) {
 						message.isAcked = true;
 						try {
 							EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());

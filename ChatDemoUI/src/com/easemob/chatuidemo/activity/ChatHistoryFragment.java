@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -35,7 +34,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMContact;
 import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroup;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
@@ -79,11 +81,21 @@ public class ChatHistoryFragment extends Fragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				EMContact emContact = adapter.getItem(position);
 				if (adapter.getItem(position).getUsername().equals(DemoApplication.getInstance().getUserName()))
 					Toast.makeText(getActivity(), "不能和自己聊天", 0).show();
 				else {
 					// 进入聊天页面
-					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getUsername()));
+					  Intent intent = new Intent(getActivity(), ChatActivity.class);
+					 if (emContact instanceof EMGroup) {
+		                    //it is group chat
+		                    intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
+		                    intent.putExtra("groupId", ((EMGroup) emContact).getGroupId());
+		                } else {
+		                    //it is single chat
+		                    intent.putExtra("userId", emContact.getUsername());
+		                } 
+					startActivity(intent);
 				}
 			}
 		});
@@ -145,7 +157,7 @@ public class ChatHistoryFragment extends Fragment {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.delete_message) {
-			User tobeDeleteUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
+			EMContact tobeDeleteUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
 			// 删除此会话
 			EMChatManager.getInstance().deleteConversation(tobeDeleteUser.getUsername());
 			adapter.remove(tobeDeleteUser);
@@ -169,18 +181,25 @@ public class ChatHistoryFragment extends Fragment {
 	}
 
 	/**
-	 * 获取有聊天记录的users
+	 * 获取有聊天记录的users和groups
 	 * 
 	 * @param context
 	 * @return
 	 */
-	private List<User> loadUsersWithRecentChat() {
-		List<User> resultList = new ArrayList<User>();
+	private List<EMContact> loadUsersWithRecentChat() {
+		List<EMContact> resultList = new ArrayList<EMContact>();
 		for (User user : contactList.values()) {
 			EMConversation conversation = EMChatManager.getInstance().getConversation(user.getUsername());
 			if (conversation.getMsgCount() > 0) {
 				resultList.add(user);
 			}
+		}
+		for(EMGroup group : EMGroupManager.getInstance().getAllGroups()){
+			EMConversation conversation = EMChatManager.getInstance().getConversation(group.getGroupId());
+			if(conversation.getMsgCount() > 0){
+				resultList.add(group);
+			}
+			
 		}
 		// 排序
 		sortUserByLastChatTime(resultList);
@@ -192,10 +211,10 @@ public class ChatHistoryFragment extends Fragment {
 	 * 
 	 * @param usernames
 	 */
-	private void sortUserByLastChatTime(List<User> contactList) {
-		Collections.sort(contactList, new Comparator<User>() {
+	private void sortUserByLastChatTime(List<EMContact> contactList) {
+		Collections.sort(contactList, new Comparator<EMContact>() {
 			@Override
-			public int compare(final User user1, final User user2) {
+			public int compare(final EMContact user1, final EMContact user2) {
 				EMConversation conversation1 = EMChatManager.getInstance().getConversation(user1.getUsername());
 				EMConversation conversation2 = EMChatManager.getInstance().getConversation(user2.getUsername());
 
