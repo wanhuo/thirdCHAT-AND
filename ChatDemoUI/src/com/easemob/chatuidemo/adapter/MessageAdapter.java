@@ -150,8 +150,6 @@ public class MessageAdapter extends BaseAdapter {
 		}
 	}
 
-	
-
 	@SuppressLint("NewApi")
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		final EMMessage message = getItem(position);
@@ -214,8 +212,8 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv_ack.setVisibility(View.INVISIBLE);
 				}
 			}
-		}else {
-			//如果是文本或者地图消息，显示的时候给对方发送已读回执
+		} else {
+			// 如果是文本或者地图消息，显示的时候给对方发送已读回执
 			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked) {
 				try {
 					// 发送已读回执
@@ -289,7 +287,7 @@ public class MessageAdapter extends BaseAdapter {
 				timestamp.setVisibility(View.VISIBLE);
 			}
 		}
-
+		convertView.setOnClickListener(null);
 		return convertView;
 	}
 
@@ -423,7 +421,7 @@ public class MessageAdapter extends BaseAdapter {
 
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 			if (message.isAcked) {
-				//隐藏语音未读标志
+				// 隐藏语音未读标志
 				holder.iv_read_status.setVisibility(View.INVISIBLE);
 			} else {
 				holder.iv_read_status.setVisibility(View.VISIBLE);
@@ -466,8 +464,8 @@ public class MessageAdapter extends BaseAdapter {
 			@Override
 			public boolean onLongClick(View v) {
 				activity.startActivityForResult(
-						(new Intent(activity, ContextMenu.class)).putExtra("position", position).putExtra("type", EMMessage.Type.LOCATION.ordinal()),
-						ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+						(new Intent(activity, ContextMenu.class)).putExtra("position", position).putExtra("type",
+								EMMessage.Type.LOCATION.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
 				return false;
 			}
 		});
@@ -529,17 +527,18 @@ public class MessageAdapter extends BaseAdapter {
 			}
 		}
 	}
-	
+
 	/**
 	 * 发送消息
+	 * 
 	 * @param message
 	 * @param holder
 	 */
 	public void sendMsgInBackground(final EMMessage message, final ViewHolder holder) {
 		holder.staus_iv.setVisibility(View.GONE);
 		holder.pb.setVisibility(View.VISIBLE);
-		if(chatType == ChatActivity.CHATTYPE_SINGLE){
-			//单聊
+		if (chatType == ChatActivity.CHATTYPE_SINGLE) {
+			// 单聊
 			EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
 
 				@Override
@@ -557,8 +556,8 @@ public class MessageAdapter extends BaseAdapter {
 				}
 
 			});
-		}else{
-			//群聊
+		} else {
+			// 群聊
 			EMChatManager.getInstance().sendGroupMessage(message, new EMCallBack() {
 
 				@Override
@@ -577,8 +576,7 @@ public class MessageAdapter extends BaseAdapter {
 
 			});
 		}
-		
-		
+
 	}
 
 	/*
@@ -692,6 +690,7 @@ public class MessageAdapter extends BaseAdapter {
 
 	/**
 	 * 更新ui上消息发送状态
+	 * 
 	 * @param message
 	 * @param holder
 	 */
@@ -749,7 +748,7 @@ public class MessageAdapter extends BaseAdapter {
 						// The local full size pic does not exist yet.
 						// ShowBigImage needs to download it from the server
 						// first
-//						intent.putExtra("", message.get);
+						// intent.putExtra("", message.get);
 						ImageMessageBody body = (ImageMessageBody) message.getBody();
 						intent.putExtra("secret", body.getSecret());
 						intent.putExtra("remotepath", remote);
@@ -793,7 +792,7 @@ public class MessageAdapter extends BaseAdapter {
 		ImageView iv_read_status;
 		TextView tv_ack;
 	}
-	
+
 	/*
 	 * 点击地图消息listener
 	 */
@@ -810,16 +809,14 @@ public class MessageAdapter extends BaseAdapter {
 
 		@Override
 		public void onClick(View v) {
-			 Intent intent;
-			 intent = new Intent(context, BaiduMapActivity.class);
-			 intent.putExtra("latitude", location.latitude);
-			 intent.putExtra("longitude", location.longitude);
-			 intent.putExtra("address", address);
-			 activity.startActivity(intent);
+			Intent intent;
+			intent = new Intent(context, BaiduMapActivity.class);
+			intent.putExtra("latitude", location.latitude);
+			intent.putExtra("longitude", location.longitude);
+			intent.putExtra("address", address);
+			activity.startActivity(intent);
 		}
 
 	}
-
-	
 
 }

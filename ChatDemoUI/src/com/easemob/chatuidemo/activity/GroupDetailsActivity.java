@@ -152,22 +152,26 @@ public class GroupDetailsActivity extends Activity {
 	private void exitGrop() {
 		new Thread(new Runnable() {
 			public void run() {
-				// try {
-				EMGroupManager.getInstance().exitFromGroup(groupId, EMChatManager.getInstance().getCurrentUser());
-				runOnUiThread(new Runnable() {
-					public void run() {
-						progressDialog.dismiss();
-						setResult(RESULT_OK);
-						finish();
-						ChatActivity.activityInstance.finish();
-					}
-				});
-				/*
-				 * } catch (final EaseMobException e) { runOnUiThread(new
-				 * Runnable() { public void run() { progressDialog.dismiss();
-				 * Toast.makeText(getApplicationContext(),
-				 * "退出群聊失败: "+e.getMessage(), 1).show(); } }); }
-				 */
+//				try {
+					EMGroupManager.getInstance().exitFromGroup(groupId, EMChatManager.getInstance().getCurrentUser());
+					runOnUiThread(new Runnable() {
+						public void run() {
+							progressDialog.dismiss();
+							setResult(RESULT_OK);
+							finish();
+							ChatActivity.activityInstance.finish();
+						}
+					});
+
+				/*} catch (final EaseMobException e) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							progressDialog.dismiss();
+							Toast.makeText(getApplicationContext(), "退出群聊失败: " + e.getMessage(), 1).show();
+						}
+					});
+				}*/
+
 			}
 		}).start();
 	}
@@ -180,22 +184,26 @@ public class GroupDetailsActivity extends Activity {
 	private void deleteGrop() {
 		new Thread(new Runnable() {
 			public void run() {
-				// try {
-				EMGroupManager.getInstance().exitAndDeleteGroup(groupId);
-				runOnUiThread(new Runnable() {
-					public void run() {
-						progressDialog.dismiss();
-						setResult(RESULT_OK);
-						finish();
-						ChatActivity.activityInstance.finish();
-					}
-				});
-				/*
-				 * } catch (final EaseMobException e) { runOnUiThread(new
-				 * Runnable() { public void run() { progressDialog.dismiss();
-				 * Toast.makeText(getApplicationContext(), "解散群聊失败: " +
-				 * e.getMessage(), 1).show(); } }); }
-				 */
+//				try {
+					EMGroupManager.getInstance().exitAndDeleteGroup(groupId);
+					runOnUiThread(new Runnable() {
+						public void run() {
+							progressDialog.dismiss();
+							setResult(RESULT_OK);
+							finish();
+							ChatActivity.activityInstance.finish();
+						}
+					});
+
+				/*} catch (final EaseMobException e) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							progressDialog.dismiss();
+							Toast.makeText(getApplicationContext(), "解散群聊失败: " + e.getMessage(), 1).show();
+						}
+					});
+				}*/
+
 			}
 		}).start();
 	}
@@ -208,20 +216,24 @@ public class GroupDetailsActivity extends Activity {
 	private void addMembersToGroup(final String[] newmembers) {
 		new Thread(new Runnable() {
 			public void run() {
-				// try {
-				EMGroupManager.getInstance().addUsersToGroup(groupId, newmembers);
-				runOnUiThread(new Runnable() {
-					public void run() {
-						progressDialog.dismiss();
-						adapter.notifyDataSetChanged();
-					}
-				});
-				/*
-				 * } catch (final EaseMobException e) { runOnUiThread(new
-				 * Runnable() { public void run() { progressDialog.dismiss();
-				 * Toast.makeText(getApplicationContext(), "添加群成员失败: " +
-				 * e.getMessage(), 1).show(); } }); }
-				 */
+//				try {
+					EMGroupManager.getInstance().addUsersToGroup(groupId, newmembers);
+					runOnUiThread(new Runnable() {
+						public void run() {
+							progressDialog.dismiss();
+							adapter.notifyDataSetChanged();
+						}
+					});
+
+				/*} catch (final EaseMobException e) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							progressDialog.dismiss();
+							Toast.makeText(getApplicationContext(), "添加群成员失败: " + e.getMessage(), 1).show();
+						}
+					});
+				}*/
+
 			}
 		}).start();
 	}

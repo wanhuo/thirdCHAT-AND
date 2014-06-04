@@ -271,7 +271,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 			listView.setSelection(count - 1);
 		}
 
-		listView.setEnabled(false);
 		listView.setOnTouchListener(new OnTouchListener() {
 
 			@Override

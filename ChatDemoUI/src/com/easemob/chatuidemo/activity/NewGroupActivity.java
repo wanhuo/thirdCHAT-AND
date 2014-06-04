@@ -59,22 +59,24 @@ public class NewGroupActivity extends Activity {
 					String groupName = groupNameEditText.getText().toString().trim();
 					String desc = introductionEditText.getText().toString();
 					String[] members = data.getStringArrayExtra("newmembers");
-					// try {
-					EMGroupManager.getInstance().createGroup(groupName, desc, members);
-					runOnUiThread(new Runnable() {
-						public void run() {
-							progressDialog.dismiss();
-							setResult(RESULT_OK);
-							finish();
-						}
-					});
-					/*
-					 * } catch (final EaseMobException e) { runOnUiThread(new
-					 * Runnable() { public void run() {
-					 * progressDialog.dismiss();
-					 * Toast.makeText(NewGroupActivity.this, "创建群组失败:" +
-					 * e.getLocalizedMessage(), 1).show(); } }); }
-					 */
+//					try {
+						EMGroupManager.getInstance().createGroup(groupName, desc, members);
+						runOnUiThread(new Runnable() {
+							public void run() {
+								progressDialog.dismiss();
+								setResult(RESULT_OK);
+								finish();
+							}
+						});
+
+					/*} catch (final EaseMobException e) {
+						runOnUiThread(new Runnable() {
+							public void run() {
+								progressDialog.dismiss();
+								Toast.makeText(NewGroupActivity.this, "创建群组失败:" + e.getLocalizedMessage(), 1).show();
+							}
+						});
+					}*/
 
 				}
 			}).start();
