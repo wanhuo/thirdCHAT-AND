@@ -292,6 +292,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 		intentFilter.setPriority(5);
 		registerReceiver(receiver, intentFilter);
 
+		// 注册一个ack回执消息的BroadcastReceiver
+		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getAckMessageBroadcastAction());
+		intentFilter.setPriority(5);
+		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
+
 		// show forward message if the message is not null
 		String forward_msg_id = getIntent().getStringExtra("forward_msg_id");
 		if (forward_msg_id != null) {
@@ -514,14 +519,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 			TextMessageBody txtBody = new TextMessageBody(content);
 			// 设置消息body
 			message.addBody(txtBody);
-			// if (chatType == CHATTYPE_GROUP) { //如果是群聊(待实现)
-			// message.setReceipt(group.getGroupId());
-			// } else {
 			// 设置要发给谁
 			message.setReceipt(toChatUsername);
 			// 把messgage加到conversation中
 			conversation.addMessage(message);
-			// }
 
 			// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
 			adapter.notifyDataSetChanged();
@@ -553,10 +554,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			VoiceMessageBody body = new VoiceMessageBody(new File(filePath), len);
 			message.addBody(body);
 
-			if (chatType == CHATTYPE_SINGLE) {
-				conversation.addMessage(message);
-			} else {
-			}
+			conversation.addMessage(message);
 			adapter.notifyDataSetChanged();
 			listView.setSelection(listView.getCount() - 1);
 			setResult(RESULT_OK);
@@ -581,11 +579,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		ImageMessageBody body = new ImageMessageBody(new File(filePath));
 		message.addBody(body);
 
-		if (chatType == CHATTYPE_SINGLE) {
-			conversation.addMessage(message);
-		} else {
-			// 群聊
-		}
+		conversation.addMessage(message);
 		adapter.notifyDataSetChanged();
 		listView.setSelection(listView.getCount() - 1);
 		setResult(RESULT_OK);
@@ -778,6 +772,27 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	/**
+	 * 消息回执BroadcastReceiver
+	 */
+	private BroadcastReceiver ackMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String msgid = intent.getStringExtra("msgid");
+			String from = intent.getStringExtra("from");
+			EMConversation conversation = EMChatManager.getInstance().getConversation(from);
+			if (conversation != null) {
+				// 把message设为已读
+				EMMessage msg = conversation.getMessage(msgid);
+				if (msg != null) {
+					msg.isAcked = true;
+				}
+			}
+			abortBroadcast();
+			adapter.notifyDataSetChanged();
+		}
+	};
+
+	/**
 	 * 按住说话listener
 	 * 
 	 */
@@ -925,7 +940,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 			unregisterReceiver(receiver);
 			receiver = null;
 		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		try {
+			unregisterReceiver(ackMessageReceiver);
+			ackMessageReceiver = null;
+		} catch (Exception e) {
 		}
 	}
 

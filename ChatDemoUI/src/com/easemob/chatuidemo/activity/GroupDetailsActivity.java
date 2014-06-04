@@ -152,8 +152,8 @@ public class GroupDetailsActivity extends Activity {
 	private void exitGrop() {
 		new Thread(new Runnable() {
 			public void run() {
-//				try {
-					EMGroupManager.getInstance().exitFromGroup(groupId, EMChatManager.getInstance().getCurrentUser());
+				try {
+					EMGroupManager.getInstance().exitFromGroup(groupId);
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
@@ -162,16 +162,14 @@ public class GroupDetailsActivity extends Activity {
 							ChatActivity.activityInstance.finish();
 						}
 					});
-
-				/*} catch (final EaseMobException e) {
+				} catch (final Exception e) {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "退出群聊失败: " + e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), "退出群聊失败: "+e.getMessage(), 1).show();
 						}
 					});
-				}*/
-
+				}
 			}
 		}).start();
 	}
@@ -184,7 +182,7 @@ public class GroupDetailsActivity extends Activity {
 	private void deleteGrop() {
 		new Thread(new Runnable() {
 			public void run() {
-//				try {
+				try {
 					EMGroupManager.getInstance().exitAndDeleteGroup(groupId);
 					runOnUiThread(new Runnable() {
 						public void run() {
@@ -194,16 +192,14 @@ public class GroupDetailsActivity extends Activity {
 							ChatActivity.activityInstance.finish();
 						}
 					});
-
-				/*} catch (final EaseMobException e) {
+				} catch (final Exception e) {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "解散群聊失败: " + e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), "解散群聊失败: "+e.getMessage(), 1).show();
 						}
 					});
-				}*/
-
+				}
 			}
 		}).start();
 	}
@@ -216,7 +212,7 @@ public class GroupDetailsActivity extends Activity {
 	private void addMembersToGroup(final String[] newmembers) {
 		new Thread(new Runnable() {
 			public void run() {
-//				try {
+				try {
 					EMGroupManager.getInstance().addUsersToGroup(groupId, newmembers);
 					runOnUiThread(new Runnable() {
 						public void run() {
@@ -224,16 +220,14 @@ public class GroupDetailsActivity extends Activity {
 							adapter.notifyDataSetChanged();
 						}
 					});
-
-				/*} catch (final EaseMobException e) {
+				} catch (final Exception e) {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "添加群成员失败: " + e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), "添加群成员失败: "+e.getMessage(), 1).show();
 						}
 					});
-				}*/
-
+				}
 			}
 		}).start();
 	}
@@ -345,37 +339,7 @@ public class GroupDetailsActivity extends Activity {
 								return;
 							}
 							EMLog.d("group", "remove user from group:" + username);
-							final ProgressDialog deleteDialog = new ProgressDialog(GroupDetailsActivity.this);
-							deleteDialog.setMessage("正在移除...");
-							deleteDialog.setCanceledOnTouchOutside(false);
-							deleteDialog.show();
-							new Thread(new Runnable() {
-
-								@Override
-								public void run() {
-									try {
-										// 删除被选中的成员
-										EMGroupManager.getInstance().removeUserFromGroup(groupId, username);
-										isInDeleteMode = false;
-										runOnUiThread(new Runnable() {
-
-											@Override
-											public void run() {
-												deleteDialog.dismiss();
-												notifyDataSetChanged();
-											}
-										});
-									} catch (final Exception e) {
-										deleteDialog.dismiss();
-										runOnUiThread(new Runnable() {
-											public void run() {
-												Toast.makeText(getApplicationContext(), "删除失败：" + e.getMessage(), 1).show();
-											}
-										});
-									}
-
-								}
-							}).start();
+							deleteMembersFromGroup(username);
 						} else {
 							// 正常情况下点击user，可以进入用户详情或者聊天页面等等
 							// startActivity(new
@@ -383,6 +347,40 @@ public class GroupDetailsActivity extends Activity {
 							// ChatActivity.class).putExtra("userId",
 							// user.getUsername()));
 						}
+					}
+
+					protected void deleteMembersFromGroup(final String username) {
+						final ProgressDialog deleteDialog = new ProgressDialog(GroupDetailsActivity.this);
+						deleteDialog.setMessage("正在移除...");
+						deleteDialog.setCanceledOnTouchOutside(false);
+						deleteDialog.show();
+						new Thread(new Runnable() {
+
+							@Override
+							public void run() {
+								try {
+									// 删除被选中的成员
+									EMGroupManager.getInstance().removeUserFromGroup(groupId, username);
+									isInDeleteMode = false;
+									runOnUiThread(new Runnable() {
+
+										@Override
+										public void run() {
+											deleteDialog.dismiss();
+											notifyDataSetChanged();
+										}
+									});
+								} catch (final Exception e) {
+									deleteDialog.dismiss();
+									runOnUiThread(new Runnable() {
+										public void run() {
+											Toast.makeText(getApplicationContext(), "删除失败：" + e.getMessage(), 1).show();
+										}
+									});
+								}
+
+							}
+						}).start();
 					}
 				});
 			}
@@ -393,5 +391,9 @@ public class GroupDetailsActivity extends Activity {
 		public int getCount() {
 			return super.getCount() + 2;
 		}
+	}
+	
+	public void back(View view){
+		finish();
 	}
 }

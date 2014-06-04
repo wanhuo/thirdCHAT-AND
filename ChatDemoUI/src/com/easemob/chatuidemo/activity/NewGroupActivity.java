@@ -27,8 +27,6 @@ public class NewGroupActivity extends Activity {
 	}
 
 	/**
-	 * 创建群组
-	 * 
 	 * @param v
 	 */
 	public void save(View v) {
@@ -42,11 +40,12 @@ public class NewGroupActivity extends Activity {
 			startActivityForResult(new Intent(this, GroupPickContactsActivity.class).putExtra("groupName", name), 0);
 		}
 	}
-
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
+			//新建群组
 			progressDialog = new ProgressDialog(this);
 			progressDialog.setMessage("正在创建群聊...");
 			progressDialog.setCanceledOnTouchOutside(false);
@@ -59,7 +58,7 @@ public class NewGroupActivity extends Activity {
 					String groupName = groupNameEditText.getText().toString().trim();
 					String desc = introductionEditText.getText().toString();
 					String[] members = data.getStringArrayExtra("newmembers");
-//					try {
+					try {
 						EMGroupManager.getInstance().createGroup(groupName, desc, members);
 						runOnUiThread(new Runnable() {
 							public void run() {
@@ -68,16 +67,15 @@ public class NewGroupActivity extends Activity {
 								finish();
 							}
 						});
-
-					/*} catch (final EaseMobException e) {
+					} catch (final Exception e) {
 						runOnUiThread(new Runnable() {
 							public void run() {
 								progressDialog.dismiss();
 								Toast.makeText(NewGroupActivity.this, "创建群组失败:" + e.getLocalizedMessage(), 1).show();
 							}
 						});
-					}*/
-
+					}
+					
 				}
 			}).start();
 		}
