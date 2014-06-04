@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -78,9 +79,9 @@ public class ChatHistoryFragment extends Fragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(adapter.getItem(position).getUsername().equals(DemoApplication.getInstance().getUserName()))
+				if (adapter.getItem(position).getUsername().equals(DemoApplication.getInstance().getUserName()))
 					Toast.makeText(getActivity(), "不能和自己聊天", 0).show();
-				else{
+				else {
 					// 进入聊天页面
 					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getUsername()));
 				}
@@ -108,6 +109,7 @@ public class ChatHistoryFragment extends Fragment {
 		clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
 		query.addTextChangedListener(new TextWatcher() {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				
 				adapter.getFilter().filter(s);
 				if (s.length() > 0) {
 					clearSearch.setVisibility(View.VISIBLE);
@@ -143,8 +145,8 @@ public class ChatHistoryFragment extends Fragment {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.delete_message) {
-			User tobeDeleteUser= adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
-			//删除此会话
+			User tobeDeleteUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
+			// 删除此会话
 			EMChatManager.getInstance().deleteConversation(tobeDeleteUser.getUsername());
 			adapter.remove(tobeDeleteUser);
 			adapter.notifyDataSetChanged();
@@ -210,7 +212,6 @@ public class ChatHistoryFragment extends Fragment {
 
 		});
 	}
-	
 
 	@Override
 	public void onHiddenChanged(boolean hidden) {
@@ -224,7 +225,7 @@ public class ChatHistoryFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if(!hidden){
+		if (!hidden) {
 			EMChatManager.getInstance().activityResumed();
 			refresh();
 		}

@@ -36,7 +36,6 @@ import com.easemob.util.HanziToPinyin;
 public class LoginActivity extends Activity {
 	private EditText usernameEditText;
 	private EditText passwordEditText;
-	private CharSequence len;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +53,11 @@ public class LoginActivity extends Activity {
 		usernameEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				if (!s.equals(len)) {
-					passwordEditText.setText(null);
-				}
+				passwordEditText.setText(null);
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				len = s;
 
 			}
 
@@ -119,23 +115,23 @@ public class LoginActivity extends Activity {
 						newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
 						newFriends.setNick("新的朋友");
 						newFriends.setHeader("");
-						userlist.put(Constant.NEW_FRIENDS_USERNAME,newFriends);
-						//添加"群聊"
-//						User groupUser = new User();
-//						groupUser.setUsername(Constant.GROUP_USERNAME);
-//						groupUser.setNick("群聊");
-//						groupUser.setHeader("");
-//						userlist.put(Constant.GROUP_USERNAME, groupUser);
-						
-						//存入内存
+						userlist.put(Constant.NEW_FRIENDS_USERNAME, newFriends);
+						// 添加"群聊"
+						// User groupUser = new User();
+						// groupUser.setUsername(Constant.GROUP_USERNAME);
+						// groupUser.setNick("群聊");
+						// groupUser.setHeader("");
+						// userlist.put(Constant.GROUP_USERNAME, groupUser);
+
+						// 存入内存
 						DemoApplication.getInstance().setContactList(userlist);
 						// 存入db
 						UserDao dao = new UserDao(LoginActivity.this);
 						List<User> users = new ArrayList<User>(userlist.values());
 						dao.saveContactList(users);
-						
-						//获取群聊列表,sdk会把群组存入到EMGroupManager和db中
-//						EMGroupManager.getInstance().getGroupsFromServer();
+
+						// 获取群聊列表,sdk会把群组存入到EMGroupManager和db中
+						// EMGroupManager.getInstance().getGroupsFromServer();
 					} catch (Exception e) {
 					}
 					pd.dismiss();
