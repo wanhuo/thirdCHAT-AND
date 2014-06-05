@@ -3,6 +3,7 @@ package com.easemob.chatuidemo.activity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.MultiAutoCompleteTextView.CommaTokenizer;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +31,8 @@ import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMNotifier;
 import com.easemob.chat.GroupChangeListener;
+import com.easemob.chat.EMMessage.Type;
+import com.easemob.chat.TextMessageBody;
 import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
@@ -37,6 +41,7 @@ import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
+import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.util.HanziToPinyin;
 
 public class MainActivity extends FragmentActivity {
@@ -401,11 +406,35 @@ public class MainActivity extends FragmentActivity {
 		
 	}
 	
+	/**
+	 * MyGroupChangeListener
+	 */
 	private class MyGroupChangeListener implements GroupChangeListener {
 
 		@Override
 		public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
-			Toast.makeText(getApplicationContext(), inviter+"邀请你加入"+groupName, Toast.LENGTH_SHORT).show();
+			//被邀请
+			EMMessage msg = EMMessage.createReceiveMessage(Type.TXT);
+			msg.setGroupId(groupId);
+			msg.setMsgId(UUID.randomUUID().toString());
+			msg.setFrom(inviter);
+			msg.addBody(new TextMessageBody(inviter + "邀请你加入了群聊"));
+			//保存邀请消息
+			EMChatManager.getInstance().saveMessage(msg);
+			//提醒新消息
+			EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
+			runOnUiThread(new Runnable() {
+				public void run() {
+					updateUnreadLabel();
+					//刷新ui
+					if(currentTabIndex == 0)
+						chatHistoryFragment.refresh();
+					if(CommonUtils.getTopActivity(MainActivity.this).equals(GroupsActivity.class.getName())){
+						GroupsActivity.instance.onResume();
+					}
+				}
+			});
+			
 		}
 
 		@Override
@@ -420,7 +449,18 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onKicked(String groupId, String actor, String reason) {
-			Toast.makeText(getApplicationContext(), "你被"+ actor +"T了", Toast.LENGTH_SHORT).show();
+			//提示用户被T了，demo省略此步骤
+			//刷新ui
+			runOnUiThread(new Runnable() {
+				public void run() {
+					if(currentTabIndex == 0)
+						chatHistoryFragment.refresh();
+					if(CommonUtils.getTopActivity(MainActivity.this).equals(GroupsActivity.class.getName())){
+						GroupsActivity.instance.onResume();
+					}
+				}
+			});
+			
 		}
 
 		

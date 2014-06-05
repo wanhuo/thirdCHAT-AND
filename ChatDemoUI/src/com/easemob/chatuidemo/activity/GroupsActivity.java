@@ -25,13 +25,14 @@ public class GroupsActivity extends Activity {
 	protected List<EMGroup> grouplist;
 	private GroupAdapter groupAdapter;
 	private InputMethodManager inputMethodManager;
-
+	public static GroupsActivity instance;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_groups);
 		
+		instance = this;
 		inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		grouplist =	EMGroupManager.getInstance().getAllGroups();
 		groupListView = (ListView)findViewById(R.id.fragment_container);
@@ -77,12 +78,18 @@ public class GroupsActivity extends Activity {
 	}
 	
 	@Override
-	protected void onResume() {
+	public void onResume() {
 		super.onResume();
 		grouplist = EMGroupManager.getInstance().getAllGroups();
 		groupAdapter = new GroupAdapter(this, 1, grouplist);
 		groupListView.setAdapter(groupAdapter);
 		groupAdapter.notifyDataSetChanged();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		instance = null;
 	}
 	
 	/**

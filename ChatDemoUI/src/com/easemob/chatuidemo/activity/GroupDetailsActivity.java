@@ -116,11 +116,11 @@ public class GroupDetailsActivity extends Activity {
 
 				break;
 			case REQUEST_CODE_EXIT: // 退出群
-				progressDialog.setMessage("正在退出群...");
+				progressDialog.setMessage("正在退出群聊...");
 				exitGrop();
 				break;
 			case REQUEST_CODE_EXIT_DELETE: // 解散群
-				progressDialog.setMessage("正在解散群...");
+				progressDialog.setMessage("正在解散群聊...");
 				deleteGrop();
 				break;
 

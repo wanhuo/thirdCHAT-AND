@@ -16,6 +16,7 @@ import android.widget.TextView.BufferType;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContact;
 import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
@@ -64,6 +65,13 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		
 		
 		EMContact user = getItem(position);
+		if(user instanceof EMGroup){
+			//群聊消息，显示群聊头像
+			holder.avatar.setImageResource(R.drawable.group_icon);
+		}else{
+			holder.avatar.setImageResource(R.drawable.default_avatar);
+		}
+		
 		String username = user.getUsername();
 		// 获取与此用户/群组的会话
 		EMConversation conversation = EMChatManager.getInstance().getConversation(username);
