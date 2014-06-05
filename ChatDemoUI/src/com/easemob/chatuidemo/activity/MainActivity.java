@@ -447,8 +447,9 @@ public class MainActivity extends FragmentActivity {
 			
 		}
 
+
 		@Override
-		public void onKicked(String groupId, String actor, String reason) {
+		public void onUserRemoved(String groupId, String groupName) {
 			//提示用户被T了，demo省略此步骤
 			//刷新ui
 			runOnUiThread(new Runnable() {
@@ -460,6 +461,10 @@ public class MainActivity extends FragmentActivity {
 					}
 				}
 			});
+		}
+
+		@Override
+		public void onGroupDestroy(String groupId, String groupName) {
 			
 		}
 
