@@ -759,7 +759,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
 			//如果是群聊消息，获取到group id
-			username = message.getGroupId();
+			String groupid = message.getGroupId();
+			if(groupid != null)
+				username = groupid;
 			if (!username.equals(toChatUsername)) {
 				//消息不是发给当前会话，return
 				return; 

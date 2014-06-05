@@ -465,6 +465,19 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onGroupDestroy(String groupId, String groupName) {
+			//群被解散
+			//提示用户群被解散,demo省略
+			//刷新ui
+			runOnUiThread(new Runnable() {
+				public void run() {
+					if(currentTabIndex == 0)
+						chatHistoryFragment.refresh();
+					if(CommonUtils.getTopActivity(MainActivity.this).equals(GroupsActivity.class.getName())){
+						GroupsActivity.instance.onResume();
+					}
+				}
+			});
+			
 			
 		}
 
