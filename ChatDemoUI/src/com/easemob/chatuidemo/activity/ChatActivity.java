@@ -293,7 +293,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		// 注册一个ack回执消息的BroadcastReceiver
 		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getAckMessageBroadcastAction());
-		intentFilter.setPriority(5);
+		ackMessageIntentFilter.setPriority(5);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 
 		// show forward message if the message is not null

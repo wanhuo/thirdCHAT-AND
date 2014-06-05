@@ -81,7 +81,7 @@ public class MainActivity extends FragmentActivity {
 
 		// 注册一个ack回执消息的BroadcastReceiver
 		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getAckMessageBroadcastAction());
-		intentFilter.setPriority(3);
+		ackMessageIntentFilter.setPriority(3);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 		
 		//注册一个好友请求同意好友请求等的BroadcastReceiver
