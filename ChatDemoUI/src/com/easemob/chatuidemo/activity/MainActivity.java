@@ -92,8 +92,8 @@ public class MainActivity extends FragmentActivity {
 		EMContactManager.getInstance().setContactListener(new MyContactListener());
 		//注册一个监听连接状态的listener
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
-		//addGroupChangeListener
-//		EMGroupManager.getInstance().addGroupChangeListener();
+		//注册群聊相关的listener
+		EMGroupManager.getInstance().addGroupChangeListener(new MyGroupChangeListener());
 	}
 
 	/**
@@ -401,9 +401,30 @@ public class MainActivity extends FragmentActivity {
 		
 	}
 	
-//	private class MyGroupChangeListener implements GroupChangeListener {
-//		
-//	}
+	private class MyGroupChangeListener implements GroupChangeListener {
+
+		@Override
+		public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
+			Toast.makeText(getApplicationContext(), inviter+"邀请你加入"+groupName, Toast.LENGTH_SHORT).show();
+		}
+
+		@Override
+		public void onInvitationAccpted(String groupId, String inviter, String reason) {
+			
+		}
+
+		@Override
+		public void onInvitationDeclined(String groupId, String invitee, String reason) {
+			
+		}
+
+		@Override
+		public void onKicked(String groupId, String actor, String reason) {
+			Toast.makeText(getApplicationContext(), "你被"+ actor +"T了", Toast.LENGTH_SHORT).show();
+		}
+
+		
+	}
 	
 	@Override
 	protected void onResume() {

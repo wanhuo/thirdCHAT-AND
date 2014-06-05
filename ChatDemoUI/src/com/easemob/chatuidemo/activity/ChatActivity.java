@@ -757,10 +757,12 @@ public class ChatActivity extends Activity implements OnClickListener {
 			String username = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
-			// EMMessage message =
-			// EMChatManager.getInstance().getMessage(msgid);
+			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
+			//如果是群聊消息，获取到group id
+			username = message.getGroupId();
 			if (!username.equals(toChatUsername)) {
-				return; // it is not for the current chat, ignore
+				//消息不是发给当前会话，return
+				return; 
 			}
 			// 通知adapter有新消息，更新ui
 			adapter.notifyDataSetChanged();
