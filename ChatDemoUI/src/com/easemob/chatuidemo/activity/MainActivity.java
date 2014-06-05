@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChatManager;
@@ -410,6 +411,5 @@ public class MainActivity extends FragmentActivity {
 		updateUnreadLabel();
 		updateUnreadAddressLable();
 	}
-	
 	
 }

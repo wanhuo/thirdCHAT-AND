@@ -285,7 +285,7 @@ public class MessageAdapter extends BaseAdapter {
 				timestamp.setVisibility(View.VISIBLE);
 			}
 		}
-		convertView.setOnClickListener(null);
+//		convertView.setOnClickListener(null);
 		return convertView;
 	}
 
