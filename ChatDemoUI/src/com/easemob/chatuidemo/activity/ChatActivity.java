@@ -287,8 +287,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// 注册接收消息广播
 		receiver = new NewMessageBroadcastReceiver();
 		IntentFilter intentFilter = new IntentFilter(EMChatManager.getInstance().getNewMessageBroadcastAction());
-		// 设置广播的优先级别大于Mainacitivity,这样如果消息来的时候正好在chat页面，
-		// 直接显示消息，而不是提示消息未读
+		// 设置广播的优先级别大于Mainacitivity,这样如果消息来的时候正好在chat页面，直接显示消息，而不是提示消息未读
 		intentFilter.setPriority(5);
 		registerReceiver(receiver, intentFilter);
 
