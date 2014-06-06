@@ -200,6 +200,12 @@ public class MessageAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
+		
+		//群聊时，显示接收的消息的发送人的名称
+		if(chatType == ChatActivity.CHATTYPE_GROUP && message.direct == EMMessage.Direct.RECEIVE)
+			//demo用username代替nick
+			holder.tv_userId.setText(message.getFrom());
+		
 		// 如果是发送的消息并且不是群聊消息，显示已读textview
 		if (message.direct == EMMessage.Direct.SEND && chatType != ChatActivity.CHATTYPE_GROUP) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
