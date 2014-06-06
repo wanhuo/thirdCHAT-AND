@@ -455,6 +455,7 @@ public class MainActivity extends FragmentActivity {
 			//刷新ui
 			runOnUiThread(new Runnable() {
 				public void run() {
+					updateUnreadLabel();
 					if(currentTabIndex == 0)
 						chatHistoryFragment.refresh();
 					if(CommonUtils.getTopActivity(MainActivity.this).equals(GroupsActivity.class.getName())){
@@ -471,6 +472,7 @@ public class MainActivity extends FragmentActivity {
 			//刷新ui
 			runOnUiThread(new Runnable() {
 				public void run() {
+					updateUnreadLabel();
 					if(currentTabIndex == 0)
 						chatHistoryFragment.refresh();
 					if(CommonUtils.getTopActivity(MainActivity.this).equals(GroupsActivity.class.getName())){

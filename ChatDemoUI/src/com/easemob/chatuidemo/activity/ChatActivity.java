@@ -1000,7 +1000,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 					// 调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
 					List<EMMessage> messages;
 					try {
-						messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
+						if(chatType == CHATTYPE_SINGLE)
+							messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
+						else
+							messages = conversation.loadMoreGroupMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
 					} catch (Exception e1) {
 						loadmorePB.setVisibility(View.GONE);
 						return;
