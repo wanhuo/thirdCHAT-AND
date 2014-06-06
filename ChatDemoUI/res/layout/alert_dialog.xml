@@ -64,7 +64,7 @@
            android:layout_height="47dp"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:background="@drawable/btn_gray_selector"
+            android:background="@drawable/btn_cancel_bj"
             android:gravity="center"
             android:onClick="cancel"
             android:text="@string/cancel"
