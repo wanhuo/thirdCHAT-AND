@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.chat.ConnectionListener;
+import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactListener;
 import com.easemob.chat.EMContactManager;
@@ -99,6 +100,8 @@ public class MainActivity extends FragmentActivity {
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 		//注册群聊相关的listener
 		EMGroupManager.getInstance().addGroupChangeListener(new MyGroupChangeListener());
+		//通知sdk，UI 已经初始化完毕，注册了相应的receiver, 可以接受broadcast了
+		EMChat.getInstance().setAppInited();
 	}
 
 	/**
@@ -270,7 +273,6 @@ public class MainActivity extends FragmentActivity {
 			final boolean isResponse = intent.getBooleanExtra("isResponse", false);
 			//消息发送方username
 			final String from = intent.getStringExtra("username");
-			
 			//接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所有客户端不要重复提醒
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
 			for(InviteMessage inviteMessage : msgs){
