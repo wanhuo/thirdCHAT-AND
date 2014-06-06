@@ -127,8 +127,8 @@ public class LoginActivity extends Activity {
 						UserDao dao = new UserDao(LoginActivity.this);
 						List<User> users = new ArrayList<User>(userlist.values());
 						dao.saveContactList(users);
-						
-						//获取群聊列表,sdk会把群组存入到EMGroupManager和db中
+
+						// 获取群聊列表,sdk会把群组存入到EMGroupManager和db中
 						EMGroupManager.getInstance().getGroupsFromServer();
 					} catch (Exception e) {
 					}
@@ -169,11 +169,11 @@ public class LoginActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-
 		if (DemoApplication.getInstance().getUserName() != null) {
 			usernameEditText.setText(DemoApplication.getInstance().getUserName());
 		}
 	}
+
 
 	/**
 	 * 设置hearder属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人

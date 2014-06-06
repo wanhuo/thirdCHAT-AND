@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.MultiAutoCompleteTextView.CommaTokenizer;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChat;
@@ -491,6 +490,6 @@ public class MainActivity extends FragmentActivity {
 		super.onResume();
 		updateUnreadLabel();
 		updateUnreadAddressLable();
+		
 	}
-	
 }
