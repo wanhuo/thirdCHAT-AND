@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.SimpleAdapter;
 
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
@@ -48,7 +49,7 @@ public class DemoApplication extends Application {
 			// 则此application::onCreate 是被service 调用的，直接返回
 			return;
 		}
-
+		
 		applicationContext = this;
 		instance = this;
 		// 初始化环信SDK,一定要先调用init()
