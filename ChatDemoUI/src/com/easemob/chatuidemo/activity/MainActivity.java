@@ -42,6 +42,7 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.HanziToPinyin;
 
 public class MainActivity extends FragmentActivity {
@@ -374,6 +375,7 @@ public class MainActivity extends FragmentActivity {
 			if(currentTabIndex == 1)
 				contactListFragment.refresh();
 			updateUnreadLabel();
+			
 		}
 
 		
@@ -404,6 +406,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onConnecting(String progress) {
 		}
+		
 		
 	}
 	

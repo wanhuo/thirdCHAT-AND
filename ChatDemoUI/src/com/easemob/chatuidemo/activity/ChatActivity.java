@@ -624,7 +624,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 		conversation.addMessage(message);
 
 		adapter.notifyDataSetChanged();
-		mEditTextContent.setText("");
 		listView.setSelection(listView.getCount() - 1);
 
 		setResult(RESULT_OK);
@@ -717,6 +716,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			more.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
 			expressionContainer.setVisibility(View.GONE);
+			listView.setSelection(listView.getCount() - 1);
 		} else {
 			if (expressionContainer.getVisibility() == View.VISIBLE) {
 				expressionContainer.setVisibility(View.GONE);
@@ -995,11 +995,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 			switch (scrollState) {
 			case OnScrollListener.SCROLL_STATE_IDLE:
 				if (view.getFirstVisiblePosition() == 0 && !isloading && haveMoreData) {
-					// sdk初始化加载的聊天记录为20条，到顶时去db里获取更多
 					loadmorePB.setVisibility(View.VISIBLE);
-					// 调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
+					// sdk初始化加载的聊天记录为20条，到顶时去db里获取更多
 					List<EMMessage> messages;
 					try {
+						// 获取更多messges，调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
 						if(chatType == CHATTYPE_SINGLE)
 							messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
 						else
