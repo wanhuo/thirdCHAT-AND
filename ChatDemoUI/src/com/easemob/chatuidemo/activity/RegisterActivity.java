@@ -52,6 +52,7 @@ public class RegisterActivity extends Activity{
 						EMChatManager.getInstance().createAccountOnServer(appkey + "_" + username, pwd);
 						runOnUiThread(new Runnable() {
 							public void run() {
+								if(!RegisterActivity.this.isFinishing())
 								pd.dismiss();
 								//保存用户名
 								DemoApplication.getInstance().setUserName(username);
@@ -62,6 +63,7 @@ public class RegisterActivity extends Activity{
 					} catch (final Exception e) {
 						runOnUiThread(new Runnable() {
 							public void run() {
+								if(!RegisterActivity.this.isFinishing())
 								pd.dismiss();
 								if(e!=null&&e.getMessage()!=null)
 								{

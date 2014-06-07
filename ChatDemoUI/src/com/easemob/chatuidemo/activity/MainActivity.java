@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import com.easemob.chat.TextMessageBody;
 import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
@@ -63,6 +65,8 @@ public class MainActivity extends FragmentActivity {
 	//当前fragment的index
 	private int currentTabIndex;
 	private NewMessageBroadcastReceiver msgReceiver;
+	// 账号在别处登录
+	private boolean isConflict=false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +166,13 @@ public class MainActivity extends FragmentActivity {
 		try {
 			unregisterReceiver(contactInviteReceiver);
 		} catch (Exception e) {}
+		
+		if(conflictBuilder!=null)
+		{
+			conflictBuilder.create().dismiss();
+			conflictBuilder=null;
+		}
+		
 		
 	}
 
@@ -390,8 +401,14 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onDisConnected(String errorString) {
-			chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
-			chatHistoryFragment.errorText.setText("连接不到聊天服务器");
+			if(errorString!=null&&errorString.contains("conflict"))
+			{
+				//收到帐号在其他手机登录
+				showConflictDialog();
+			}else{
+				chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
+				chatHistoryFragment.errorText.setText("连接不到聊天服务器");
+			}
 		}
 
 		@Override
@@ -427,6 +444,8 @@ public class MainActivity extends FragmentActivity {
 			EMChatManager.getInstance().saveMessage(msg);
 			//提醒新消息
 			EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
+			
+			if(!isConflict)
 			runOnUiThread(new Runnable() {
 				public void run() {
 					updateUnreadLabel();
@@ -458,12 +477,17 @@ public class MainActivity extends FragmentActivity {
 			//刷新ui
 			runOnUiThread(new Runnable() {
 				public void run() {
-					updateUnreadLabel();
-					if(currentTabIndex == 0)
-						chatHistoryFragment.refresh();
-					if(CommonUtils.getTopActivity(MainActivity.this).equals(GroupsActivity.class.getName())){
-						GroupsActivity.instance.onResume();
+					try {
+						updateUnreadLabel();
+						if(currentTabIndex == 0)
+							chatHistoryFragment.refresh();
+						if(CommonUtils.getTopActivity(MainActivity.this).equals(GroupsActivity.class.getName())){
+							GroupsActivity.instance.onResume();
+						}
+					} catch (Exception e) {
+						Log.e("###", "refresh exception "+e.getMessage());
 					}
+					
 				}
 			});
 		}
@@ -493,8 +517,79 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		updateUnreadLabel();
-		updateUnreadAddressLable();
+		if(!isConflict)
+		{
+			updateUnreadLabel();
+			updateUnreadAddressLable();
+		}
 		
 	}
+	private android.app.AlertDialog.Builder conflictBuilder;
+
+	/**
+	 * 帐号在别处登录
+	 */
+	private void showConflictDialog() {
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				DemoApplication.getInstance().logout();
+				
+			}
+		}).start();
+		if(!MainActivity.this.isFinishing()){
+			//clear up global variables
+			try {
+				if(conflictBuilder==null)
+					conflictBuilder=new android.app.AlertDialog.Builder(MainActivity.this);
+					conflictBuilder.setTitle("下线通知");
+					conflictBuilder.setMessage(R.string.connect_conflict);
+					conflictBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+							conflictBuilder=null;
+							finish();
+							startActivity(new Intent(MainActivity.this, LoginActivity.class));
+						}
+					});
+					conflictBuilder.setCancelable(false);
+					conflictBuilder.create().show();
+					isConflict=true;
+			} catch (Exception e) {
+				Log.e("###", "---------color conflictBuilder error"+e.getMessage());
+			}
+			
+		}
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

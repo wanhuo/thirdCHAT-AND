@@ -49,7 +49,6 @@ public class DemoApplication extends Application {
 			// 则此application::onCreate 是被service 调用的，直接返回
 			return;
 		}
-		
 		applicationContext = this;
 		instance = this;
 		// 初始化环信SDK,一定要先调用init()

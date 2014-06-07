@@ -132,6 +132,9 @@ public class LoginActivity extends Activity {
 						EMGroupManager.getInstance().getGroupsFromServer();
 					} catch (Exception e) {
 					}
+					
+					
+					if(!LoginActivity.this.isFinishing())
 					pd.dismiss();
 					// 进入主页面
 					startActivity(new Intent(LoginActivity.this, MainActivity.class));
