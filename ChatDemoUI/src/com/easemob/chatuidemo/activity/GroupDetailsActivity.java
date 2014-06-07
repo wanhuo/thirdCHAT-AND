@@ -413,7 +413,7 @@ public class GroupDetailsActivity extends Activity {
 						}
 					});
 
-				} catch (EaseMobException e) {
+				} catch (Exception e) {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							loadingPB.setVisibility(View.INVISIBLE);
