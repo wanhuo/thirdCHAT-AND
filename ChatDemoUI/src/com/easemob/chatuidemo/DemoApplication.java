@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
+import android.provider.Settings.System;
 import android.util.Log;
 import android.widget.SimpleAdapter;
 
@@ -71,13 +72,6 @@ public class DemoApplication extends Application {
 		options.setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker());
 
 		MobclickAgent.onError(applicationContext);
-
-		if (getUserName() != null && contactList == null) {
-			UserDao dao = new UserDao(applicationContext);
-			// 获取本地好友user list到内存,方便以后获取好友list
-			contactList = dao.getContactList();
-		}
-
 	}
 
 	public static DemoApplication getInstance() {
@@ -90,6 +84,12 @@ public class DemoApplication extends Application {
 	 * @return
 	 */
 	public Map<String, User> getContactList() {
+		if(getUserName() != null &&contactList == null)
+		{
+			UserDao dao = new UserDao(applicationContext);
+			// 获取本地好友user list到内存,方便以后获取好友list
+			contactList = dao.getContactList();
+		}
 		return contactList;
 	}
 

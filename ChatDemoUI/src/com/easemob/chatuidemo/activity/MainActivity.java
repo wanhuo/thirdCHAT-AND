@@ -212,6 +212,7 @@ public class MainActivity extends FragmentActivity {
 	 */
 	public int getUnreadAddressCountTotal(){
 		int unreadAddressCountTotal=0;
+		if(DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME)!=null)
 		unreadAddressCountTotal=DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME).getUnreadMsgCount();
 		return unreadAddressCountTotal;
 	}
