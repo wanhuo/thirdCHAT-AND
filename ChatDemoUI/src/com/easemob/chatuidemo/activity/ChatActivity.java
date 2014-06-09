@@ -363,7 +363,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			case RESULT_CODE_DELETE: // 删除消息
 				EMMessage deleteMsg = (EMMessage) adapter.getItem(data.getIntExtra("position", -1));
 				conversation.removeMessage(deleteMsg.getMsgId());
-				adapter.notifyDataSetChanged();
+				adapter.refresh(conversation);
 				listView.setSelection(data.getIntExtra("position", adapter.getCount()) - 1);
 				break;
 
@@ -382,7 +382,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		if (resultCode == RESULT_OK) { // 清空消息
 			if (requestCode == REQUEST_CODE_EMPTY_HISTORY) {
 				EMChatManager.getInstance().deleteConversation(toChatUsername);
-				adapter.notifyDataSetChanged();
+				adapter.refresh(EMChatManager.getInstance().getConversation(toChatUsername));
 			} else if (requestCode == REQUEST_CODE_CAMERA) { // 发送照片
 				if (cameraFile != null && cameraFile.exists())
 					sendPicture(cameraFile.getAbsolutePath());
@@ -422,7 +422,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 				}
 			} else if (conversation.getMsgCount() > 0) {
-				adapter.notifyDataSetChanged();
+				adapter.refresh(conversation);
 				setResult(RESULT_OK);
 			}
 		}
@@ -524,7 +524,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			conversation.addMessage(message);
 
 			// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
-			adapter.notifyDataSetChanged();
+			adapter.refresh(conversation);
 			listView.setSelection(listView.getCount() - 1);
 			mEditTextContent.setText("");
 
@@ -554,7 +554,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			message.addBody(body);
 
 			conversation.addMessage(message);
-			adapter.notifyDataSetChanged();
+			adapter.refresh(conversation);
 			listView.setSelection(listView.getCount() - 1);
 			setResult(RESULT_OK);
 			// send file
@@ -579,7 +579,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		message.addBody(body);
 
 		conversation.addMessage(message);
-		adapter.notifyDataSetChanged();
+		adapter.refresh(conversation);
 		listView.setSelection(listView.getCount() - 1);
 		setResult(RESULT_OK);
 		// more(more);
@@ -622,8 +622,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		message.setReceipt(toChatUsername);
 		conversation.addMessage(message);
-
-		adapter.notifyDataSetChanged();
+		adapter.refresh(conversation);
 		listView.setSelection(listView.getCount() - 1);
 
 		setResult(RESULT_OK);
@@ -641,7 +640,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// msg.setBackSend(true);
 		msg.status = EMMessage.Status.CREATE;
 
-		adapter.notifyDataSetChanged();
+		adapter.refresh(conversation);
 		listView.setSelection(resendPos);
 	}
 
@@ -766,7 +765,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 				return; 
 			}
 			// 通知adapter有新消息，更新ui
-			adapter.notifyDataSetChanged();
+			conversation = EMChatManager.getInstance().getConversation(toChatUsername);
+			adapter.refresh(conversation);
 			listView.setSelection(listView.getCount() - 1);
 			// 记得把广播给终结掉
 			abortBroadcast();

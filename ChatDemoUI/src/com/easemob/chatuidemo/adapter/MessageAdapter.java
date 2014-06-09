@@ -96,6 +96,14 @@ public class MessageAdapter extends BaseAdapter {
 	public int getCount() {
 		return conversation.getMsgCount();
 	}
+	
+	public void refresh(EMConversation conversation){
+		this.conversation=conversation;
+		notifyDataSetChanged();
+	}
+	
+	
+	
 
 	public EMMessage getItem(int position) {
 		return conversation.getMessage(position);
