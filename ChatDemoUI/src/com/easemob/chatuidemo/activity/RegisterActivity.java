@@ -22,6 +22,7 @@ import com.easemob.exceptions.EaseMobException;
 public class RegisterActivity extends Activity{
 	private EditText userNameEditText;
 	private EditText passwordEditText;
+	private EditText confirmPwdEditText;
 
 
 	@Override
@@ -30,6 +31,7 @@ public class RegisterActivity extends Activity{
 		setContentView(R.layout.activity_register);
 		userNameEditText = (EditText) findViewById(R.id.username);
 		passwordEditText = (EditText) findViewById(R.id.password);
+		confirmPwdEditText=(EditText) findViewById(R.id.confirm_password);
 	}
 	
 	
@@ -38,8 +40,30 @@ public class RegisterActivity extends Activity{
 	 * @param view
 	 */
 	public void register(View view){
-		final String username = userNameEditText.getText().toString();
-		final String pwd = passwordEditText.getText().toString();
+		final String username = userNameEditText.getText().toString().trim();
+		final String pwd = passwordEditText.getText().toString().trim();
+		String confirm_pwd=confirmPwdEditText.getText().toString().trim();
+		if(TextUtils.isEmpty(username))
+		{
+			Toast.makeText(this, "用户名不能为空！", Toast.LENGTH_SHORT).show();
+			userNameEditText.requestFocus();
+			return;
+		}else if(TextUtils.isEmpty(pwd))
+		{
+			Toast.makeText(this, "密码不能为空！", Toast.LENGTH_SHORT).show();
+			passwordEditText.requestFocus();
+			return;
+		}else if(TextUtils.isEmpty(confirm_pwd))
+		{
+			Toast.makeText(this, "确认密码不能为空！", Toast.LENGTH_SHORT).show();
+			confirmPwdEditText.requestFocus();
+			return;
+		}else if(!pwd.equals(confirm_pwd))
+		{
+			Toast.makeText(this, "两次输入的密码不一致，请重新输入！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
 		if(!TextUtils.isEmpty(username) && !TextUtils.isEmpty(pwd)){
 			final ProgressDialog pd = new ProgressDialog(this);
 			pd.setMessage("正在注册...");
