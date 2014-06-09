@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,8 @@ public class GroupDetailsActivity extends Activity {
 	private static final int REQUEST_CODE_ADD_USER = 0;
 	private static final int REQUEST_CODE_EXIT = 1;
 	private static final int REQUEST_CODE_EXIT_DELETE = 2;
+	private static final int REQUEST_CODE_CLEAR_ALL_HISTORY=3;
+	
 	private ExpandGridView userGridview;
 	private String groupId;
 	private ProgressBar loadingPB;
@@ -45,12 +48,16 @@ public class GroupDetailsActivity extends Activity {
 	private int referenceWidth;
 	private int referenceHeight;
 	private ProgressDialog progressDialog;
+	
+	//清空所有聊天记录
+	private RelativeLayout clearAllHistory;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_group_details);
-
+		clearAllHistory=(RelativeLayout) findViewById(R.id.clear_all_history);
 		userGridview = (ExpandGridView) findViewById(R.id.gridview);
 		loadingPB = (ProgressBar) findViewById(R.id.progressBar);
 		exitBtn = (Button) findViewById(R.id.btn_exit_grp);
@@ -95,6 +102,20 @@ public class GroupDetailsActivity extends Activity {
 				return false;
 			}
 		});
+		
+		clearAllHistory.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent=new Intent(GroupDetailsActivity.this, AlertDialog.class);
+				intent.putExtra("cancel",true);
+				intent.putExtra("titleIsCancel", true);
+				intent.putExtra("msg","确定删除群的聊天记录吗？");
+				startActivityForResult(intent, REQUEST_CODE_CLEAR_ALL_HISTORY);
+			}
+		});
+		
+		
 	}
 
 	
@@ -122,6 +143,14 @@ public class GroupDetailsActivity extends Activity {
 			case REQUEST_CODE_EXIT_DELETE: // 解散群
 				progressDialog.setMessage("正在解散群聊...");
 				deleteGrop();
+				break;
+			case REQUEST_CODE_CLEAR_ALL_HISTORY:
+				//删除此群聊的聊天记录
+				progressDialog.setMessage("正在删除群消息...");
+				
+				deleteGroupHistory();
+				
+				
 				break;
 
 			default:
@@ -151,6 +180,24 @@ public class GroupDetailsActivity extends Activity {
 
 	}
 
+	
+	
+	
+	/**
+	 * 删除群聊天记录
+	 */
+	public void deleteGroupHistory(){
+		
+		
+		EMChatManager.getInstance().deleteConversation(group.getGroupId());
+		progressDialog.dismiss();
+//		adapter.refresh(EMChatManager.getInstance().getConversation(toChatUsername));
+		
+		
+		
+	}
+	
+	
 	/**
 	 * 退出群组
 	 * 
@@ -425,6 +472,20 @@ public class GroupDetailsActivity extends Activity {
 	}
 
 	public void back(View view) {
+		setResult(RESULT_OK);
 		finish();
 	}
+
+
+
+	@Override
+	public void onBackPressed() {
+		setResult(RESULT_OK);
+		finish();
+	}
+	
+	
+	
+	
+	
 }

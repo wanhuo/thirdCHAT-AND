@@ -82,17 +82,52 @@
                 android:listSelector="@android:color/transparent"
                 android:numColumns="4"
                 android:verticalSpacing="10dp" />
-
+             <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dip"
+                        android:layout_marginLeft="10dip"
+                        android:layout_marginRight="10dip"
+                        android:background="#E6E6E6" />
+		
+            
+            <RelativeLayout 
+                android:id="@+id/clear_all_history"
+                android:layout_width="match_parent"
+                android:layout_height="50dip"
+                android:background="@drawable/btn_bottom_selector"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                
+                ><TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="20dip"
+                    android:gravity="center_vertical|left"
+                    android:text="清空聊天记录"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:typeface="serif" />
+                
+            </RelativeLayout>
+            
+              <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dip"
+                        android:layout_marginLeft="10dip"
+                        android:layout_marginRight="10dip"
+                        android:background="#E6E6E6" />
             
             <Button
                 android:id="@+id/btn_exit_grp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                 android:layout_marginLeft="11dp"
+                android:layout_marginLeft="11dp"
                 android:layout_marginRight="11dp"
+                android:layout_marginTop="11dp"
                 android:paddingBottom="7dp"
           		android:paddingTop="7dp"
-                android:layout_marginTop="6dp"
+                
                 android:background="@drawable/btn_style_alert_dialog_special"
                 android:onClick="exitGroup"
                 android:text="退出群聊"
@@ -114,6 +149,10 @@
                 android:text="解散群聊"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
+            
+            
+            
+            
       <!--       <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

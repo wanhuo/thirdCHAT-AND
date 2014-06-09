@@ -115,11 +115,11 @@ public class LoginActivity extends Activity {
 						newFriends.setHeader("");
 						userlist.put(Constant.NEW_FRIENDS_USERNAME,newFriends);
 						//添加"群聊"
-//						User groupUser = new User();
-//						groupUser.setUsername(Constant.GROUP_USERNAME);
-//						groupUser.setNick("群聊");
-//						groupUser.setHeader("");
-//						userlist.put(Constant.GROUP_USERNAME, groupUser);
+						User groupUser = new User();
+						groupUser.setUsername(Constant.GROUP_USERNAME);
+						groupUser.setNick("群聊");
+						groupUser.setHeader("");
+						userlist.put(Constant.GROUP_USERNAME, groupUser);
 						
 						//存入内存
 						DemoApplication.getInstance().setContactList(userlist);

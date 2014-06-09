@@ -92,7 +92,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 	public static final int REQUEST_CODE_CAMERA = 18;
 	public static final int REQUEST_CODE_LOCAL = 19;
 	public static final int REQUEST_CODE_CLICK_DESTORY_IMG = 20;
-
+	public static final int REQUEST_CODE_GROUP_DETAIL=21;
+	
 	public static final int RESULT_CODE_COPY = 1;
 	public static final int RESULT_CODE_DELETE = 2;
 	public static final int RESULT_CODE_FORWARD = 3;
@@ -424,6 +425,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 			} else if (conversation.getMsgCount() > 0) {
 				adapter.refresh(conversation);
 				setResult(RESULT_OK);
+			}else if(requestCode==REQUEST_CODE_GROUP_DETAIL)
+			{
+				System.out.println("-------------------group detail------------");
+				EMChatManager.getInstance().getConversation(toChatUsername);
+				adapter.refresh(conversation);
 			}
 		}
 	}
@@ -700,7 +706,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 * @param view
 	 */
 	public void toGroupDetails(View view) {
-		startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername)), 0);
+		startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername)), REQUEST_CODE_GROUP_DETAIL);
 	}
 
 	/**
