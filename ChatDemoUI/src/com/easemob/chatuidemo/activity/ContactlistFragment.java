@@ -207,7 +207,7 @@ public class ContactlistFragment extends Fragment{
 		});
 		
 		//加入"新的朋友"和"群聊"
-		contactList.add(0,users.get(Constant.GROUP_USERNAME));
+//		contactList.add(0,users.get(Constant.GROUP_USERNAME));
 		//把"新的朋友"添加到首位
 		contactList.add(0,users.get(Constant.NEW_FRIENDS_USERNAME));
 	}

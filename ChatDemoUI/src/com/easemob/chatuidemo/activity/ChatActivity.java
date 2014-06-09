@@ -518,7 +518,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			TextMessageBody txtBody = new TextMessageBody(content);
 			// 设置消息body
 			message.addBody(txtBody);
-			// 设置要发给谁
+			// 设置要发给谁,用户username或者群聊groupid
 			message.setReceipt(toChatUsername);
 			// 把messgage加到conversation中
 			conversation.addMessage(message);
@@ -753,7 +753,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private class NewMessageBroadcastReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			System.err.println("!!chatactivity receive msg. todo, support group new msg!!!");
 			String username = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象

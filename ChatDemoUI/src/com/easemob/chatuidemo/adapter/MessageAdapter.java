@@ -200,12 +200,12 @@ public class MessageAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
-		//群聊时，显示接收的消息的发送人的名称
-		if(chatType == ChatActivity.CHATTYPE_GROUP && message.direct == EMMessage.Direct.RECEIVE)
-			//demo用username代替nick
+
+		// 群聊时，显示接收的消息的发送人的名称
+		if (chatType == ChatActivity.CHATTYPE_GROUP && message.direct == EMMessage.Direct.RECEIVE)
+			// demo用username代替nick
 			holder.tv_userId.setText(message.getFrom());
-		
+
 		// 如果是发送的消息并且不是群聊消息，显示已读textview
 		if (message.direct == EMMessage.Direct.SEND && chatType != ChatActivity.CHATTYPE_GROUP) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
@@ -218,7 +218,8 @@ public class MessageAdapter extends BaseAdapter {
 			}
 		} else {
 			// 如果是文本或者地图消息并且不是group messgae，显示的时候给对方发送已读回执
-			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked && chatType != ChatActivity.CHATTYPE_GROUP) {
+			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked
+					&& chatType != ChatActivity.CHATTYPE_GROUP) {
 				try {
 					// 发送已读回执
 					message.isAcked = true;
@@ -291,7 +292,7 @@ public class MessageAdapter extends BaseAdapter {
 				timestamp.setVisibility(View.VISIBLE);
 			}
 		}
-//		convertView.setOnClickListener(null);
+		// convertView.setOnClickListener(null);
 		return convertView;
 	}
 
@@ -631,62 +632,93 @@ public class MessageAdapter extends BaseAdapter {
 
 		try {
 			String to = message.getTo();
-			/*
-			 * EMMessage msg = new EMMessage(EMMessage.Type.IMAGE);
-			 * msg.setReceipt(to); File imageFile = new
-			 * File(message.getFilePath()); ImageMessageBody body = new
-			 * ImageMessageBody(imageFile); msg.addBody(body);
-			 */
 
 			// before send, update ui
 			holder.staus_iv.setVisibility(View.GONE);
 			holder.pb.setVisibility(View.VISIBLE);
 			holder.tv.setVisibility(View.VISIBLE);
 			holder.tv.setText("0%");
+			if (chatType == ChatActivity.CHATTYPE_SINGLE) {
+				EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
 
-			// need to check, what this flag for?
-			// message.setBgSendAndShowChated(false);
-			// message.setBackSend(false);
-			// message.setSendingStatus(Message.SENDING_STATUS_SENDING);
-			// send out msg
-			EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
+					@Override
+					public void onSuccess() {
+						Log.d(TAG, "send image message successfully");
+						activity.runOnUiThread(new Runnable() {
+							public void run() {
+								// send success
+								holder.pb.setVisibility(View.GONE);
+								holder.tv.setVisibility(View.GONE);
+							}
+						});
+					}
 
-				@Override
-				public void onSuccess() {
-					Log.d(TAG, "send image message successfully");
-					activity.runOnUiThread(new Runnable() {
-						public void run() {
-							// send success
-							holder.pb.setVisibility(View.GONE);
-							holder.tv.setVisibility(View.GONE);
-						}
-					});
-				}
+					@Override
+					public void onError(int code, String error) {
+						activity.runOnUiThread(new Runnable() {
+							public void run() {
+								holder.pb.setVisibility(View.GONE);
+								holder.tv.setVisibility(View.GONE);
+								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
+								holder.staus_iv.setVisibility(View.VISIBLE);
+								Toast.makeText(activity,
+										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+										.show();
+							}
+						});
+					}
 
-				@Override
-				public void onError(int code, String error) {
-					activity.runOnUiThread(new Runnable() {
-						public void run() {
-							holder.pb.setVisibility(View.GONE);
-							holder.tv.setVisibility(View.GONE);
-							// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
-							holder.staus_iv.setVisibility(View.VISIBLE);
-							Toast.makeText(activity,
-									activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0).show();
-						}
-					});
-				}
+					@Override
+					public void onProgress(final int progress, String status) {
+						activity.runOnUiThread(new Runnable() {
+							public void run() {
+								holder.tv.setText(progress + "%");
+							}
+						});
+					}
 
-				@Override
-				public void onProgress(final int progress, String status) {
-					activity.runOnUiThread(new Runnable() {
-						public void run() {
-							holder.tv.setText(progress + "%");
-						}
-					});
-				}
+				});
+			} else {
+				EMChatManager.getInstance().sendGroupMessage(message, new EMCallBack() {
 
-			});
+					@Override
+					public void onSuccess() {
+						Log.d(TAG, "send image message successfully");
+						activity.runOnUiThread(new Runnable() {
+							public void run() {
+								// send success
+								holder.pb.setVisibility(View.GONE);
+								holder.tv.setVisibility(View.GONE);
+							}
+						});
+					}
+
+					@Override
+					public void onError(int code, String error) {
+						activity.runOnUiThread(new Runnable() {
+							public void run() {
+								holder.pb.setVisibility(View.GONE);
+								holder.tv.setVisibility(View.GONE);
+								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
+								holder.staus_iv.setVisibility(View.VISIBLE);
+								Toast.makeText(activity,
+										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+										.show();
+							}
+						});
+					}
+
+					@Override
+					public void onProgress(final int progress, String status) {
+						activity.runOnUiThread(new Runnable() {
+							public void run() {
+								holder.tv.setText(progress + "%");
+							}
+						});
+					}
+
+				});
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -757,7 +789,8 @@ public class MessageAdapter extends BaseAdapter {
 						intent.putExtra("secret", body.getSecret());
 						intent.putExtra("remotepath", remote);
 					}
-					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked && chatType != ChatActivity.CHATTYPE_GROUP) {
+					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
+							&& chatType != ChatActivity.CHATTYPE_GROUP) {
 						message.isAcked = true;
 						try {
 							EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
