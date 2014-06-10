@@ -427,9 +427,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 				setResult(RESULT_OK);
 			}else if(requestCode==REQUEST_CODE_GROUP_DETAIL)
 			{
-				System.out.println("-------------------group detail------------");
 				EMChatManager.getInstance().getConversation(toChatUsername);
-				adapter.refresh(conversation);
+				adapter.refresh();
 			}
 		}
 	}
@@ -621,17 +620,16 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 * @param locationAddress
 	 */
 	private void sendLocationMsg(double latitude, double longitude, String imagePath, String locationAddress) {
-
 		EMMessage message = EMMessage.createSendMessage(EMMessage.Type.LOCATION);
 		LocationMessageBody locBody = new LocationMessageBody(locationAddress, latitude, longitude);
 		message.addBody(locBody);
-
 		message.setReceipt(toChatUsername);
 		conversation.addMessage(message);
+		listView.setAdapter(adapter);
 		adapter.refresh();
-		listView.setSelection(listView.getCount() - 1);
-
+		listView.setSelection(listView.getCount()-1);
 		setResult(RESULT_OK);
+		
 	}
 
 	/**

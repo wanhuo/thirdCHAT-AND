@@ -101,6 +101,7 @@ public class MessageAdapter extends BaseAdapter {
 		notifyDataSetChanged();
 	}
 	
+	
 	public EMMessage getItem(int position) {
 		return conversation.getMessage(position);
 	}
