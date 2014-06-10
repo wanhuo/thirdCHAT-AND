@@ -967,6 +967,12 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		adapter.refresh();
+	}
+	
 	/**
 	 * 隐藏软键盘
 	 */
