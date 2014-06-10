@@ -92,8 +92,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 	public static final int REQUEST_CODE_CAMERA = 18;
 	public static final int REQUEST_CODE_LOCAL = 19;
 	public static final int REQUEST_CODE_CLICK_DESTORY_IMG = 20;
-	public static final int REQUEST_CODE_GROUP_DETAIL=21;
-	
+	public static final int REQUEST_CODE_GROUP_DETAIL = 21;
+
 	public static final int RESULT_CODE_COPY = 1;
 	public static final int RESULT_CODE_DELETE = 2;
 	public static final int RESULT_CODE_FORWARD = 3;
@@ -382,6 +382,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 		if (resultCode == RESULT_OK) { // 清空消息
 			if (requestCode == REQUEST_CODE_EMPTY_HISTORY) {
+				// 清空会话
 				EMChatManager.getInstance().clearConversation(toChatUsername);
 				adapter.refresh();
 			} else if (requestCode == REQUEST_CODE_CAMERA) { // 发送照片
@@ -637,10 +638,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 */
 	private void resendMessage() {
 		EMMessage msg = null;
-		if (chatType == CHATTYPE_SINGLE) {
-			msg = conversation.getMessage(resendPos);
-		} else {
-		}
+		msg = conversation.getMessage(resendPos);
 		// msg.setBackSend(true);
 		msg.status = EMMessage.Status.CREATE;
 
@@ -704,7 +702,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 * @param view
 	 */
 	public void toGroupDetails(View view) {
-		startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername)), REQUEST_CODE_GROUP_DETAIL);
+		startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername)),
+				REQUEST_CODE_GROUP_DETAIL);
 	}
 
 	/**
@@ -760,15 +759,16 @@ public class ChatActivity extends Activity implements OnClickListener {
 			String msgid = intent.getStringExtra("msgid");
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
-			//如果是群聊消息，获取到group id
+			// 如果是群聊消息，获取到group id
 			String groupid = message.getGroupId();
-			if(groupid != null)
+			if (groupid != null)
 				username = groupid;
 			if (!username.equals(toChatUsername)) {
-				//消息不是发给当前会话，return
-				return; 
+				// 消息不是发给当前会话，return
+				return;
 			}
-//			conversation = EMChatManager.getInstance().getConversation(toChatUsername);
+			// conversation =
+			// EMChatManager.getInstance().getConversation(toChatUsername);
 			// 通知adapter有新消息，更新ui
 			adapter.refresh();
 			listView.setSelection(listView.getCount() - 1);
@@ -1002,8 +1002,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 					// sdk初始化加载的聊天记录为20条，到顶时去db里获取更多
 					List<EMMessage> messages;
 					try {
-						// 获取更多messges，调用此方法的时候从db获取的messages sdk会自动存入到此conversation中
-						if(chatType == CHATTYPE_SINGLE)
+						// 获取更多messges，调用此方法的时候从db获取的messages
+						// sdk会自动存入到此conversation中
+						if (chatType == CHATTYPE_SINGLE)
 							messages = conversation.loadMoreMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);
 						else
 							messages = conversation.loadMoreGroupMsgFromDB(adapter.getItem(0).getMsgId(), pagesize);

@@ -189,7 +189,7 @@ public class GroupDetailsActivity extends Activity {
 	public void deleteGroupHistory(){
 		
 		
-		EMChatManager.getInstance().deleteConversation(group.getGroupId());
+		EMChatManager.getInstance().clearConversation(group.getGroupId());
 		progressDialog.dismiss();
 //		adapter.refresh(EMChatManager.getInstance().getConversation(toChatUsername));
 		
