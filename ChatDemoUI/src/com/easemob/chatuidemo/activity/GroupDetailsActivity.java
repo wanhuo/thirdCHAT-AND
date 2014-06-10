@@ -72,7 +72,11 @@ public class GroupDetailsActivity extends Activity {
 		group = EMGroupManager.getInstance().getGroup(groupId);
 
 		// 如果自己是群主，显示解散按钮
-		if (group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
+		if(group.getOwner() == null || "".equals(group.getOwner())){
+			exitBtn.setVisibility(View.GONE);
+			deleteBtn.setVisibility(View.GONE);
+		}
+		if (EMChatManager.getInstance().getCurrentUser().equals(group.getOwner())) {
 			exitBtn.setVisibility(View.GONE);
 			deleteBtn.setVisibility(View.VISIBLE);
 		}
@@ -455,8 +459,17 @@ public class GroupDetailsActivity extends Activity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							loadingPB.setVisibility(View.INVISIBLE);
-//							group = EMGroupManager.getInstance().getGroup(groupId);
 							adapter.notifyDataSetChanged();
+							if (EMChatManager.getInstance().getCurrentUser().equals(group.getOwner())) {
+								//显示解散按钮
+								exitBtn.setVisibility(View.GONE);
+								deleteBtn.setVisibility(View.VISIBLE);
+							}else{
+								//显示退出按钮
+								exitBtn.setVisibility(View.VISIBLE);
+								deleteBtn.setVisibility(View.GONE);
+								
+							}
 						}
 					});
 
