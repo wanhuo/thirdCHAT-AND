@@ -30,6 +30,7 @@ import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.EMMessage.Type;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.LocationMessageBody;
@@ -73,16 +74,11 @@ public class MessageAdapter extends BaseAdapter {
 	// reference to conversation object in chatsdk
 	private EMConversation conversation;
 
-	/**
-	 * 单聊or群聊类型
-	 */
-	private int chatType = ChatActivity.CHATTYPE_SINGLE;
 
 	private Context context;
 
 	public MessageAdapter(Context context, String username, int chatType) {
 		this.username = username;
-		this.chatType = chatType;
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		activity = (Activity) context;
@@ -156,6 +152,7 @@ public class MessageAdapter extends BaseAdapter {
 	@SuppressLint("NewApi")
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		final EMMessage message = getItem(position);
+		ChatType chatType = message.getChatType();
 		final ViewHolder holder;
 		if (convertView == null) {
 			holder = new ViewHolder();
@@ -207,12 +204,12 @@ public class MessageAdapter extends BaseAdapter {
 		}
 
 		// 群聊时，显示接收的消息的发送人的名称
-		if (chatType == ChatActivity.CHATTYPE_GROUP && message.direct == EMMessage.Direct.RECEIVE)
+		if (chatType == ChatType.GroupChat && message.direct == EMMessage.Direct.RECEIVE)
 			// demo用username代替nick
 			holder.tv_userId.setText(message.getFrom());
 
 		// 如果是发送的消息并且不是群聊消息，显示已读textview
-		if (message.direct == EMMessage.Direct.SEND && chatType != ChatActivity.CHATTYPE_GROUP) {
+		if (message.direct == EMMessage.Direct.SEND && chatType != ChatType.GroupChat) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
 			if (holder.tv_ack != null) {
 				if (message.isAcked) {
@@ -224,7 +221,7 @@ public class MessageAdapter extends BaseAdapter {
 		} else {
 			// 如果是文本或者地图消息并且不是group messgae，显示的时候给对方发送已读回执
 			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked
-					&& chatType != ChatActivity.CHATTYPE_GROUP) {
+					&& chatType != ChatType.GroupChat) {
 				try {
 					// 发送已读回执
 					message.isAcked = true;
@@ -417,8 +414,7 @@ public class MessageAdapter extends BaseAdapter {
 	private void handleVoiceMessage(final EMMessage message, final ViewHolder holder, final int position, View convertView) {
 		VoiceMessageBody voiceBody = (VoiceMessageBody) message.getBody();
 		holder.tv.setText(voiceBody.getLength() + "\"");
-		holder.iv.setOnClickListener(new VoicePlayClickListener(message, holder.iv, holder.iv_read_status, activity, activity, username,
-				chatType));
+		holder.iv.setOnClickListener(new VoicePlayClickListener(message, holder.iv, holder.iv_read_status, activity, activity, username));
 		holder.iv.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -547,7 +543,7 @@ public class MessageAdapter extends BaseAdapter {
 	public void sendMsgInBackground(final EMMessage message, final ViewHolder holder) {
 		holder.staus_iv.setVisibility(View.GONE);
 		holder.pb.setVisibility(View.VISIBLE);
-		if (chatType == ChatActivity.CHATTYPE_SINGLE) {
+//		if (chatType == ChatActivity.CHATTYPE_SINGLE) {
 			// 单聊
 			EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
 
@@ -566,26 +562,26 @@ public class MessageAdapter extends BaseAdapter {
 				}
 
 			});
-		} else {
-			// 群聊
-			EMChatManager.getInstance().sendGroupMessage(message, new EMCallBack() {
-
-				@Override
-				public void onSuccess() {
-					updateSendedView(message, holder);
-				}
-
-				@Override
-				public void onError(int code, String error) {
-					updateSendedView(message, holder);
-				}
-
-				@Override
-				public void onProgress(int progress, String status) {
-				}
-
-			});
-		}
+//		} else {
+//			// 群聊
+//			EMChatManager.getInstance().sendGroupMessage(message, new EMCallBack() {
+//
+//				@Override
+//				public void onSuccess() {
+//					updateSendedView(message, holder);
+//				}
+//
+//				@Override
+//				public void onError(int code, String error) {
+//					updateSendedView(message, holder);
+//				}
+//
+//				@Override
+//				public void onProgress(int progress, String status) {
+//				}
+//
+//			});
+//		}
 
 	}
 
@@ -643,7 +639,7 @@ public class MessageAdapter extends BaseAdapter {
 			holder.pb.setVisibility(View.VISIBLE);
 			holder.tv.setVisibility(View.VISIBLE);
 			holder.tv.setText("0%");
-			if (chatType == ChatActivity.CHATTYPE_SINGLE) {
+//			if (chatType == ChatActivity.CHATTYPE_SINGLE) {
 				EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
 
 					@Override
@@ -683,47 +679,47 @@ public class MessageAdapter extends BaseAdapter {
 					}
 
 				});
-			} else {
-				EMChatManager.getInstance().sendGroupMessage(message, new EMCallBack() {
-
-					@Override
-					public void onSuccess() {
-						Log.d(TAG, "send image message successfully");
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								// send success
-								holder.pb.setVisibility(View.GONE);
-								holder.tv.setVisibility(View.GONE);
-							}
-						});
-					}
-
-					@Override
-					public void onError(int code, String error) {
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								holder.pb.setVisibility(View.GONE);
-								holder.tv.setVisibility(View.GONE);
-								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
-								holder.staus_iv.setVisibility(View.VISIBLE);
-								Toast.makeText(activity,
-										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
-										.show();
-							}
-						});
-					}
-
-					@Override
-					public void onProgress(final int progress, String status) {
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								holder.tv.setText(progress + "%");
-							}
-						});
-					}
-
-				});
-			}
+//			} else {
+//				EMChatManager.getInstance().sendGroupMessage(message, new EMCallBack() {
+//
+//					@Override
+//					public void onSuccess() {
+//						Log.d(TAG, "send image message successfully");
+//						activity.runOnUiThread(new Runnable() {
+//							public void run() {
+//								// send success
+//								holder.pb.setVisibility(View.GONE);
+//								holder.tv.setVisibility(View.GONE);
+//							}
+//						});
+//					}
+//
+//					@Override
+//					public void onError(int code, String error) {
+//						activity.runOnUiThread(new Runnable() {
+//							public void run() {
+//								holder.pb.setVisibility(View.GONE);
+//								holder.tv.setVisibility(View.GONE);
+//								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
+//								holder.staus_iv.setVisibility(View.VISIBLE);
+//								Toast.makeText(activity,
+//										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+//										.show();
+//							}
+//						});
+//					}
+//
+//					@Override
+//					public void onProgress(final int progress, String status) {
+//						activity.runOnUiThread(new Runnable() {
+//							public void run() {
+//								holder.tv.setText(progress + "%");
+//							}
+//						});
+//					}
+//
+//				});
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -795,7 +791,7 @@ public class MessageAdapter extends BaseAdapter {
 						intent.putExtra("remotepath", remote);
 					}
 					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
-							&& chatType != ChatActivity.CHATTYPE_GROUP) {
+							&& message.getChatType() != ChatType.GroupChat) {
 						message.isAcked = true;
 						try {
 							EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
@@ -814,7 +810,7 @@ public class MessageAdapter extends BaseAdapter {
 				return false;
 			}
 
-			new LoadImageTask().execute(thumbernailPath, localFullSizePath, remote, chatType, iv, activity, message);
+			new LoadImageTask().execute(thumbernailPath, localFullSizePath, remote, message.getChatType(), iv, activity, message);
 			return true;
 		}
 

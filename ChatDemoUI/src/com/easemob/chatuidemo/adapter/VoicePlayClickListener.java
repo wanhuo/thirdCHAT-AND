@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import com.easemob.chat.EMChatDB;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.ChatActivity;
@@ -32,7 +33,7 @@ class VoicePlayClickListener implements View.OnClickListener {
 	private Context context;
 	Activity activity;
 	private String username;
-	private int chatType;
+	private ChatType chatType;
 
 	static boolean isPlaying = false;
 	static VoicePlayClickListener currentPlayListener = null;
@@ -50,7 +51,7 @@ class VoicePlayClickListener implements View.OnClickListener {
 	 * @param chatType
 	 */
 	public VoicePlayClickListener(EMMessage message, ImageView v, ImageView iv_read_status, Context context, Activity activity,
-			String username, int chatType) {
+			String username) {
 		this.message = message;
 		voiceBody = (VoiceMessageBody) message.getBody();
 		this.iv_read_status = iv_read_status;
@@ -58,7 +59,7 @@ class VoicePlayClickListener implements View.OnClickListener {
 		voiceIconView = v;
 		this.activity = activity;
 		this.username = username;
-		this.chatType = chatType;
+		this.chatType = message.getChatType();
 	}
 
 	private void stopPlayVoice() {
@@ -123,7 +124,7 @@ class VoicePlayClickListener implements View.OnClickListener {
 						EMChatDB.getInstance().updateMessageAck(message.getMsgId(), true);
 					}
 					//告知对方已读这条消息
-					if(chatType != ChatActivity.CHATTYPE_GROUP)
+					if(chatType != ChatType.GroupChat)
 						EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
 				}
 			} catch (Exception e) {

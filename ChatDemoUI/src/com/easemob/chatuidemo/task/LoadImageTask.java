@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.ShowBigImage;
@@ -25,7 +26,7 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 	String thumbnailPath = null;	
 	String remotePath = null;
 	EMMessage message = null;
-    int chatType;
+    ChatType chatType;
 	Activity activity;
 	
 	@Override
@@ -33,7 +34,7 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 		thumbnailPath = (String)args[0];
 		localFullSizePath = (String)args[1];
         remotePath = (String)args[2];
-		chatType = (Integer)args[3];		
+		chatType = (ChatType) args[3];		
 		iv = (ImageView)args[4];		
 //		if(args[2] != null) {
 		    activity = (Activity) args[5];
@@ -62,7 +63,7 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 	                        //The local full size pic does not exist yet. ShowBigImage needs to download it from the server first
 	                        intent.putExtra("remotepath", remotePath);                          
 	                    }  
-	                    if (chatType == ChatActivity.CHATTYPE_SINGLE) {
+	                    if (message.getChatType() != ChatType.Chat) {
 	                        // delete the image from server after download
 	                    }
 	                    if(message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked){
