@@ -595,6 +595,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		message.addBody(body);
 
 		conversation.addMessage(message);
+		listView.setAdapter(adapter);
 		adapter.refresh();
 		listView.setSelection(listView.getCount() - 1);
 		setResult(RESULT_OK);
@@ -640,7 +641,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		message.setReceipt(toChatUsername);
 		conversation.addMessage(message);
 		listView.setAdapter(adapter);
-		adapter.refresh();
+		adapter.notifyDataSetChanged();
 		listView.setSelection(listView.getCount()-1);
 		setResult(RESULT_OK);
 		
@@ -731,7 +732,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 			more.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
 			expressionContainer.setVisibility(View.GONE);
-			listView.setSelection(listView.getCount() - 1);
 		} else {
 			if (expressionContainer.getVisibility() == View.VISIBLE) {
 				expressionContainer.setVisibility(View.GONE);
