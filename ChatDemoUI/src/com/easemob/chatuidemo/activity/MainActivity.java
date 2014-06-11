@@ -283,7 +283,7 @@ public class MainActivity extends FragmentActivity {
 			final boolean isResponse = intent.getBooleanExtra("isResponse", false);
 			// 消息发送方username
 			final String from = intent.getStringExtra("username");
-			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所有客户端不要重复提醒
+			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所以客户端不要重复提醒
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
 			for (InviteMessage inviteMessage : msgs) {
 				if (inviteMessage.getFrom().equals(from)) {
@@ -379,6 +379,7 @@ public class MainActivity extends FragmentActivity {
 			for (String username : usernameList) {
 				localUsers.remove(username);
 				userDao.deleteContact(username);
+				inviteMessgeDao.deleteMessage(username);
 			}
 			// 刷新ui
 			if (currentTabIndex == 1)

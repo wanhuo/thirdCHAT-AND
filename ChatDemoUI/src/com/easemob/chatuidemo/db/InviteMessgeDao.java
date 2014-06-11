@@ -101,4 +101,11 @@ public class InviteMessgeDao {
 		}
 		return msgs;
 	}
+	
+	public void deleteMessage(String from){
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		if(db.isOpen()){
+			db.delete(TABLE_NAME, COLUMN_NAME_FROM + " = ?", new String[]{from});
+		}
+	}
 }

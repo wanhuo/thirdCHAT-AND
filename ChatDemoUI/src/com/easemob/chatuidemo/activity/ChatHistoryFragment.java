@@ -42,6 +42,7 @@ import com.easemob.chat.EMMessage;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ChatHistoryAdapter;
+import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.domain.User;
 
 /**
@@ -160,6 +161,8 @@ public class ChatHistoryFragment extends Fragment {
 			EMContact tobeDeleteUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
 			// 删除此会话
 			EMChatManager.getInstance().deleteConversation(tobeDeleteUser.getUsername());
+			InviteMessgeDao inviteMessgeDao = new InviteMessgeDao(getActivity());
+			inviteMessgeDao.deleteMessage(tobeDeleteUser.getUsername());
 			adapter.remove(tobeDeleteUser);
 			adapter.notifyDataSetChanged();
 
