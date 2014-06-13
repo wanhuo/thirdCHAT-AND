@@ -31,6 +31,7 @@ import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ContactAdapter;
+import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.widget.Sidebar;
@@ -111,6 +112,9 @@ public class ContactlistFragment extends Fragment{
 			User tobeDeleteUser= adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
 			//删除此联系人
 			deleteContact(tobeDeleteUser);
+			//删除相关的邀请消息
+			InviteMessgeDao dao = new InviteMessgeDao(getActivity());
+			dao.deleteMessage(tobeDeleteUser.getUsername());
 			return true;
 		}
 		return super.onContextItemSelected(item);

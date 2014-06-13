@@ -10,8 +10,6 @@ public class InviteMessage {
 	//未验证，已同意等状态
 	private InviteMesageStatus status;
 	
-	//是不是我发的好友申请
-	private boolean isInviteFromMe;
 
 	private int id;
 	
@@ -48,14 +46,6 @@ public class InviteMessage {
 		this.status = status;
 	}
 
-	public boolean isInviteFromMe() {
-		return isInviteFromMe;
-	}
-
-	public void setInviteFromMe(boolean isInviteFromMe) {
-		this.isInviteFromMe = isInviteFromMe;
-	}
-
 	
 	
 	public int getId() {
@@ -69,12 +59,16 @@ public class InviteMessage {
 
 
 	public enum InviteMesageStatus{
-		/**已添加*/
+		/**被邀请*/
+		BEINVITEED,
+		/**被拒绝*/
+		BEREFUSED,
+		/**对方同意*/
+		BEAGREED,
+		/**我同意了对方的请求*/
 		AGREED,
-		/**未验证*/
-		NO_VALIDATION,
-		/**已忽略*/
-		IGNORED
+		/**我拒绝了对方的好友请求*/
+		REFUSED
 	}
 	
 }

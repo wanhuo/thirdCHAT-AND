@@ -92,9 +92,10 @@ public class MainActivity extends FragmentActivity {
 		ackMessageIntentFilter.setPriority(3);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 
-		// 注册一个好友请求同意好友请求等的BroadcastReceiver
-		IntentFilter inviteIntentFilter = new IntentFilter(EMChatManager.getInstance().getContactInviteEventBroadcastAction());
-		registerReceiver(contactInviteReceiver, inviteIntentFilter);
+//		 注册一个好友请求同意好友请求等的BroadcastReceiver
+//		好友变动这块全部放到了MyContactListener里
+//		IntentFilter inviteIntentFilter = new IntentFilter(EMChatManager.getInstance().getContactInviteEventBroadcastAction());
+//		registerReceiver(contactInviteReceiver, inviteIntentFilter);
 
 		// setContactListener监听联系人的变化等
 		EMContactManager.getInstance().setContactListener(new MyContactListener());
@@ -164,10 +165,6 @@ public class MainActivity extends FragmentActivity {
 			unregisterReceiver(ackMessageReceiver);
 		} catch (Exception e) {
 		}
-		try {
-			unregisterReceiver(contactInviteReceiver);
-		} catch (Exception e) {
-		}
 
 		if (conflictBuilder != null) {
 			conflictBuilder.create().dismiss();
@@ -193,13 +190,18 @@ public class MainActivity extends FragmentActivity {
 	 * 刷新新的朋友消息数
 	 */
 	public void updateUnreadAddressLable() {
-		int count = getUnreadAddressCountTotal();
-		if (count > 0) {
-			unreadAddressLable.setText(String.valueOf(count));
-			unreadAddressLable.setVisibility(View.VISIBLE);
-		} else {
-			unreadAddressLable.setVisibility(View.INVISIBLE);
-		}
+		runOnUiThread(new Runnable() {
+			public void run() {
+				int count = getUnreadAddressCountTotal();
+				if (count > 0) {
+					unreadAddressLable.setText(String.valueOf(count));
+					unreadAddressLable.setVisibility(View.VISIBLE);
+				} else {
+					unreadAddressLable.setVisibility(View.INVISIBLE);
+				}
+			}
+		});
+		
 
 	}
 
@@ -274,57 +276,6 @@ public class MainActivity extends FragmentActivity {
 		}
 	};
 
-	private BroadcastReceiver contactInviteReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// 请求理由
-			final String reason = intent.getStringExtra("reason");
-			final boolean isResponse = intent.getBooleanExtra("isResponse", false);
-			// 消息发送方username
-			final String from = intent.getStringExtra("username");
-			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所以客户端不要重复提醒
-			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
-			for (InviteMessage inviteMessage : msgs) {
-				if (inviteMessage.getFrom().equals(from)) {
-					return;
-				}
-			}
-
-			InviteMessage msg = new InviteMessage();
-			msg.setFrom(from);
-			msg.setTime(System.currentTimeMillis());
-			msg.setReason(reason);
-			// sdk暂时只提供同意好友请求方法，不同意选项可以参考微信增加一个忽略按钮。
-			if (!isResponse) {
-				Log.d(TAG, from + "请求加你为好友,reason: " + reason);
-				// 设成未验证
-				msg.setStatus(InviteMesageStatus.NO_VALIDATION);
-				msg.setInviteFromMe(false);
-			} else {
-				Log.d(TAG, from + "同意了你的好友请求");
-				// 对方已同意你的请求
-				msg.setStatus(InviteMesageStatus.AGREED);
-				msg.setInviteFromMe(true);
-			}
-			// 保存msg
-			inviteMessgeDao.saveMessage(msg);
-			// 未读数加1
-			User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
-			user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
-			// 提示有新消息
-			EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
-
-			// 刷新bottom bar消息未读数
-			updateUnreadAddressLable();
-			// 刷新好友页面ui
-			if (currentTabIndex == 1)
-				contactListFragment.refresh();
-			abortBroadcast();
-
-		}
-
-	};
 	private InviteMessgeDao inviteMessgeDao;
 	private UserDao userDao;
 
@@ -388,8 +339,75 @@ public class MainActivity extends FragmentActivity {
 
 		}
 
+		@Override
+		public void onContactInvited(String username, String reason) {
+			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所以客户端不要重复提醒
+			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
+			for (InviteMessage inviteMessage : msgs) {
+				if (inviteMessage.getFrom().equals(username)) {
+					return;
+				}
+			}
+			// 自己封装的javabean
+			InviteMessage msg = new InviteMessage();
+			msg.setFrom(username);
+			msg.setTime(System.currentTimeMillis());
+			msg.setReason(reason);
+			Log.d(TAG, username + "请求加你为好友,reason: " + reason);
+			// 设置相应status
+			msg.setStatus(InviteMesageStatus.BEINVITEED);
+			notifyNewIviteMessage(msg);
+
+		}
+
+		
+
+		@Override
+		public void onContactAgreed(String username) {
+			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
+			for (InviteMessage inviteMessage : msgs) {
+				if (inviteMessage.getFrom().equals(username)) {
+					return;
+				}
+			}
+			// 自己封装的javabean
+			InviteMessage msg = new InviteMessage();
+			msg.setFrom(username);
+			msg.setTime(System.currentTimeMillis());
+			Log.d(TAG, username + "同意了你的好友请求" );
+			msg.setStatus(InviteMesageStatus.BEAGREED);
+			notifyNewIviteMessage(msg);
+
+		}
+
+		@Override
+		public void onContactRefused(String username) {
+			//参考同意，被邀请实现此功能,demo未实现
+
+		}
+
+	}
+	
+	protected void notifyNewIviteMessage(InviteMessage msg) {
+		// 保存msg
+		inviteMessgeDao.saveMessage(msg);
+		// 未读数加1
+		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
+		user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
+		// 提示有新消息
+		EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
+
+		// 刷新bottom bar消息未读数
+		updateUnreadAddressLable();
+		// 刷新好友页面ui
+		if (currentTabIndex == 1)
+			contactListFragment.refresh();
 	}
 
+	/**
+	 * 连接监听listener
+	 *
+	 */
 	private class MyConnectionListener implements ConnectionListener {
 
 		@Override

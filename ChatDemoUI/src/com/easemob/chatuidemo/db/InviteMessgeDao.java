@@ -43,7 +43,6 @@ public class InviteMessgeDao {
 			values.put(COLUMN_NAME_REASON, message.getReason());
 			values.put(COLUMN_NAME_TIME, message.getTime());
 			values.put(COLUMN_NAME_STATUS, message.getStatus().ordinal());
-			values.put(COLUMN_NAME_ISINVITEFROMME, message.isInviteFromMe());
 			db.insert(TABLE_NAME, null, values);
 			
 			Cursor cursor = db.rawQuery("select last_insert_rowid() from " + TABLE_NAME,null); 
@@ -88,13 +87,16 @@ public class InviteMessgeDao {
 				msg.setFrom(from);
 				msg.setReason(reason);
 				msg.setTime(time);
-				if(status == InviteMesageStatus.NO_VALIDATION.ordinal())
-					msg.setStatus(InviteMesageStatus.NO_VALIDATION);
-				else if(status == InviteMesageStatus.IGNORED.ordinal())
-					msg.setStatus(InviteMesageStatus.IGNORED);
-				else
+				if(status == InviteMesageStatus.BEINVITEED.ordinal())
+					msg.setStatus(InviteMesageStatus.BEINVITEED);
+				else if(status == InviteMesageStatus.BEAGREED.ordinal())
+					msg.setStatus(InviteMesageStatus.BEAGREED);
+				else if(status == InviteMesageStatus.BEREFUSED.ordinal())
+					msg.setStatus(InviteMesageStatus.BEREFUSED);
+				else if(status == InviteMesageStatus.AGREED.ordinal())
 					msg.setStatus(InviteMesageStatus.AGREED);
-				msg.setInviteFromMe(isIniviteFromMe == 0 ? false : true);
+				else if(status == InviteMesageStatus.REFUSED.ordinal())
+					msg.setStatus(InviteMesageStatus.REFUSED);
 				msgs.add(msg);
 			}
 			cursor.close();

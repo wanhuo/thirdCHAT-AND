@@ -70,7 +70,7 @@
             android:text="@string/cancel"
             android:textColor="#666666"
             android:textSize="16sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:layout_width="match_parent"
