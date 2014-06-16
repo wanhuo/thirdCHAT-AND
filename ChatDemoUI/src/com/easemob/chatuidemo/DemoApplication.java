@@ -30,6 +30,9 @@ import android.widget.SimpleAdapter;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMNotifier;
+import com.easemob.chat.OnMessageNotifyListener;
 import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
@@ -84,6 +87,22 @@ public class DemoApplication extends Application {
 		// 设置语音消息播放是否设置为扬声器播放 默认为true
 		options.setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker());
 
+		//取消注释，app在后台，有新消息来时，标题栏的消息提示换成自己写的
+//		options.setNotifyText(new OnMessageNotifyListener() {
+//			
+//			@Override
+//			public String onNewMessageNotify(EMMessage message) {
+//				//可以根据message的类型提示不同文字，demo简单的覆盖了原来的提示
+//				return "你的好基友" + message.getFrom() + "发来了一条消息哦";
+//			}
+//			
+//			@Override
+//			public String onLatestMessageNotify(EMMessage message, int fromUsersNum, int messageNum) {
+//				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
+//			}
+//		});
+		
+		
 		MobclickAgent.onError(applicationContext);
 	}
 
