@@ -34,7 +34,7 @@ import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.ChatActivity;
 
-class VoicePlayClickListener implements View.OnClickListener {
+public class VoicePlayClickListener implements View.OnClickListener {
 
 	EMMessage message;
 	VoiceMessageBody voiceBody;
@@ -48,8 +48,8 @@ class VoicePlayClickListener implements View.OnClickListener {
 	private String username;
 	private ChatType chatType;
 
-	static boolean isPlaying = false;
-	static VoicePlayClickListener currentPlayListener = null;
+	public static boolean isPlaying = false;
+	public static VoicePlayClickListener currentPlayListener = null;
 	static EMMessage currentMessage = null;
 
 
@@ -75,7 +75,7 @@ class VoicePlayClickListener implements View.OnClickListener {
 		this.chatType = message.getChatType();
 	}
 
-	private void stopPlayVoice() {
+	public void stopPlayVoice() {
 		voiceAnimation.stop();
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 			voiceIconView.setImageResource(R.drawable.chatfrom_voice_playing);
@@ -90,7 +90,7 @@ class VoicePlayClickListener implements View.OnClickListener {
 		isPlaying = false;
 	}
 
-	private void playVoice(String filePath) {
+	public void playVoice(String filePath) {
 		if (!(new File(filePath).exists())) {
 			return;
 		}

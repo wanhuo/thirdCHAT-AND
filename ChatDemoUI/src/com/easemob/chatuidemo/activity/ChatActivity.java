@@ -72,6 +72,7 @@ import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ExpressionAdapter;
 import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
 import com.easemob.chatuidemo.adapter.MessageAdapter;
+import com.easemob.chatuidemo.adapter.VoicePlayClickListener;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
@@ -603,8 +604,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 		//如果是群聊，设置chattype,默认是单聊
 		if(chatType == CHATTYPE_GROUP)
 			message.setChatType(ChatType.GroupChat);
+		
 		message.setReceipt(to);
 		ImageMessageBody body = new ImageMessageBody(new File(filePath));
+//		默认超过100k的图片会压缩后发给对方，可以设置成发送原图
+//		body.setSendOriginalImage(true);
 		message.addBody(body);
 
 		conversation.addMessage(message);
@@ -984,6 +988,18 @@ public class ChatActivity extends Activity implements OnClickListener {
 	protected void onResume() {
 		super.onResume();
 		adapter.refresh();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		try {
+			if(VoicePlayClickListener.isPlaying){
+				VoicePlayClickListener.currentPlayListener.stopPlayVoice();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
