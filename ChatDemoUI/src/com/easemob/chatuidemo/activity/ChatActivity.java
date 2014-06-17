@@ -441,8 +441,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			} else if (conversation.getMsgCount() > 0) {
 				adapter.refresh();
 				setResult(RESULT_OK);
-			}else if(requestCode==REQUEST_CODE_GROUP_DETAIL)
-			{
+			} else if (requestCode == REQUEST_CODE_GROUP_DETAIL) {
 				EMChatManager.getInstance().getConversation(toChatUsername);
 				adapter.refresh();
 			}
@@ -536,8 +535,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		if (content.length() > 0) {
 			EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
-			//如果是群聊，设置chattype,默认是单聊
-			if(chatType == CHATTYPE_GROUP)
+			// 如果是群聊，设置chattype,默认是单聊
+			if (chatType == CHATTYPE_GROUP)
 				message.setChatType(ChatType.GroupChat);
 			TextMessageBody txtBody = new TextMessageBody(content);
 			// 设置消息body
@@ -571,8 +570,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 		try {
 			final EMMessage message = EMMessage.createSendMessage(EMMessage.Type.VOICE);
-			//如果是群聊，设置chattype,默认是单聊
-			if(chatType == CHATTYPE_GROUP)
+			// 如果是群聊，设置chattype,默认是单聊
+			if (chatType == CHATTYPE_GROUP)
 				message.setChatType(ChatType.GroupChat);
 			String to = toChatUsername;
 			message.setReceipt(to);
@@ -601,14 +600,14 @@ public class ChatActivity extends Activity implements OnClickListener {
 		String to = toChatUsername;
 		// create and add image message in view
 		final EMMessage message = EMMessage.createSendMessage(EMMessage.Type.IMAGE);
-		//如果是群聊，设置chattype,默认是单聊
-		if(chatType == CHATTYPE_GROUP)
+		// 如果是群聊，设置chattype,默认是单聊
+		if (chatType == CHATTYPE_GROUP)
 			message.setChatType(ChatType.GroupChat);
-		
+
 		message.setReceipt(to);
 		ImageMessageBody body = new ImageMessageBody(new File(filePath));
-//		默认超过100k的图片会压缩后发给对方，可以设置成发送原图
-//		body.setSendOriginalImage(true);
+		// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
+		// body.setSendOriginalImage(true);
 		message.addBody(body);
 
 		conversation.addMessage(message);
@@ -650,8 +649,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 */
 	private void sendLocationMsg(double latitude, double longitude, String imagePath, String locationAddress) {
 		EMMessage message = EMMessage.createSendMessage(EMMessage.Type.LOCATION);
-		//如果是群聊，设置chattype,默认是单聊
-		if(chatType == CHATTYPE_GROUP)
+		// 如果是群聊，设置chattype,默认是单聊
+		if (chatType == CHATTYPE_GROUP)
 			message.setChatType(ChatType.GroupChat);
 		LocationMessageBody locBody = new LocationMessageBody(locationAddress, latitude, longitude);
 		message.addBody(locBody);
@@ -659,9 +658,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 		conversation.addMessage(message);
 		listView.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
-		listView.setSelection(listView.getCount()-1);
+		listView.setSelection(listView.getCount() - 1);
 		setResult(RESULT_OK);
-		
+
 	}
 
 	/**
@@ -790,7 +789,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
 			EMMessage message = EMChatManager.getInstance().getMessage(msgid);
 			// 如果是群聊消息，获取到group id
-			if(message.getChatType() == ChatType.GroupChat){
+			if (message.getChatType() == ChatType.GroupChat) {
 				username = message.getTo();
 			}
 			if (!username.equals(toChatUsername)) {
@@ -989,19 +988,21 @@ public class ChatActivity extends Activity implements OnClickListener {
 		super.onResume();
 		adapter.refresh();
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
-		try {
-			if(VoicePlayClickListener.isPlaying){
-				VoicePlayClickListener.currentPlayListener.stopPlayVoice();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (VoicePlayClickListener.isPlaying && VoicePlayClickListener.currentPlayListener != null) {
+			VoicePlayClickListener.currentPlayListener.stopPlayVoice();
 		}
+		
+		if(voiceRecorder.isRecording()){
+			voiceRecorder.discardRecording();
+			recordingContainer.setVisibility(View.INVISIBLE);
+		}
+
 	}
-	
+
 	/**
 	 * 隐藏软键盘
 	 */
