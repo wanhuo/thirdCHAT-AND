@@ -360,7 +360,7 @@ public class MessageAdapter extends BaseAdapter {
 		ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
 		String filePath = imgBody.getLocalUrl();
 		if (new File(filePath).exists())
-			showImageView(filePath, holder.iv, filePath, null, message);
+			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, null, message);
 		else {
 			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
 		}
@@ -817,11 +817,6 @@ public class MessageAdapter extends BaseAdapter {
 			});
 			return true;
 		} else {
-			// TODO: For whatever reasons if the thumbernailPath does not exist
-			// (it should...), shall we display a default image instead?
-			if (!new File(thumbernailPath).exists()) {
-				return false;
-			}
 
 			new LoadImageTask().execute(thumbernailPath, localFullSizePath, remote, message.getChatType(), iv, activity, message);
 			return true;

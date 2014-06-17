@@ -53,7 +53,12 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 		    activity = (Activity) args[5];
 //		}
 		message = (EMMessage) args[6];
-		return ImageUtils.decodeScaleImage(thumbnailPath, 120, 120);
+		File file = new File(thumbnailPath);
+		if(file.exists())
+			return ImageUtils.decodeScaleImage(thumbnailPath, 120, 120);
+		else
+			return ImageUtils.decodeScaleImage(localFullSizePath, 120, 120);
+		
 	}
 	
 	protected void onPostExecute(Bitmap image) {
