@@ -5,6 +5,7 @@
     <item android:drawable="@color/btn_logout_normal"/> -->
 
     
+    <item android:drawable="@drawable/btn_green_pressed_shape" android:state_enabled="false"/>
     <item android:drawable="@drawable/btn_green_pressed_shape" android:state_pressed="true"/>
     <item android:drawable="@drawable/btn_green_normal_shape"/>
    
