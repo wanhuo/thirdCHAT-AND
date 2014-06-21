@@ -105,10 +105,6 @@ public class MainActivity extends FragmentActivity {
 		ackMessageIntentFilter.setPriority(3);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 
-//		 注册一个好友请求同意好友请求等的BroadcastReceiver
-//		好友变动这块全部放到了MyContactListener里
-//		IntentFilter inviteIntentFilter = new IntentFilter(EMChatManager.getInstance().getContactInviteEventBroadcastAction());
-//		registerReceiver(contactInviteReceiver, inviteIntentFilter);
 
 		// setContactListener监听联系人的变化等
 		EMContactManager.getInstance().setContactListener(new MyContactListener());

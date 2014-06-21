@@ -468,7 +468,10 @@ public class GroupDetailsActivity extends Activity {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					EMGroupManager.getInstance().getGroupFromServer(groupId);
+					EMGroup returnGroup = EMGroupManager.getInstance().getGroupFromServer(groupId);
+					//更新本地数据
+					EMGroupManager.getInstance().createOrUpdateLocalGroup(returnGroup);
+					
 					runOnUiThread(new Runnable() {
 						public void run() {
 							loadingPB.setVisibility(View.INVISIBLE);

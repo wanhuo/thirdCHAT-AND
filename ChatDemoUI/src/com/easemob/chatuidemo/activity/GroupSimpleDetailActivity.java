@@ -81,11 +81,11 @@ public class GroupSimpleDetailActivity extends Activity {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					EMGroupManager.getInstance().joinPublicGroup(groupid);
+					EMGroupManager.getInstance().joinGroup(groupid);
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
-							Toast.makeText(GroupSimpleDetailActivity.this, "发送请求成功", 0).show();
+							Toast.makeText(GroupSimpleDetailActivity.this, "加入群聊成功", 0).show();
 							btn_add_group.setEnabled(false);
 						}
 					});
@@ -94,7 +94,7 @@ public class GroupSimpleDetailActivity extends Activity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
-							Toast.makeText(GroupSimpleDetailActivity.this, "发送请求失败："+e.getMessage(), 0).show();
+							Toast.makeText(GroupSimpleDetailActivity.this, "加入群聊失败："+e.getMessage(), 0).show();
 						}
 					});
 				}
@@ -102,4 +102,7 @@ public class GroupSimpleDetailActivity extends Activity {
 		}).start();
 	}
 	
+	public void back(View view){
+		finish();
+	}
 }

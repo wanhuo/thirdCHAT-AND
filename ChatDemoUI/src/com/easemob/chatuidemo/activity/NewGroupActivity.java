@@ -72,7 +72,7 @@ public class NewGroupActivity extends Activity {
 					String desc = introductionEditText.getText().toString();
 					String[] members = data.getStringArrayExtra("newmembers");
 					try {
-						EMGroupManager.getInstance().createGroup(groupName, desc, members);
+						EMGroupManager.getInstance().createPublicGroup(groupName, desc, members, false);
 						runOnUiThread(new Runnable() {
 							public void run() {
 								progressDialog.dismiss();

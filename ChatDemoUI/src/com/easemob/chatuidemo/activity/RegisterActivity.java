@@ -81,12 +81,11 @@ public class RegisterActivity extends Activity{
 			final ProgressDialog pd = new ProgressDialog(this);
 			pd.setMessage("正在注册...");
 			pd.show();
-			final String appkey = EMChatConfig.getInstance().APPKEY;
 			new Thread(new Runnable() {
 				public void run() {
 					try {
 						//调用sdk注册方法
-						EMChatManager.getInstance().createAccountOnServer(appkey + "_" + username, pwd);
+						EMChatManager.getInstance().createAccountOnServer(username, pwd);
 						runOnUiThread(new Runnable() {
 							public void run() {
 								if(!RegisterActivity.this.isFinishing())
