@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ public class NewGroupActivity extends Activity {
 	private EditText groupNameEditText;
 	private ProgressDialog progressDialog;
 	private EditText introductionEditText;
+	private CheckBox checkBox;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class NewGroupActivity extends Activity {
 		setContentView(R.layout.activity_new_group);
 		groupNameEditText = (EditText) findViewById(R.id.edit_group_name);
 		introductionEditText = (EditText) findViewById(R.id.edit_group_introduction);
+		checkBox = (CheckBox) findViewById(R.id.checkbox);
 	}
 
 	/**
@@ -72,7 +75,10 @@ public class NewGroupActivity extends Activity {
 					String desc = introductionEditText.getText().toString();
 					String[] members = data.getStringArrayExtra("newmembers");
 					try {
-						EMGroupManager.getInstance().createPublicGroup(groupName, desc, members, false);
+						if(checkBox.isChecked())
+							EMGroupManager.getInstance().createPublicGroup(groupName, desc, members, false);
+						else
+							EMGroupManager.getInstance().createPrivateGroup(groupName, desc, members);
 						runOnUiThread(new Runnable() {
 							public void run() {
 								progressDialog.dismiss();
