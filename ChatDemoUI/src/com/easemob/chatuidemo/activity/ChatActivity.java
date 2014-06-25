@@ -29,6 +29,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
@@ -492,6 +493,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 	 * 照相获取图片
 	 */
 	public void selectPicFromCamera() {
+		if(!CommonUtils.isExitsSdcard()){
+			Toast.makeText(getApplicationContext(), "SD卡不存在，不能拍照", 0).show();
+			return;
+		}
+		
 		cameraFile = new File(PathUtil.getInstance().getImagePath(), DemoApplication.getInstance().getUserName()
 				+ System.currentTimeMillis() + ".jpg");
 		cameraFile.getParentFile().mkdirs();
@@ -842,6 +848,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 				}
 				try {
 					v.setPressed(true);
+					if(VoicePlayClickListener.isPlaying)
+						VoicePlayClickListener.currentPlayListener.stopPlayVoice();
 					recordingContainer.setVisibility(View.VISIBLE);
 					recordingHint.setText(getString(R.string.move_up_to_cancel));
 					recordingHint.setBackgroundColor(Color.TRANSPARENT);
