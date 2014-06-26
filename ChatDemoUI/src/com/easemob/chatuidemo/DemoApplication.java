@@ -20,10 +20,12 @@ import java.util.Map;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings.System;
+import android.telephony.gsm.SmsMessage.MessageClass;
 import android.util.Log;
 import android.widget.SimpleAdapter;
 
@@ -31,8 +33,11 @@ import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.EMNotifier;
 import com.easemob.chat.OnMessageNotifyListener;
+import com.easemob.chat.OnNotificationClickListener;
+import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
@@ -66,6 +71,7 @@ public class DemoApplication extends Application {
 			// 则此application::onCreate 是被service 调用的，直接返回
 			return;
 		}
+		
 		applicationContext = this;
 		instance = this;
 		// 初始化环信SDK,一定要先调用init()
@@ -86,7 +92,25 @@ public class DemoApplication extends Application {
 		options.setNoticedByVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgVibrate());
 		// 设置语音消息播放是否设置为扬声器播放 默认为true
 		options.setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker());
-
+		
+		//设置notification消息点击时，跳转的intent为自定义的intent
+		options.setOnNotificationClickListener(new OnNotificationClickListener() {
+			
+			@Override
+			public Intent onNotificationClick(EMMessage message) {
+				Intent intent = new Intent(applicationContext, ChatActivity.class);
+				ChatType chatType = message.getChatType();
+				if(chatType == ChatType.Chat){ //单聊信息
+					intent.putExtra("userId", message.getFrom());
+					intent.putExtra("chatType", ChatActivity.CHATTYPE_SINGLE);
+				}else{ //群聊信息
+					//message.getTo()为群聊id
+					intent.putExtra("groupId", message.getTo());
+					intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
+				}
+				return intent;
+			}
+		});
 		//取消注释，app在后台，有新消息来时，标题栏的消息提示换成自己写的
 //		options.setNotifyText(new OnMessageNotifyListener() {
 //			

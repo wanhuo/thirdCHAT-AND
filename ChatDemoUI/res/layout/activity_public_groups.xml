@@ -29,7 +29,9 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="7dp" />
     </RelativeLayout>
-
+	
+    <include layout="@layout/search_bar" />
+    
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"

@@ -25,13 +25,13 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
-import com.easemob.exceptions.EaseMobException;
 
 public class NewGroupActivity extends Activity {
 	private EditText groupNameEditText;
 	private ProgressDialog progressDialog;
 	private EditText introductionEditText;
 	private CheckBox checkBox;
+	private CheckBox memberCheckbox;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,8 @@ public class NewGroupActivity extends Activity {
 		setContentView(R.layout.activity_new_group);
 		groupNameEditText = (EditText) findViewById(R.id.edit_group_name);
 		introductionEditText = (EditText) findViewById(R.id.edit_group_introduction);
-		checkBox = (CheckBox) findViewById(R.id.checkbox);
+		checkBox = (CheckBox) findViewById(R.id.cb_public);
+		memberCheckbox = (CheckBox) findViewById(R.id.cb_member_inviter);
 	}
 
 	/**
@@ -75,10 +76,13 @@ public class NewGroupActivity extends Activity {
 					String desc = introductionEditText.getText().toString();
 					String[] members = data.getStringArrayExtra("newmembers");
 					try {
-						if(checkBox.isChecked())
+						if(checkBox.isChecked()){
+							//创建公开群
 							EMGroupManager.getInstance().createPublicGroup(groupName, desc, members, false);
-						else
-							EMGroupManager.getInstance().createPrivateGroup(groupName, desc, members);
+						}else{
+							//创建不公开群
+							EMGroupManager.getInstance().createPrivateGroup(groupName, desc, members, memberCheckbox.isChecked());
+						}
 						runOnUiThread(new Runnable() {
 							public void run() {
 								progressDialog.dismiss();
