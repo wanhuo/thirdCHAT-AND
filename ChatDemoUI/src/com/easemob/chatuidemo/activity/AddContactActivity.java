@@ -13,18 +13,12 @@
  */
 package com.easemob.chatuidemo.activity;
 
-import org.jivesoftware.smack.PrivacyList;
-import org.jivesoftware.smack.PrivacyListManager;
-import org.jivesoftware.smack.packet.PrivacyItem.PrivacyRule;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -34,14 +28,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.easemob.chat.EMChat;
-import com.easemob.chat.EMChatConfig;
-import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
-import com.easemob.exceptions.EMNetworkUnconnectedException;
-import com.easemob.exceptions.EaseMobException;
 
 public class AddContactActivity extends Activity{
 	private EditText editText;
