@@ -62,6 +62,7 @@
         <activity
             android:name=".activity.ChatActivity"
             android:theme="@style/horizontal_slide"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize" >
         </activity>
         <!-- 添加好友 -->
@@ -133,7 +134,9 @@
         <!-- 公开的群聊列表 -->
         <activity
             android:name=".activity.PublicGroupsActivity"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide" 
+            android:windowSoftInputMode="adjustPan"
+            >
         </activity>
         <activity
             android:name=".activity.GroupSimpleDetailActivity"

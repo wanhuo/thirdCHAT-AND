@@ -29,6 +29,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -334,7 +335,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onContactDeleted(List<String> usernameList) {
-			// 删除联系人
+			// 被删除
 			Map<String, User> localUsers = DemoApplication.getInstance().getContactList();
 			for (String username : usernameList) {
 				localUsers.remove(username);
@@ -543,6 +544,15 @@ public class MainActivity extends FragmentActivity {
 		}
 
 	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		 if (keyCode == KeyEvent.KEYCODE_BACK) {  
+			 moveTaskToBack(false);  
+	         return true;  
+	     }  
+	     return super.onKeyDown(keyCode, event);  
+	}
 
 	private android.app.AlertDialog.Builder conflictBuilder;
 
@@ -552,7 +562,7 @@ public class MainActivity extends FragmentActivity {
 	private void showConflictDialog() {
 
 		DemoApplication.getInstance().logout();
-
+		
 		if (!MainActivity.this.isFinishing()) {
 			// clear up global variables
 			try {

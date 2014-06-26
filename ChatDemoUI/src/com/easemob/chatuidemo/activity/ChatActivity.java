@@ -1001,9 +1001,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 	protected void onPause() {
 		super.onPause();
 		if (VoicePlayClickListener.isPlaying && VoicePlayClickListener.currentPlayListener != null) {
+			//停止语音播放
 			VoicePlayClickListener.currentPlayListener.stopPlayVoice();
 		}
-		
+		//停止录音
 		if(voiceRecorder.isRecording()){
 			voiceRecorder.discardRecording();
 			recordingContainer.setVisibility(View.INVISIBLE);
@@ -1095,6 +1096,19 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		}
 
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		//点击notification bar进入聊天页面，保证只有一个聊天页面
+		String username = intent.getStringExtra("userId");
+		if(toChatUsername.equals(username))
+			super.onNewIntent(intent);
+		else{
+			finish();
+			startActivity(intent);
+		}
+		
 	}
 
 }
