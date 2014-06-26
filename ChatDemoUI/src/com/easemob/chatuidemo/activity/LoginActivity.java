@@ -20,11 +20,14 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -47,6 +50,9 @@ import com.easemob.util.HanziToPinyin;
 public class LoginActivity extends Activity {
 	private EditText usernameEditText;
 	private EditText passwordEditText;
+	
+	private boolean progressShow;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +100,16 @@ public class LoginActivity extends Activity {
 		final String password = passwordEditText.getText().toString();
 
 		if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
+			progressShow=true;
 			final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
-			pd.setCanceledOnTouchOutside(false);
+			pd.setCancelable(true);
+			pd.setOnCancelListener(new OnCancelListener() {
+				
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					progressShow=false;
+				}
+			});
 			pd.setMessage("正在登陆...");
 			pd.show();
 			// 调用sdk登陆方法登陆聊天服务器
@@ -103,6 +117,10 @@ public class LoginActivity extends Activity {
 
 				@Override
 				public void onSuccess() {
+					if(!progressShow)
+					{
+						return;
+					}
 					// 登陆成功，保存用户名密码
 					DemoApplication.getInstance().setUserName(username);
 					DemoApplication.getInstance().setPassword(password);
@@ -161,6 +179,10 @@ public class LoginActivity extends Activity {
 
 				@Override
 				public void onError(int code, final String message) {
+					if(!progressShow)
+					{
+						return;
+					}
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
