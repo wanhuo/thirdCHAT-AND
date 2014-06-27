@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
@@ -261,7 +262,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 		manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+		wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "demo");
 		// 判断单聊还是群聊
 		chatType = getIntent().getIntExtra("chatType", CHATTYPE_SINGLE);
 
@@ -832,6 +833,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			adapter.notifyDataSetChanged();
 		}
 	};
+	private PowerManager.WakeLock wakeLock;
 
 	/**
 	 * 按住说话listener
@@ -848,6 +850,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 				}
 				try {
 					v.setPressed(true);
+					wakeLock.acquire();
 					if(VoicePlayClickListener.isPlaying)
 						VoicePlayClickListener.currentPlayListener.stopPlayVoice();
 					recordingContainer.setVisibility(View.VISIBLE);
@@ -856,6 +859,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 					voiceRecorder.startRecording(null, toChatUsername, getApplicationContext());
 				} catch (Exception e) {
 					v.setPressed(false);
+					if(wakeLock.isHeld())
+						wakeLock.release();
 					recordingContainer.setVisibility(View.INVISIBLE);
 					Toast.makeText(ChatActivity.this, R.string.recoding_fail, Toast.LENGTH_SHORT).show();
 					return false;
@@ -875,10 +880,12 @@ public class ChatActivity extends Activity implements OnClickListener {
 			case MotionEvent.ACTION_UP:
 				v.setPressed(false);
 				recordingContainer.setVisibility(View.INVISIBLE);
+				if(wakeLock.isHeld())
+					wakeLock.release();
 				if (event.getY() < 0) {
 					// discard the recorded audio.
 					voiceRecorder.discardRecording();
-
+					
 				} else {
 					// stop recording and send voice file
 					try {
@@ -886,6 +893,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 						if (length > 0) {
 							sendVoice(voiceRecorder.getVoiceFilePath(), voiceRecorder.getVoiceFileName(toChatUsername),
 									Integer.toString(length), false);
+						}else{
+							Toast.makeText(getApplicationContext(), "录音时间太短", 0).show();
 						}
 					} catch (Exception e) {
 						Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接", Toast.LENGTH_SHORT).show();
@@ -1000,6 +1009,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		if(wakeLock.isHeld())
+			wakeLock.release();
 		if (VoicePlayClickListener.isPlaying && VoicePlayClickListener.currentPlayListener != null) {
 			//停止语音播放
 			VoicePlayClickListener.currentPlayListener.stopPlayVoice();

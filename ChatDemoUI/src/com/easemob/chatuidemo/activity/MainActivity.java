@@ -113,7 +113,7 @@ public class MainActivity extends FragmentActivity {
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 		// 注册群聊相关的listener
 		EMGroupManager.getInstance().addGroupChangeListener(new MyGroupChangeListener());
-		// 通知sdk，UI 已经初始化完毕，注册了相应的receiver, 可以接受broadcast了
+		// 通知sdk，UI 已经初始化完毕，注册了相应的receiver和listener, 可以接受broadcast了
 		EMChat.getInstance().setAppInited();
 	}
 
