@@ -40,7 +40,6 @@ import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.widget.ExpandGridView;
-import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 import com.easemob.util.NetUtils;
 
@@ -282,9 +281,16 @@ public class GroupDetailsActivity extends Activity {
 	 */
 	private void addMembersToGroup(final String[] newmembers) {
 		new Thread(new Runnable() {
+
 			public void run() {
 				try {
-					EMGroupManager.getInstance().addUsersToGroup(groupId, newmembers);
+					//创建者调用add方法
+					if(EMChatManager.getInstance().getCurrentUser().equals(group.getOwner())){
+						EMGroupManager.getInstance().addUsersToGroup(groupId, newmembers);
+					}else{
+						//一般成员调用invite方法
+						EMGroupManager.getInstance().inviteUser(groupId, newmembers, null);
+					}
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
@@ -333,7 +339,7 @@ public class GroupDetailsActivity extends Activity {
 				button.setText("");
 				// 设置成删除按钮
 				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_minus_btn, 0, 0);
-				// 如果不是创建者，不提供加减人按钮
+				// 如果不是创建者或者没有相应权限，不提供加减人按钮
 				if (!group.getOwner().equals(DemoApplication.getInstance().getUserName())) {
 					// if current user is not group admin, hide add/remove btn
 					convertView.setVisibility(View.INVISIBLE);
@@ -358,8 +364,8 @@ public class GroupDetailsActivity extends Activity {
 			} else if (position == getCount() - 2) { // 添加群组成员按钮
 				button.setText("");
 				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_add_btn, 0, 0);
-				// 如果不是创建者，不提供加减人按钮
-				if (!group.getOwner().equals(DemoApplication.getInstance().getUserName())) {
+				//如果不是创建者或者没有相应权限
+				if (!group.isAllowInvites() && !group.getOwner().equals(DemoApplication.getInstance().getUserName())) {
 					// if current user is not group admin, hide add/remove btn
 					convertView.setVisibility(View.INVISIBLE);
 				} else {
