@@ -13,6 +13,7 @@
  */
 package com.easemob.chat.demo;
 
+import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.ImageMessageBody;
@@ -50,6 +51,9 @@ public class MainActivity extends Activity {
 		msgReceiver = new NewMessageBroadcastReceiver();
 		IntentFilter intentFilter = new IntentFilter(EMChatManager.getInstance().getNewMessageBroadcastAction());
 		registerReceiver(msgReceiver, intentFilter);
+		
+		//app初始化完毕
+		EMChat.getInstance().setAppInited();
 
 	}
 
