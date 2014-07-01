@@ -40,7 +40,7 @@ import com.easemob.chatuidemo.adapter.ContactAdapter;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.widget.Sidebar;
 
-public class GroupPickContactsActivity extends Activity {
+public class GroupPickContactsActivity extends BaseActivity {
 	private ListView listView;
 	/** 是否为一个新建的群组 */
 	protected boolean isCreatingNewGroup;

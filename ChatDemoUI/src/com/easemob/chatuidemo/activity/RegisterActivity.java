@@ -32,7 +32,7 @@ import com.easemob.exceptions.EaseMobException;
  * 注册页
  *
  */
-public class RegisterActivity extends Activity{
+public class RegisterActivity extends BaseActivity{
 	private EditText userNameEditText;
 	private EditText passwordEditText;
 	private EditText confirmPwdEditText;

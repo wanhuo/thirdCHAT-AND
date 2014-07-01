@@ -43,7 +43,7 @@ import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.util.EMLog;
 import com.easemob.util.NetUtils;
 
-public class GroupDetailsActivity extends Activity {
+public class GroupDetailsActivity extends BaseActivity {
 	private static final String TAG = "GroupDetailsActivity";
 	private static final int REQUEST_CODE_ADD_USER = 0;
 	private static final int REQUEST_CODE_EXIT = 1;

@@ -26,7 +26,7 @@ import android.widget.Toast;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
 
-public class NewGroupActivity extends Activity {
+public class NewGroupActivity extends BaseActivity {
 	private EditText groupNameEditText;
 	private ProgressDialog progressDialog;
 	private EditText introductionEditText;

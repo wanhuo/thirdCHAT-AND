@@ -45,7 +45,7 @@ import com.easemob.util.PathUtil;
  * 下载显示大图
  * 
  */
-public class ShowBigImage extends Activity {
+public class ShowBigImage extends BaseActivity {
 
 	private ProgressDialog pd;
 	private PhotoView image;

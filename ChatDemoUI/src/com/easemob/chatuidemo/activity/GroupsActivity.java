@@ -33,7 +33,7 @@ import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.GroupAdapter;
 
-public class GroupsActivity extends Activity {
+public class GroupsActivity extends BaseActivity {
 	private ListView groupListView;
 	protected List<EMGroup> grouplist;
 	private GroupAdapter groupAdapter;

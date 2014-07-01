@@ -32,7 +32,7 @@ import com.easemob.chat.EMContactManager;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 
-public class AddContactActivity extends Activity{
+public class AddContactActivity extends BaseActivity{
 	private EditText editText;
 	private LinearLayout searchedUserLayout;
 	private TextView nameText;

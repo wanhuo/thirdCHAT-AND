@@ -87,7 +87,7 @@ import com.easemob.util.VoiceRecorder;
  * 聊天页面
  * 
  */
-public class ChatActivity extends Activity implements OnClickListener {
+public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private static final int REQUEST_CODE_PICK_PICTURE = 1;
 	private static final int REQUEST_CODE_EMPTY_HISTORY = 2;
@@ -1004,6 +1004,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	protected void onResume() {
 		super.onResume();
 		adapter.refresh();
+	
 	}
 
 	@Override

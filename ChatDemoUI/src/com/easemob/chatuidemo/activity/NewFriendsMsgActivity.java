@@ -27,7 +27,7 @@ import com.easemob.chatuidemo.adapter.NewFriendsMsgAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
 
-public class NewFriendsMsgActivity extends Activity {
+public class NewFriendsMsgActivity extends BaseActivity {
 	private ListView listView;
 
 	@Override

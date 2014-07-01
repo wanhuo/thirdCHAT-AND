@@ -40,7 +40,7 @@ import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.exceptions.EaseMobException;
 
-public class PublicGroupsActivity extends Activity {
+public class PublicGroupsActivity extends BaseActivity {
 	private ProgressBar pb;
 	private ListView listView;
 	private EditText query;

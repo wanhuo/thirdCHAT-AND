@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 import com.easemob.chatuidemo.R;
 
-public class ExitGroupDialog extends Activity{
+public class ExitGroupDialog extends BaseActivity{
     private TextView text;
     private Button exitBtn;
 

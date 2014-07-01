@@ -541,6 +541,7 @@ public class MainActivity extends FragmentActivity {
 		if (!isConflict) {
 			updateUnreadLabel();
 			updateUnreadAddressLable();
+			EMChatManager.getInstance().activityResumed();
 		}
 
 	}

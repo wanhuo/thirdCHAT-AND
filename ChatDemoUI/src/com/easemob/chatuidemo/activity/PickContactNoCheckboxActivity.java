@@ -36,7 +36,7 @@ import com.easemob.chatuidemo.adapter.ContactAdapter;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.widget.Sidebar;
 
-public class PickContactNoCheckboxActivity extends Activity {
+public class PickContactNoCheckboxActivity extends BaseActivity {
 
 	private ListView listView;
 	private Sidebar sidebar;

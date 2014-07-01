@@ -22,7 +22,7 @@ import android.view.View;
 import com.easemob.chat.EMMessage;
 import com.easemob.chatuidemo.R;
 
-public class ContextMenu extends Activity {
+public class ContextMenu extends BaseActivity {
 
 	private int position;
 	

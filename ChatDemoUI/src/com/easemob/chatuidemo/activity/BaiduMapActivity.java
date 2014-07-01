@@ -48,7 +48,7 @@ import com.baidu.platform.comapi.basestruct.GeoPoint;
 import com.easemob.chatuidemo.R;
 import com.easemob.util.EMLog;
 
-public class BaiduMapActivity extends Activity {
+public class BaiduMapActivity extends BaseActivity {
 
 	private final static String TAG = "map";
 	static MapView mMapView = null;

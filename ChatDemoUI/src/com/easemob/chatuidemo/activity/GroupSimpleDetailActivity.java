@@ -30,7 +30,7 @@ import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.exceptions.EaseMobException;
 
-public class GroupSimpleDetailActivity extends Activity {
+public class GroupSimpleDetailActivity extends BaseActivity {
 	private Button btn_add_group;
 	private TextView tv_admin;
 	private TextView tv_name;

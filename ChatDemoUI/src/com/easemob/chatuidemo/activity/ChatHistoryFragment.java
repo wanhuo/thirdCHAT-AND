@@ -261,7 +261,6 @@ public class ChatHistoryFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		if (!hidden) {
-			EMChatManager.getInstance().activityResumed();
 			refresh();
 		}
 	}
