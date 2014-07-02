@@ -104,6 +104,7 @@
     </LinearLayout>
     
     <LinearLayout 
+        android:id="@+id/ll_open_invite"
         android:layout_width="match_parent"
        android:layout_height="39dp"
         android:layout_marginBottom="10dp"

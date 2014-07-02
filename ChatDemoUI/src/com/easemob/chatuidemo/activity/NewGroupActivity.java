@@ -20,7 +20,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.easemob.chat.EMGroupManager;
@@ -32,6 +35,7 @@ public class NewGroupActivity extends BaseActivity {
 	private EditText introductionEditText;
 	private CheckBox checkBox;
 	private CheckBox memberCheckbox;
+	private LinearLayout openInviteContainer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,20 @@ public class NewGroupActivity extends BaseActivity {
 		introductionEditText = (EditText) findViewById(R.id.edit_group_introduction);
 		checkBox = (CheckBox) findViewById(R.id.cb_public);
 		memberCheckbox = (CheckBox) findViewById(R.id.cb_member_inviter);
+		openInviteContainer = (LinearLayout) findViewById(R.id.ll_open_invite);
+		
+		checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				//公开群不允许群成员邀请
+				if(isChecked){
+					openInviteContainer.setVisibility(View.INVISIBLE);
+				}else{
+					openInviteContainer.setVisibility(View.VISIBLE);
+				}
+			}
+		});
 	}
 
 	/**
