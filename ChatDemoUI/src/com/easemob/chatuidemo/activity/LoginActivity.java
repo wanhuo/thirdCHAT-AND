@@ -98,7 +98,6 @@ public class LoginActivity extends BaseActivity {
 		}
 		final String username = usernameEditText.getText().toString();
 		final String password = passwordEditText.getText().toString();
-
 		if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
 			progressShow=true;
 			final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
@@ -186,7 +185,14 @@ public class LoginActivity extends BaseActivity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
-							Toast.makeText(getApplicationContext(), "登录失败: " + message, 0).show();
+							if(message.indexOf("not support the capital letters")!=-1)
+							{
+								Toast.makeText(getApplicationContext(), "用户名不支持大写字母", 0).show();
+							}else{
+								Toast.makeText(getApplicationContext(), "登录失败: " + message, 0).show();
+							}
+							
+							
 
 						}
 					});

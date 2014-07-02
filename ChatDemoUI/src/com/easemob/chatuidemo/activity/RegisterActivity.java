@@ -110,6 +110,8 @@ public class RegisterActivity extends BaseActivity{
 									}else if(errorMsg.indexOf("conflict")!=-1)
 									{
 										Toast.makeText(getApplicationContext(), "用户已存在！", 0).show();
+									}else if(errorMsg.indexOf("not support the capital letters")!=-1){
+										Toast.makeText(getApplicationContext(), "用户名不支持大写字母！", 0).show();
 									}else{
 										Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), 1).show();
 									}
