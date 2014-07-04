@@ -57,6 +57,7 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.HanziToPinyin;
 
 public class MainActivity extends FragmentActivity {
@@ -491,7 +492,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onInvitationDeclined(String groupId, String invitee, String reason) {
-
+			
 		}
 
 		@Override
@@ -531,6 +532,18 @@ public class MainActivity extends FragmentActivity {
 				}
 			});
 
+		}
+
+		@Override
+		public void onApplicationReceived(String groupId, String groupName, String applyer, String reason) {
+			//用户申请加入群聊
+			try {
+//				EMGroupManager.getInstance().acceptApplication(applyer, groupId);
+				EMGroupManager.getInstance().declineApplication(applyer, groupId, "拒绝的就是你");
+			} catch (EaseMobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
