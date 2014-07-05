@@ -399,6 +399,10 @@ public class MainActivity extends FragmentActivity {
 
 	}
 	
+	/**
+	 * 保存提示新消息
+	 * @param msg
+	 */
 	protected void notifyNewIviteMessage(InviteMessage msg) {
 		// 保存msg
 		inviteMessgeDao.saveMessage(msg);
@@ -537,13 +541,22 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onApplicationReceived(String groupId, String groupName, String applyer, String reason) {
 			//用户申请加入群聊
-			try {
-//				EMGroupManager.getInstance().acceptApplication(applyer, groupId);
-				EMGroupManager.getInstance().declineApplication(applyer, groupId, "拒绝的就是你");
-			} catch (EaseMobException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			InviteMessage msg = new InviteMessage();
+			msg.setFrom(applyer);
+			msg.setTime(System.currentTimeMillis());
+			msg.setGroupId(groupId);
+			msg.setGroupName(groupName);
+			msg.setReason(reason);
+			Log.d(TAG, applyer + " 申请加入群聊："+groupName);
+			msg.setStatus(InviteMesageStatus.BEAPPLYED);
+			notifyNewIviteMessage(msg);
+//			try {
+////				EMGroupManager.getInstance().acceptApplication(applyer, groupId);
+//				EMGroupManager.getInstance().declineApplication(applyer, groupId, "拒绝的就是你");
+//			} catch (EaseMobException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 
 	}

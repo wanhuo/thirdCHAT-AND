@@ -21,16 +21,19 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
@@ -58,6 +61,8 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			holder.reason = (TextView) convertView.findViewById(R.id.message);
 			holder.name = (TextView) convertView.findViewById(R.id.name);
 			holder.status = (Button) convertView.findViewById(R.id.user_state);
+			holder.groupContainer = (LinearLayout) convertView.findViewById(R.id.ll_group);
+			holder.groupname = (TextView) convertView.findViewById(R.id.tv_groupName);
 			// holder.time = (TextView) convertView.findViewById(R.id.time);
 			convertView.setTag(holder);
 		} else {
@@ -66,6 +71,13 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 
 		final InviteMessage msg = getItem(position);
 		if (msg != null) {
+			if(msg.getGroupId() != null){ // 显示群聊提示
+				holder.groupContainer.setVisibility(View.VISIBLE);
+				holder.groupname.setText(msg.getGroupName());
+			} else{
+				holder.groupContainer.setVisibility(View.GONE);
+			}
+			
 			holder.reason.setText(msg.getReason());
 			holder.name.setText(msg.getFrom());
 			// holder.time.setText(DateUtils.getTimestampString(new
@@ -73,12 +85,18 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			if (msg.getStatus() == InviteMesageStatus.BEAGREED) {
 				holder.status.setVisibility(View.INVISIBLE);
 				holder.reason.setText("已同意你的好友请求");
-			} else if (msg.getStatus() == InviteMesageStatus.BEINVITEED) {
+			} else if (msg.getStatus() == InviteMesageStatus.BEINVITEED || msg.getStatus() == InviteMesageStatus.BEAPPLYED) {
 				holder.status.setVisibility(View.VISIBLE);
 				holder.status.setText("同意");
-				if (msg.getReason() == null) {
-					// 如果没写理由
-					holder.reason.setText("请求加你为好友");
+				if(msg.getStatus() == InviteMesageStatus.BEINVITEED){
+					if (msg.getReason() == null) {
+						// 如果没写理由
+						holder.reason.setText("请求加你为好友");
+					}
+				}else{ //入群申请
+					if (TextUtils.isEmpty(msg.getReason())) {
+						holder.reason.setText("申请加入群：" + msg.getGroupName());
+					}
 				}
 				// 设置点击事件
 				holder.status.setOnClickListener(new OnClickListener() {
@@ -106,7 +124,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 	}
 
 	/**
-	 * 同意好友请求
+	 * 同意好友请求或者群申请
 	 * 
 	 * @param button
 	 * @param username
@@ -121,7 +139,10 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			public void run() {
 				// 调用sdk的同意方法
 				try {
-					EMChatManager.getInstance().acceptInvitation(msg.getFrom());
+					if(msg.getGroupId() == null) //同意好友请求
+						EMChatManager.getInstance().acceptInvitation(msg.getFrom());
+					else //同意加群申请
+						EMGroupManager.getInstance().acceptApplication(msg.getFrom(), msg.getGroupId());
 					((Activity) context).runOnUiThread(new Runnable() {
 
 						@Override
@@ -144,7 +165,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 						@Override
 						public void run() {
 							pd.dismiss();
-							Toast.makeText(context, "添加失败: " + e.getMessage(), 1).show();
+							Toast.makeText(context, "同意失败: " + e.getMessage(), 1).show();
 						}
 					});
 
@@ -158,6 +179,8 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 		TextView name;
 		TextView reason;
 		Button status;
+		LinearLayout groupContainer;
+		TextView groupname;
 		// TextView time;
 	}
 
