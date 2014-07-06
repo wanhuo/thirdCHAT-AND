@@ -31,6 +31,9 @@ public class InviteMessgeDao {
 	public static final String TABLE_NAME = "new_friends_msgs";
 	public static final String COLUMN_NAME_ID = "id";
 	public static final String COLUMN_NAME_FROM = "username";
+	public static final String COLUMN_NAME_GROUP_ID = "groupid";
+	public static final String COLUMN_NAME_GROUP_Name = "groupname";
+	
 	public static final String COLUMN_NAME_TIME = "time";
 	public static final String COLUMN_NAME_REASON = "reason";
 	public static final String COLUMN_NAME_STATUS = "status";
@@ -53,6 +56,8 @@ public class InviteMessgeDao {
 		if(db.isOpen()){
 			ContentValues values = new ContentValues();
 			values.put(COLUMN_NAME_FROM, message.getFrom());
+			values.put(COLUMN_NAME_GROUP_ID, message.getGroupId());
+			values.put(COLUMN_NAME_GROUP_Name, message.getGroupName());
 			values.put(COLUMN_NAME_REASON, message.getReason());
 			values.put(COLUMN_NAME_TIME, message.getTime());
 			values.put(COLUMN_NAME_STATUS, message.getStatus().ordinal());
@@ -91,6 +96,8 @@ public class InviteMessgeDao {
 				InviteMessage msg = new InviteMessage();
 				int id = cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_ID));
 				String from = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_FROM));
+				String groupid = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_GROUP_ID));
+				String groupname = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_GROUP_Name));
 				String reason = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_REASON));
 				long time = cursor.getLong(cursor.getColumnIndex(COLUMN_NAME_TIME));
 				int isIniviteFromMe = cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_ISINVITEFROMME));
@@ -98,6 +105,8 @@ public class InviteMessgeDao {
 				
 				msg.setId(id);
 				msg.setFrom(from);
+				msg.setGroupId(groupid);
+				msg.setGroupName(groupname);
 				msg.setReason(reason);
 				msg.setTime(time);
 				if(status == InviteMesageStatus.BEINVITEED.ordinal())
@@ -110,6 +119,9 @@ public class InviteMessgeDao {
 					msg.setStatus(InviteMesageStatus.AGREED);
 				else if(status == InviteMesageStatus.REFUSED.ordinal())
 					msg.setStatus(InviteMesageStatus.REFUSED);
+				else if(status == InviteMesageStatus.BEAPPLYED.ordinal()){
+					msg.setStatus(InviteMesageStatus.BEAPPLYED);
+				}
 				msgs.add(msg);
 			}
 			cursor.close();

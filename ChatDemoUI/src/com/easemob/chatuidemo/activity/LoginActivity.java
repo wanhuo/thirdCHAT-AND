@@ -138,10 +138,10 @@ public class LoginActivity extends BaseActivity {
 							setUserHearder(username, user);
 							userlist.put(username, user);
 						}
-						// 添加user"新的朋友"
+						// 添加user"申请与通知"
 						User newFriends = new User();
 						newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
-						newFriends.setNick("新的朋友");
+						newFriends.setNick("申请与通知");
 						newFriends.setHeader("");
 						userlist.put(Constant.NEW_FRIENDS_USERNAME,newFriends);
 						//添加"群聊"

@@ -35,6 +35,7 @@ public class GroupSimpleDetailActivity extends BaseActivity {
 	private TextView tv_admin;
 	private TextView tv_name;
 	private TextView tv_introduction;
+	private EMGroup group;
 	private String groupid;
 	private ProgressBar progressBar;
 
@@ -56,13 +57,15 @@ public class GroupSimpleDetailActivity extends BaseActivity {
 		
 		
 		new Thread(new Runnable() {
+
 			public void run() {
 				//从服务器获取详情
 				try {
-					final EMGroup group = EMGroupManager.getInstance().getGroupFromServer(groupid);
+					group = EMGroupManager.getInstance().getGroupFromServer(groupid);
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressBar.setVisibility(View.INVISIBLE);
+							//获取详情成功，并且自己不在群中，才让加入群聊按钮可点击
 							if(!group.getMembers().contains(EMChatManager.getInstance().getCurrentUser()))
 								btn_add_group.setEnabled(true);
 							tv_name.setText(group.getGroupName());
@@ -94,7 +97,12 @@ public class GroupSimpleDetailActivity extends BaseActivity {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					EMGroupManager.getInstance().joinGroup(groupid);
+					//如果是membersOnly的群，需要申请加入，不能直接join
+					if(group.isMembersOnly()){
+						EMGroupManager.getInstance().applyJoinToGroup(groupid, "求加入");
+					}else{
+						EMGroupManager.getInstance().joinGroup(groupid);
+					}
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();

@@ -27,6 +27,10 @@ import com.easemob.chatuidemo.adapter.NewFriendsMsgAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
 
+/**
+ * 系统消息
+ *
+ */
 public class NewFriendsMsgActivity extends BaseActivity {
 	private ListView listView;
 

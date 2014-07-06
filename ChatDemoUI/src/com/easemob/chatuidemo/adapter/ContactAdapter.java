@@ -132,7 +132,7 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 			} else {
 				tvHeader.setVisibility(View.GONE);
 			}
-			//显示新的朋友item
+			//显示申请与通知item
 			if(username.equals(Constant.NEW_FRIENDS_USERNAME)){
 				nameTextview.setText(user.getNick());
 				avatar.setImageResource(R.drawable.new_friends_icon);

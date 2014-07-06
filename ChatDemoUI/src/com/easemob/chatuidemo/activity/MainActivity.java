@@ -57,6 +57,7 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.HanziToPinyin;
 
 public class MainActivity extends FragmentActivity {
@@ -93,7 +94,8 @@ public class MainActivity extends FragmentActivity {
 		fragments = new Fragment[] { chatHistoryFragment, contactListFragment, settingFragment };
 		// 添加显示第一个fragment
 		getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, chatHistoryFragment)
-				.add(R.id.fragment_container, contactListFragment).hide(contactListFragment).show(chatHistoryFragment).commit();
+				.add(R.id.fragment_container, contactListFragment).hide(contactListFragment).show(chatHistoryFragment)
+				.commit();
 
 		// 注册一个接收消息的BroadcastReceiver
 		msgReceiver = new NewMessageBroadcastReceiver();
@@ -102,10 +104,10 @@ public class MainActivity extends FragmentActivity {
 		registerReceiver(msgReceiver, intentFilter);
 
 		// 注册一个ack回执消息的BroadcastReceiver
-		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getAckMessageBroadcastAction());
+		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance()
+				.getAckMessageBroadcastAction());
 		ackMessageIntentFilter.setPriority(3);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
-
 
 		// setContactListener监听联系人的变化等
 		EMContactManager.getInstance().setContactListener(new MyContactListener());
@@ -197,7 +199,7 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	/**
-	 * 刷新新的朋友消息数
+	 * 刷新申请与通知消息数
 	 */
 	public void updateUnreadAddressLable() {
 		runOnUiThread(new Runnable() {
@@ -211,19 +213,19 @@ public class MainActivity extends FragmentActivity {
 				}
 			}
 		});
-		
 
 	}
 
 	/**
-	 * 获取未读新的朋友消息
+	 * 获取未读申请与通知消息
 	 * 
 	 * @return
 	 */
 	public int getUnreadAddressCountTotal() {
 		int unreadAddressCountTotal = 0;
 		if (DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME) != null)
-			unreadAddressCountTotal = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME).getUnreadMsgCount();
+			unreadAddressCountTotal = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME)
+					.getUnreadMsgCount();
 		return unreadAddressCountTotal;
 	}
 
@@ -314,7 +316,8 @@ public class MainActivity extends FragmentActivity {
 				} else if (Character.isDigit(headerName.charAt(0))) {
 					user.setHeader("#");
 				} else {
-					user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1).toUpperCase());
+					user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(
+							0, 1).toUpperCase());
 					char header = user.getHeader().toLowerCase().charAt(0);
 					if (header < 'a' || header > 'z') {
 						user.setHeader("#");
@@ -370,8 +373,6 @@ public class MainActivity extends FragmentActivity {
 
 		}
 
-		
-
 		@Override
 		public void onContactAgreed(String username) {
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
@@ -384,7 +385,7 @@ public class MainActivity extends FragmentActivity {
 			InviteMessage msg = new InviteMessage();
 			msg.setFrom(username);
 			msg.setTime(System.currentTimeMillis());
-			Log.d(TAG, username + "同意了你的好友请求" );
+			Log.d(TAG, username + "同意了你的好友请求");
 			msg.setStatus(InviteMesageStatus.BEAGREED);
 			notifyNewIviteMessage(msg);
 
@@ -392,18 +393,19 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onContactRefused(String username) {
-			//参考同意，被邀请实现此功能,demo未实现
+			// 参考同意，被邀请实现此功能,demo未实现
 
 		}
 
 	}
-	
-	protected void notifyNewIviteMessage(InviteMessage msg) {
-		// 保存msg
-		inviteMessgeDao.saveMessage(msg);
-		// 未读数加1
-		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
-		user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
+
+	/**
+	 * 保存提示新消息
+	 * 
+	 * @param msg
+	 */
+	private void notifyNewIviteMessage(InviteMessage msg) {
+		saveInviteMsg(msg);
 		// 提示有新消息
 		EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
 
@@ -413,10 +415,21 @@ public class MainActivity extends FragmentActivity {
 		if (currentTabIndex == 1)
 			contactListFragment.refresh();
 	}
+	/**
+	 * 保存邀请等msg
+	 * @param msg
+	 */
+	private void saveInviteMsg(InviteMessage msg) {
+		// 保存msg
+		inviteMessgeDao.saveMessage(msg);
+		// 未读数加1
+		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
+		user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
+	}
 
 	/**
 	 * 连接监听listener
-	 *
+	 * 
 	 */
 	private class MyConnectionListener implements ConnectionListener {
 
@@ -533,6 +546,52 @@ public class MainActivity extends FragmentActivity {
 
 		}
 
+		@Override
+		public void onApplicationReceived(String groupId, String groupName, String applyer, String reason) {
+			// 用户申请加入群聊
+			InviteMessage msg = new InviteMessage();
+			msg.setFrom(applyer);
+			msg.setTime(System.currentTimeMillis());
+			msg.setGroupId(groupId);
+			msg.setGroupName(groupName);
+			msg.setReason(reason);
+			Log.d(TAG, applyer + " 申请加入群聊：" + groupName);
+			msg.setStatus(InviteMesageStatus.BEAPPLYED);
+			notifyNewIviteMessage(msg);
+		}
+
+		@Override
+		public void onApplicationAccept(String groupId, String groupName, String accepter) {
+			//加群申请被同意
+			EMMessage msg = EMMessage.createReceiveMessage(Type.TXT);
+			msg.setChatType(ChatType.GroupChat);
+			msg.setFrom(accepter);
+			msg.setTo(groupId);
+			msg.setMsgId(UUID.randomUUID().toString());
+			msg.addBody(new TextMessageBody(accepter + "同意了你的群聊申请"));
+			// 保存同意消息
+			EMChatManager.getInstance().saveMessage(msg);
+			// 提醒新消息
+			EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
+			
+			runOnUiThread(new Runnable() {
+				public void run() {
+					updateUnreadLabel();
+					// 刷新ui
+					if (currentTabIndex == 0)
+						chatHistoryFragment.refresh();
+					if (CommonUtils.getTopActivity(MainActivity.this).equals(GroupsActivity.class.getName())) {
+						GroupsActivity.instance.onResume();
+					}
+				}
+			});
+		}
+
+		@Override
+		public void onApplicationDeclined(String groupId, String groupName, String decliner, String reason) {
+			//加群申请被拒绝，demo未实现
+		}
+
 	}
 
 	@Override
@@ -545,14 +604,14 @@ public class MainActivity extends FragmentActivity {
 		}
 
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		 if (keyCode == KeyEvent.KEYCODE_BACK) {  
-			 moveTaskToBack(false);  
-	         return true;  
-	     }  
-	     return super.onKeyDown(keyCode, event);  
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			moveTaskToBack(false);
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	private android.app.AlertDialog.Builder conflictBuilder;
@@ -563,7 +622,7 @@ public class MainActivity extends FragmentActivity {
 	private void showConflictDialog() {
 
 		DemoApplication.getInstance().logout();
-		
+
 		if (!MainActivity.this.isFinishing()) {
 			// clear up global variables
 			try {
