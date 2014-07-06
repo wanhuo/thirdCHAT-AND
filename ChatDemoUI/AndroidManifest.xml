@@ -142,6 +142,13 @@
             android:name=".activity.GroupSimpleDetailActivity"
             android:theme="@style/horizontal_slide" >
         </activity>
+        <activity 
+            android:name=".activity.ShowVideoActivity"
+            android:theme="@style/horizontal_slide"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            ></activity>
+        
+        
         
         <!-- 开机自启动服务 -->
         <receiver android:name="com.easemob.chat.StartServiceReceiver">

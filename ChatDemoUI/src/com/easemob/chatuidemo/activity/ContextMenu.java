@@ -39,6 +39,8 @@ public class ContextMenu extends BaseActivity {
 		    setContentView(R.layout.context_menu_for_image);
 		} else if (type == EMMessage.Type.VOICE.ordinal()) {
 		    setContentView(R.layout.context_menu_for_voice);
+		} else if (type == EMMessage.Type.VIDEO.ordinal()) {
+			setContentView(R.layout.context_menu_for_video);
 		}
 		    
 		/*    
