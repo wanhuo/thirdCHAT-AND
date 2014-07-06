@@ -83,7 +83,7 @@ public class ContactlistFragment extends Fragment{
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				String username = adapter.getItem(position).getUsername();
 				if(Constant.NEW_FRIENDS_USERNAME.equals(username)){
-					//进入新的朋友页面
+					//进入申请与通知页面
 					User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 					user.setUnreadMsgCount(0);
 					startActivity(new Intent(getActivity(), NewFriendsMsgActivity.class));
@@ -223,9 +223,9 @@ public class ContactlistFragment extends Fragment{
 			}
 		});
 		
-		//加入"新的朋友"和"群聊"
+		//加入"申请与通知"和"群聊"
 		contactList.add(0,users.get(Constant.GROUP_USERNAME));
-		//把"新的朋友"添加到首位
+		//把"申请与通知"添加到首位
 		contactList.add(0,users.get(Constant.NEW_FRIENDS_USERNAME));
 	}
 }
