@@ -65,6 +65,8 @@ import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.util.DateUtils;
 import com.easemob.util.LatLng;
+import com.easemob.util.PathUtil;
+import com.easemob.util.TextFormater;
 
 public class MessageAdapter extends BaseAdapter {
 
@@ -222,12 +224,19 @@ public class MessageAdapter extends BaseAdapter {
 			}else if(message.getType()==EMMessage.Type.VIDEO)
 			{
 				try {
-					holder.iv = ((ImageView) convertView.findViewById(R.id.iv_video));
-					holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
-					holder.tv = (TextView) convertView.findViewById(R.id.percentage);
-					holder.pb = (ProgressBar) convertView.findViewById(R.id.progressBar);
-					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
-					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
+					 	holder.iv = ((ImageView) convertView.findViewById(R.id.chatting_content_iv));
+	                    holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
+	                    holder.tv = (TextView) convertView.findViewById(R.id.percentage);
+	                    holder.pb = (ProgressBar) convertView.findViewById(R.id.progressBar);
+	                    holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
+	                    holder.size = (TextView) convertView.findViewById(R.id.chatting_size_iv);
+	                    holder.timeLength = (TextView) convertView.findViewById(R.id.chatting_length_iv);
+	                    holder.playBtn = (ImageView) convertView.findViewById(R.id.chatting_status_btn);
+	                    holder.container_status_btn = (LinearLayout) convertView.findViewById(R.id.container_status_btn);
+	                    holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
+					
+					
+					
 				} catch (Exception e) {
 				}
 			}
@@ -448,20 +457,53 @@ public class MessageAdapter extends BaseAdapter {
 	 * @param convertView
 	 */
 	private void handleVideoMessage(final EMMessage message, final ViewHolder holder, final int position, View convertView) {
+		
 		VideoMessageBody videoBody = (VideoMessageBody) message.getBody();
-		String localThumb=videoBody.getLocalThumb();
-		holder.pb.setTag(position);
+		// final File image=new File(PathUtil.getInstance().getVideoPath(),
+		// videoBody.getFileName());
+		String localThumb = videoBody.getLocalThumb();
+		
 		holder.iv.setOnLongClickListener(new OnLongClickListener() {
-			
+
 			@Override
 			public boolean onLongClick(View v) {
-				activity.startActivityForResult(new Intent(activity, ContextMenu.class).putExtra("position",position).putExtra("type", EMMessage.Type.VIDEO.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+				activity.startActivityForResult(new Intent(activity, ContextMenu.class).putExtra("position", position).putExtra("type", EMMessage.Type.VIDEO.ordinal()),
+						ChatActivity.REQUEST_CODE_CONTEXT_MENU);
 				return true;
 			}
 		});
+
+		if (localThumb != null) {
+
+			showVideoThumbView(localThumb, holder.iv, videoBody.getThumbnailUrl(), message);
+		}
+		if(videoBody.getLength()>0)
+		{
+			String time = DateUtils.toTime(videoBody.getLength());
+			holder.timeLength.setText(time);
+		}
+		holder.playBtn.setImageResource(R.drawable.video_download_btn_nor);
+		
 		
 		if(message.direct==EMMessage.Direct.RECEIVE)
 		{
+			if (videoBody.getVideoFileLength() > 0) {
+				String size = TextFormater.getDataSize(videoBody.getVideoFileLength());
+				holder.size.setText(size);
+			}
+		}else{
+			if(videoBody.getLocalUrl()!=null&&new File(videoBody.getLocalUrl()).exists()) 
+			{
+				String size = TextFormater.getDataSize(new File(videoBody.getLocalUrl()).length());
+				holder.size.setText(size);
+			}
+		}
+		
+		if(message.direct==EMMessage.Direct.RECEIVE)
+		{
+			
+			
+			
 			System.err.println("it is receive msg");
 			if(message.status==EMMessage.Status.INPROGRESS)
 			{
@@ -471,8 +513,6 @@ public class MessageAdapter extends BaseAdapter {
 				 
 			}else{
 				System.err.println("!!!! not back receive, show image directly");
-				holder.pb.setVisibility(View.GONE);
-				holder.tv.setVisibility(View.GONE);
 				holder.iv.setImageResource(R.drawable.default_image);
 				if(localThumb!=null)
 				{
@@ -483,69 +523,66 @@ public class MessageAdapter extends BaseAdapter {
 			
 			return;
 		}
+		holder.pb.setTag(position);
 		
-		
-		if(localThumb!=null)
-		{
-			showVideoThumbView(localThumb,holder.iv,videoBody.getThumbnailUrl(),message);
-		}
-		 
 		// until here ,deal with send video msg
-		switch (message.status) {
-		case SUCCESS:
-			holder.pb.setVisibility(View.GONE);
-			holder.staus_iv.setVisibility(View.GONE);
-			holder.tv.setVisibility(View.GONE);
-			break;
-		case FAIL:
-			holder.pb.setVisibility(View.GONE);
-			holder.tv.setVisibility(View.GONE);
-			holder.staus_iv.setVisibility(View.VISIBLE);
-			break;
-		case INPROGRESS:
-			//set a timer
-			final Timer timer=new Timer();
-			timer.schedule(new TimerTask() {
-				
-				@Override
-				public void run() {
-					activity.runOnUiThread(new Runnable() {
+				switch (message.status) {
+				case SUCCESS:
+					holder.pb.setVisibility(View.GONE);
+					holder.staus_iv.setVisibility(View.GONE);
+					holder.tv.setVisibility(View.GONE);
+					break;
+				case FAIL:
+					holder.pb.setVisibility(View.GONE);
+					holder.tv.setVisibility(View.GONE);
+					holder.staus_iv.setVisibility(View.VISIBLE);
+					break;
+				case INPROGRESS:
+					//set a timer
+					final Timer timer=new Timer();
+					timer.schedule(new TimerTask() {
 						
 						@Override
 						public void run() {
-							holder.pb.setVisibility(View.VISIBLE);
-							holder.tv.setVisibility(View.VISIBLE);
-							holder.tv.setText(message.progress+"%");
-							if(message.status==EMMessage.Status.SUCCESS)
-							{
-								holder.pb.setVisibility(View.GONE);
-								holder.tv.setVisibility(View.GONE);
-								//message.setSendingStatus(Message.SENDING_STATUS_SUCCESS);
-								timer.cancel();
-							}else if(message.status==EMMessage.Status.FAIL)
-							{
-								holder.pb.setVisibility(View.GONE);
-								holder.tv.setVisibility(View.GONE);
-								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
-								// message.setProgress(0);
-								holder.staus_iv.setVisibility(View.VISIBLE);
-								Toast.makeText(activity,
-										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
-										.show();
-								timer.cancel();
-							}
+							activity.runOnUiThread(new Runnable() {
+								
+								@Override
+								public void run() {
+									holder.pb.setVisibility(View.VISIBLE);
+									holder.tv.setVisibility(View.VISIBLE);
+									holder.tv.setText(message.progress+"%");
+									if(message.status==EMMessage.Status.SUCCESS)
+									{
+										holder.pb.setVisibility(View.GONE);
+										holder.tv.setVisibility(View.GONE);
+										//message.setSendingStatus(Message.SENDING_STATUS_SUCCESS);
+										timer.cancel();
+									}else if(message.status==EMMessage.Status.FAIL)
+									{
+										holder.pb.setVisibility(View.GONE);
+										holder.tv.setVisibility(View.GONE);
+										// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
+										// message.setProgress(0);
+										holder.staus_iv.setVisibility(View.VISIBLE);
+										Toast.makeText(activity,
+												activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+												.show();
+										timer.cancel();
+									}
+									 
+								}
+							});
 							 
 						}
-					});
-					 
+					}, 0,500);
+					break;
+				default:
+					sendMsgInBackground(message, holder);
+
 				}
-			}, 0,500);
-			break;
-		default:
-			sendMsgInBackground(message, holder);
-
-		}
-
+		
+		 
+		
 	}
 	
 
@@ -750,8 +787,11 @@ public class MessageAdapter extends BaseAdapter {
 					@Override
 					public void run() {
 						// message.setBackReceive(false);
-						holder.pb.setVisibility(View.GONE);
-						holder.tv.setVisibility(View.GONE);
+						if(message.getType()==EMMessage.Type.IMAGE)
+						{
+							holder.pb.setVisibility(View.GONE);
+							holder.tv.setVisibility(View.GONE);
+						}
 						notifyDataSetChanged();
 					}
 				});
@@ -764,13 +804,17 @@ public class MessageAdapter extends BaseAdapter {
 
 			@Override
 			public void onProgress(final int progress, String status) {
-				activity.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						holder.tv.setText(progress + "%");
+				if(message.getType()==EMMessage.Type.IMAGE)
+				{
+					activity.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							holder.tv.setText(progress + "%");
 
-					}
-				});
+						}
+					});
+				}
+				
 			}
 
 		});

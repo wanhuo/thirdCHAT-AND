@@ -14,19 +14,22 @@
 package com.easemob.chatuidemo.activity;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.http.entity.mime.MinimalField;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -80,6 +83,7 @@ import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.chatuidemo.widget.PasteEditText;
+import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
 import com.easemob.util.VoiceRecorder;
 
@@ -111,6 +115,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	public static final int REQUEST_CODE_CLICK_DESTORY_IMG = 20;
 	public static final int REQUEST_CODE_GROUP_DETAIL = 21;
 	public static final int REQUEST_CODE_CAMERA_VIDEO=22;
+	public static final int REQUEST_CODE_SELECT_VIDEO=23;
 	
 	
 
@@ -409,12 +414,95 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			} else if (requestCode == REQUEST_CODE_CAMERA) { // 发送照片
 				if (cameraFile != null && cameraFile.exists())
 					sendPicture(cameraFile.getAbsolutePath());
+			}else if(requestCode==REQUEST_CODE_SELECT_VIDEO){
+				
+				Uri videoUri=data.getData();
+				String[] proj={MediaStore.Images.Media.DATA,MediaStore.Video.Media.DURATION};
+				try {
+					Cursor cursor=getContentResolver().query(videoUri, proj, null, null, null);
+					if(cursor!=null)
+					{
+						if(cursor.moveToFirst())
+						{
+							int index=cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+							int duration=cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
+							String videoPath=cursor.getString(index);
+							Bitmap bitmap=ThumbnailUtils.createVideoThumbnail(videoPath, 3);
+							if(bitmap==null)
+							{
+								EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
+								bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
+							}
+							File videoFile=new File(videoPath);
+							System.out.println("length:"+videoFile.length());
+							//限制大小不能超过5M
+							if(videoFile.length()>1024*1024*5)
+							{
+								Toast.makeText(this, "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
+								return;
+							}
+							
+							
+							//get the thumb image file
+							File file=new File(PathUtil.getInstance().getVideoPath(),"th"+videoFile.getName());
+							try {
+								if(!file.getParentFile().exists())
+								{
+									file.getParentFile().mkdirs();
+								}
+								bitmap.compress(CompressFormat.JPEG,100,new FileOutputStream(file));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							sendVideo(videoPath, file.getAbsolutePath(), duration);
+						}
+					}else{
+						File videoFile=new File(videoUri.getPath());
+						Bitmap bitmap=ThumbnailUtils.createVideoThumbnail(videoFile.getAbsolutePath(), 3);
+						if(bitmap==null)
+						{
+							EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
+							bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
+						}
+						
+						
+						System.out.println("length:"+videoFile.length());
+						//限制大小不能超过5M
+						if(videoFile.length()>1024*1024*5)
+						{
+							Toast.makeText(this, "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
+							return;
+						}
+						
+						
+						//get the thumb image file
+						File file=new File(PathUtil.getInstance().getVideoPath(),"th"+videoFile.getName());
+						try {
+							if(!file.getParentFile().exists())
+							{
+								file.getParentFile().mkdirs();
+							}
+							bitmap.compress(CompressFormat.JPEG,100,new FileOutputStream(file));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						sendVideo(videoFile.getAbsolutePath(), file.getAbsolutePath(), 0);
+						 
+					}
+					
+					
+				} catch (Exception e) {
+					System.out.println("exception:"+e.getMessage());
+				}
+				
+				 
+				
 			} else if(requestCode==REQUEST_CODE_CAMERA_VIDEO){
 				if(videoFile!=null&&videoFile.exists())
 				{
 					//保存缩略图
 				String thumbPath=com.easemob.util.ImageUtils.saveVideoThumb(videoFile,120,120, Thumbnails.MINI_KIND);
-					sendVideo(videoFile.getAbsolutePath(),videoFile.getName(),thumbPath, 1);
+					sendVideo(videoFile.getAbsolutePath(),thumbPath, 1);
 				}
 			}else if (requestCode == REQUEST_CODE_LOCAL) { // 发送本地图片
 				if (data != null) {
@@ -440,6 +528,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			} else if (requestCode == REQUEST_CODE_PICTURE) {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_LOCATION) {
+				resendMessage();
+			}else if(requestCode==REQUEST_CODE_VIDEO){
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_COPY_AND_PASTE) {
 				// 粘贴
@@ -500,7 +590,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		}else if(id==R.id.btn_video)
 		{
-			selectVideoFromCamera();//点击摄像图标
+//			selectVideoFromCamera();//点击摄像图标
+			selectVideoFromLocal();//从相册选择视频文件
+			
 		}
 	}
 
@@ -536,6 +628,28 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		
 		
 	}
+	
+	
+	/**
+	 * 选择视频文件
+	 */
+	public void selectVideoFromLocal(){
+		Intent intent=new Intent(Intent.ACTION_GET_CONTENT);
+		
+		 if (Build.VERSION.SDK_INT < 19) {
+			    intent = new Intent(Intent.ACTION_GET_CONTENT);
+			    intent.setType("video/*");
+		        
+		    } else {
+		        //change to below intent to support 4.4 content resolver change
+	            //http://developer.android.com/about/versions/android-4.4.html
+			    intent = new Intent(
+			        Intent.ACTION_PICK,
+			        android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+		    }
+		startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
+	}
+	
 	
 	
 	
@@ -663,18 +777,20 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	/**
 	 * 发送视频
 	 */
-	private void sendVideo(final String filePath, String fileName,String thumbPath, int length) {
-		if (!new File(filePath).exists()) {
+	private void sendVideo(final String filePath,String thumbPath, int length) {
+		File videoFile=new File(filePath);
+		if (!videoFile.exists()) {
 			return;
 		}
 		try {
 			EMMessage message = EMMessage.createSendMessage(EMMessage.Type.VIDEO);
+			
 			// 如果是群聊，设置chattype,默认是单聊
 			if (chatType == CHATTYPE_GROUP)
 				message.setChatType(ChatType.GroupChat);
 			String to = toChatUsername;
 			message.setReceipt(to);
-			VideoMessageBody body=new VideoMessageBody(new File(filePath),thumbPath,length);
+			VideoMessageBody body=new VideoMessageBody(videoFile,thumbPath,length,videoFile.length());
 			message.addBody(body);
 			conversation.addMessage(message);
 			listView.setAdapter(adapter);
