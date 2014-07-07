@@ -24,7 +24,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
 
     <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
@@ -61,8 +62,8 @@
         <!-- 聊天页面 -->
         <activity
             android:name=".activity.ChatActivity"
-            android:theme="@style/horizontal_slide"
             android:launchMode="singleTop"
+            android:theme="@style/horizontal_slide"
             android:windowSoftInputMode="adjustResize" >
         </activity>
         <!-- 添加好友 -->
@@ -134,40 +135,35 @@
         <!-- 公开的群聊列表 -->
         <activity
             android:name=".activity.PublicGroupsActivity"
-            android:theme="@style/horizontal_slide" 
-            android:windowSoftInputMode="adjustPan"
-            >
+            android:theme="@style/horizontal_slide"
+            android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
             android:name=".activity.GroupSimpleDetailActivity"
             android:theme="@style/horizontal_slide" >
         </activity>
-        <activity 
+        <activity
             android:name=".activity.ShowVideoActivity"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            ></activity>
-        
-        
-        
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+
         <!-- 开机自启动服务 -->
-        <receiver android:name="com.easemob.chat.StartServiceReceiver">
-            <intent-filter android:priority="1000">
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
-                <category android:name="android.intent.category.LAUNCHER" />  
+        <receiver android:name="com.easemob.chat.StartServiceReceiver" >
+            <intent-filter android:priority="1000" >
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
-        
-        
+
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="easemob-demo#chatdemoui" />
-		<!-- 声明sdk所需的service -->
+        <!-- 声明sdk所需的service -->
         <service android:name="com.easemob.chat.EMChatService" />
-        
-        
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"

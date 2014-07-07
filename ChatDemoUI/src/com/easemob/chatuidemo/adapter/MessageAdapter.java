@@ -80,14 +80,12 @@ public class MessageAdapter extends BaseAdapter {
 	private static final int MESSAGE_TYPE_RECV_IMAGE = 5;
 	private static final int MESSAGE_TYPE_SENT_VOICE = 6;
 	private static final int MESSAGE_TYPE_RECV_VOICE = 7;
-	private static final int MESSAGE_TYPE_SENT_VIDEO=8;
-	private static final int MESSAGE_TYPE_RECV_VIDEO=9;
-	
-	
+	private static final int MESSAGE_TYPE_SENT_VIDEO = 8;
+	private static final int MESSAGE_TYPE_RECV_VIDEO = 9;
 
 	public static final String IMAGE_DIR = "chat/image/";
 	public static final String VOICE_DIR = "chat/audio/";
-	public static final String VIDEO_DIR="chat/video";
+	public static final String VIDEO_DIR = "chat/video";
 
 	private String username;
 	private LayoutInflater inflater;
@@ -95,7 +93,6 @@ public class MessageAdapter extends BaseAdapter {
 
 	// reference to conversation object in chatsdk
 	private EMConversation conversation;
-
 
 	private Context context;
 
@@ -114,12 +111,11 @@ public class MessageAdapter extends BaseAdapter {
 	public int getCount() {
 		return conversation.getMsgCount();
 	}
-	
-	public void refresh(){
+
+	public void refresh() {
 		notifyDataSetChanged();
 	}
-	
-	
+
 	public EMMessage getItem(int position) {
 		return conversation.getMessage(position);
 	}
@@ -167,7 +163,8 @@ public class MessageAdapter extends BaseAdapter {
 			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_voice, null) : inflater.inflate(
 					R.layout.row_sent_voice, null);
 		case VIDEO:
-			return message.direct==EMMessage.Direct.RECEIVE?inflater.inflate(R.layout.row_received_video, null):inflater.inflate(R.layout.row_sent_video, null);
+			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_video, null) : inflater.inflate(
+					R.layout.row_sent_video, null);
 		default:
 			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_message, null) : inflater.inflate(
 					R.layout.row_sent_message, null);
@@ -221,22 +218,19 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
 				} catch (Exception e) {
 				}
-			}else if(message.getType()==EMMessage.Type.VIDEO)
-			{
+			} else if (message.getType() == EMMessage.Type.VIDEO) {
 				try {
-					 	holder.iv = ((ImageView) convertView.findViewById(R.id.chatting_content_iv));
-	                    holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
-	                    holder.tv = (TextView) convertView.findViewById(R.id.percentage);
-	                    holder.pb = (ProgressBar) convertView.findViewById(R.id.progressBar);
-	                    holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
-	                    holder.size = (TextView) convertView.findViewById(R.id.chatting_size_iv);
-	                    holder.timeLength = (TextView) convertView.findViewById(R.id.chatting_length_iv);
-	                    holder.playBtn = (ImageView) convertView.findViewById(R.id.chatting_status_btn);
-	                    holder.container_status_btn = (LinearLayout) convertView.findViewById(R.id.container_status_btn);
-	                    holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
-					
-					
-					
+					holder.iv = ((ImageView) convertView.findViewById(R.id.chatting_content_iv));
+					holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
+					holder.tv = (TextView) convertView.findViewById(R.id.percentage);
+					holder.pb = (ProgressBar) convertView.findViewById(R.id.progressBar);
+					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
+					holder.size = (TextView) convertView.findViewById(R.id.chatting_size_iv);
+					holder.timeLength = (TextView) convertView.findViewById(R.id.chatting_length_iv);
+					holder.playBtn = (ImageView) convertView.findViewById(R.id.chatting_status_btn);
+					holder.container_status_btn = (LinearLayout) convertView.findViewById(R.id.container_status_btn);
+					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
+
 				} catch (Exception e) {
 				}
 			}
@@ -263,8 +257,7 @@ public class MessageAdapter extends BaseAdapter {
 			}
 		} else {
 			// 如果是文本或者地图消息并且不是group messgae，显示的时候给对方发送已读回执
-			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked
-					&& chatType != ChatType.GroupChat) {
+			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked && chatType != ChatType.GroupChat) {
 				try {
 					// 发送已读回执
 					message.isAcked = true;
@@ -290,7 +283,7 @@ public class MessageAdapter extends BaseAdapter {
 			handleVoiceMessage(message, holder, position, convertView);
 			break;
 		case VIDEO:
-			handleVideoMessage(message,holder,position,convertView);
+			handleVideoMessage(message, holder, position, convertView);
 			break;
 		default:
 			// not supported
@@ -448,27 +441,29 @@ public class MessageAdapter extends BaseAdapter {
 			sendPictureMessage(message, holder);
 		}
 	}
-	
+
 	/**
 	 * 视频消息
+	 * 
 	 * @param message
 	 * @param holder
 	 * @param position
 	 * @param convertView
 	 */
 	private void handleVideoMessage(final EMMessage message, final ViewHolder holder, final int position, View convertView) {
-		
+
 		VideoMessageBody videoBody = (VideoMessageBody) message.getBody();
 		// final File image=new File(PathUtil.getInstance().getVideoPath(),
 		// videoBody.getFileName());
 		String localThumb = videoBody.getLocalThumb();
-		
+
 		holder.iv.setOnLongClickListener(new OnLongClickListener() {
 
 			@Override
 			public boolean onLongClick(View v) {
-				activity.startActivityForResult(new Intent(activity, ContextMenu.class).putExtra("position", position).putExtra("type", EMMessage.Type.VIDEO.ordinal()),
-						ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+				activity.startActivityForResult(
+						new Intent(activity, ContextMenu.class).putExtra("position", position).putExtra("type",
+								EMMessage.Type.VIDEO.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
 				return true;
 			}
 		});
@@ -477,116 +472,100 @@ public class MessageAdapter extends BaseAdapter {
 
 			showVideoThumbView(localThumb, holder.iv, videoBody.getThumbnailUrl(), message);
 		}
-		if(videoBody.getLength()>0)
-		{
+		if (videoBody.getLength() > 0) {
 			String time = DateUtils.toTime(videoBody.getLength());
 			holder.timeLength.setText(time);
 		}
 		holder.playBtn.setImageResource(R.drawable.video_download_btn_nor);
-		
-		
-		if(message.direct==EMMessage.Direct.RECEIVE)
-		{
+
+		if (message.direct == EMMessage.Direct.RECEIVE) {
 			if (videoBody.getVideoFileLength() > 0) {
 				String size = TextFormater.getDataSize(videoBody.getVideoFileLength());
 				holder.size.setText(size);
 			}
-		}else{
-			if(videoBody.getLocalUrl()!=null&&new File(videoBody.getLocalUrl()).exists()) 
-			{
+		} else {
+			if (videoBody.getLocalUrl() != null && new File(videoBody.getLocalUrl()).exists()) {
 				String size = TextFormater.getDataSize(new File(videoBody.getLocalUrl()).length());
 				holder.size.setText(size);
 			}
 		}
-		
-		if(message.direct==EMMessage.Direct.RECEIVE)
-		{
-			
-			
-			
+
+		if (message.direct == EMMessage.Direct.RECEIVE) {
+
 			System.err.println("it is receive msg");
-			if(message.status==EMMessage.Status.INPROGRESS)
-			{
+			if (message.status == EMMessage.Status.INPROGRESS) {
 				System.err.println("!!!! back receive");
 				holder.iv.setImageResource(R.drawable.default_image);
 				showDownloadImageProgress(message, holder);
-				 
-			}else{
+
+			} else {
 				System.err.println("!!!! not back receive, show image directly");
 				holder.iv.setImageResource(R.drawable.default_image);
-				if(localThumb!=null)
-				{
-					showVideoThumbView(localThumb,holder.iv,videoBody.getThumbnailUrl(),message);
+				if (localThumb != null) {
+					showVideoThumbView(localThumb, holder.iv, videoBody.getThumbnailUrl(), message);
 				}
-				 
+
 			}
-			
+
 			return;
 		}
 		holder.pb.setTag(position);
-		
+
 		// until here ,deal with send video msg
-				switch (message.status) {
-				case SUCCESS:
-					holder.pb.setVisibility(View.GONE);
-					holder.staus_iv.setVisibility(View.GONE);
-					holder.tv.setVisibility(View.GONE);
-					break;
-				case FAIL:
-					holder.pb.setVisibility(View.GONE);
-					holder.tv.setVisibility(View.GONE);
-					holder.staus_iv.setVisibility(View.VISIBLE);
-					break;
-				case INPROGRESS:
-					//set a timer
-					final Timer timer=new Timer();
-					timer.schedule(new TimerTask() {
-						
+		switch (message.status) {
+		case SUCCESS:
+			holder.pb.setVisibility(View.GONE);
+			holder.staus_iv.setVisibility(View.GONE);
+			holder.tv.setVisibility(View.GONE);
+			break;
+		case FAIL:
+			holder.pb.setVisibility(View.GONE);
+			holder.tv.setVisibility(View.GONE);
+			holder.staus_iv.setVisibility(View.VISIBLE);
+			break;
+		case INPROGRESS:
+			// set a timer
+			final Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					activity.runOnUiThread(new Runnable() {
+
 						@Override
 						public void run() {
-							activity.runOnUiThread(new Runnable() {
-								
-								@Override
-								public void run() {
-									holder.pb.setVisibility(View.VISIBLE);
-									holder.tv.setVisibility(View.VISIBLE);
-									holder.tv.setText(message.progress+"%");
-									if(message.status==EMMessage.Status.SUCCESS)
-									{
-										holder.pb.setVisibility(View.GONE);
-										holder.tv.setVisibility(View.GONE);
-										//message.setSendingStatus(Message.SENDING_STATUS_SUCCESS);
-										timer.cancel();
-									}else if(message.status==EMMessage.Status.FAIL)
-									{
-										holder.pb.setVisibility(View.GONE);
-										holder.tv.setVisibility(View.GONE);
-										// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
-										// message.setProgress(0);
-										holder.staus_iv.setVisibility(View.VISIBLE);
-										Toast.makeText(activity,
-												activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
-												.show();
-										timer.cancel();
-									}
-									 
-								}
-							});
-							 
+							holder.pb.setVisibility(View.VISIBLE);
+							holder.tv.setVisibility(View.VISIBLE);
+							holder.tv.setText(message.progress + "%");
+							if (message.status == EMMessage.Status.SUCCESS) {
+								holder.pb.setVisibility(View.GONE);
+								holder.tv.setVisibility(View.GONE);
+								// message.setSendingStatus(Message.SENDING_STATUS_SUCCESS);
+								timer.cancel();
+							} else if (message.status == EMMessage.Status.FAIL) {
+								holder.pb.setVisibility(View.GONE);
+								holder.tv.setVisibility(View.GONE);
+								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
+								// message.setProgress(0);
+								holder.staus_iv.setVisibility(View.VISIBLE);
+								Toast.makeText(activity,
+										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+										.show();
+								timer.cancel();
+							}
+
 						}
-					}, 0,500);
-					break;
-				default:
-					sendMsgInBackground(message, holder);
+					});
 
 				}
-		
-		 
-		
-	}
-	
+			}, 0, 500);
+			break;
+		default:
+			sendMsgInBackground(message, holder);
 
-	
+		}
+
+	}
 
 	/**
 	 * 语音消息
@@ -728,45 +707,46 @@ public class MessageAdapter extends BaseAdapter {
 	public void sendMsgInBackground(final EMMessage message, final ViewHolder holder) {
 		holder.staus_iv.setVisibility(View.GONE);
 		holder.pb.setVisibility(View.VISIBLE);
-//		if (chatType == ChatActivity.CHATTYPE_SINGLE) {
-			// 单聊
-			EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
+		// if (chatType == ChatActivity.CHATTYPE_SINGLE) {
+		// 单聊
+		EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
 
-				@Override
-				public void onSuccess() {
-					updateSendedView(message, holder);
-				}
+			@Override
+			public void onSuccess() {
+				updateSendedView(message, holder);
+			}
 
-				@Override
-				public void onError(int code, String error) {
-					updateSendedView(message, holder);
-				}
+			@Override
+			public void onError(int code, String error) {
+				updateSendedView(message, holder);
+			}
 
-				@Override
-				public void onProgress(int progress, String status) {
-				}
+			@Override
+			public void onProgress(int progress, String status) {
+			}
 
-			});
-//		} else {
-//			// 群聊
-//			EMChatManager.getInstance().sendGroupMessage(message, new EMCallBack() {
-//
-//				@Override
-//				public void onSuccess() {
-//					updateSendedView(message, holder);
-//				}
-//
-//				@Override
-//				public void onError(int code, String error) {
-//					updateSendedView(message, holder);
-//				}
-//
-//				@Override
-//				public void onProgress(int progress, String status) {
-//				}
-//
-//			});
-//		}
+		});
+		// } else {
+		// // 群聊
+		// EMChatManager.getInstance().sendGroupMessage(message, new
+		// EMCallBack() {
+		//
+		// @Override
+		// public void onSuccess() {
+		// updateSendedView(message, holder);
+		// }
+		//
+		// @Override
+		// public void onError(int code, String error) {
+		// updateSendedView(message, holder);
+		// }
+		//
+		// @Override
+		// public void onProgress(int progress, String status) {
+		// }
+		//
+		// });
+		// }
 
 	}
 
@@ -776,9 +756,10 @@ public class MessageAdapter extends BaseAdapter {
 	 */
 	private void showDownloadImageProgress(final EMMessage message, final ViewHolder holder) {
 		System.err.println("!!! show download image progress");
-//		final ImageMessageBody msgbody = (ImageMessageBody) message.getBody();
-		final FileMessageBody msgbody=(FileMessageBody) message.getBody();
-		
+		// final ImageMessageBody msgbody = (ImageMessageBody)
+		// message.getBody();
+		final FileMessageBody msgbody = (FileMessageBody) message.getBody();
+
 		msgbody.setDownloadCallback(new EMCallBack() {
 
 			@Override
@@ -787,8 +768,7 @@ public class MessageAdapter extends BaseAdapter {
 					@Override
 					public void run() {
 						// message.setBackReceive(false);
-						if(message.getType()==EMMessage.Type.IMAGE)
-						{
+						if (message.getType() == EMMessage.Type.IMAGE) {
 							holder.pb.setVisibility(View.GONE);
 							holder.tv.setVisibility(View.GONE);
 						}
@@ -804,8 +784,7 @@ public class MessageAdapter extends BaseAdapter {
 
 			@Override
 			public void onProgress(final int progress, String status) {
-				if(message.getType()==EMMessage.Type.IMAGE)
-				{
+				if (message.getType() == EMMessage.Type.IMAGE) {
 					activity.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -814,7 +793,7 @@ public class MessageAdapter extends BaseAdapter {
 						}
 					});
 				}
-				
+
 			}
 
 		});
@@ -824,7 +803,6 @@ public class MessageAdapter extends BaseAdapter {
 	 * send message with new sdk
 	 */
 	private void sendPictureMessage(final EMMessage message, final ViewHolder holder) {
-
 		try {
 			String to = message.getTo();
 
@@ -833,87 +811,88 @@ public class MessageAdapter extends BaseAdapter {
 			holder.pb.setVisibility(View.VISIBLE);
 			holder.tv.setVisibility(View.VISIBLE);
 			holder.tv.setText("0%");
-//			if (chatType == ChatActivity.CHATTYPE_SINGLE) {
-				EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
+			// if (chatType == ChatActivity.CHATTYPE_SINGLE) {
+			EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
 
-					@Override
-					public void onSuccess() {
-						Log.d(TAG, "send image message successfully");
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								// send success
-								holder.pb.setVisibility(View.GONE);
-								holder.tv.setVisibility(View.GONE);
-							}
-						});
-					}
+				@Override
+				public void onSuccess() {
+					Log.d(TAG, "send image message successfully");
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							// send success
+							holder.pb.setVisibility(View.GONE);
+							holder.tv.setVisibility(View.GONE);
+						}
+					});
+				}
 
-					@Override
-					public void onError(int code, String error) {
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								holder.pb.setVisibility(View.GONE);
-								holder.tv.setVisibility(View.GONE);
-								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
-								holder.staus_iv.setVisibility(View.VISIBLE);
-								Toast.makeText(activity,
-										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
-										.show();
-							}
-						});
-					}
+				@Override
+				public void onError(int code, String error) {
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							holder.pb.setVisibility(View.GONE);
+							holder.tv.setVisibility(View.GONE);
+							// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
+							holder.staus_iv.setVisibility(View.VISIBLE);
+							Toast.makeText(activity,
+									activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0).show();
+						}
+					});
+				}
 
-					@Override
-					public void onProgress(final int progress, String status) {
-						activity.runOnUiThread(new Runnable() {
-							public void run() {
-								holder.tv.setText(progress + "%");
-							}
-						});
-					}
+				@Override
+				public void onProgress(final int progress, String status) {
+					activity.runOnUiThread(new Runnable() {
+						public void run() {
+							holder.tv.setText(progress + "%");
+						}
+					});
+				}
 
-				});
-//			} else {
-//				EMChatManager.getInstance().sendGroupMessage(message, new EMCallBack() {
-//
-//					@Override
-//					public void onSuccess() {
-//						Log.d(TAG, "send image message successfully");
-//						activity.runOnUiThread(new Runnable() {
-//							public void run() {
-//								// send success
-//								holder.pb.setVisibility(View.GONE);
-//								holder.tv.setVisibility(View.GONE);
-//							}
-//						});
-//					}
-//
-//					@Override
-//					public void onError(int code, String error) {
-//						activity.runOnUiThread(new Runnable() {
-//							public void run() {
-//								holder.pb.setVisibility(View.GONE);
-//								holder.tv.setVisibility(View.GONE);
-//								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
-//								holder.staus_iv.setVisibility(View.VISIBLE);
-//								Toast.makeText(activity,
-//										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
-//										.show();
-//							}
-//						});
-//					}
-//
-//					@Override
-//					public void onProgress(final int progress, String status) {
-//						activity.runOnUiThread(new Runnable() {
-//							public void run() {
-//								holder.tv.setText(progress + "%");
-//							}
-//						});
-//					}
-//
-//				});
-//			}
+			});
+			// } else {
+			// EMChatManager.getInstance().sendGroupMessage(message, new
+			// EMCallBack() {
+			//
+			// @Override
+			// public void onSuccess() {
+			// Log.d(TAG, "send image message successfully");
+			// activity.runOnUiThread(new Runnable() {
+			// public void run() {
+			// // send success
+			// holder.pb.setVisibility(View.GONE);
+			// holder.tv.setVisibility(View.GONE);
+			// }
+			// });
+			// }
+			//
+			// @Override
+			// public void onError(int code, String error) {
+			// activity.runOnUiThread(new Runnable() {
+			// public void run() {
+			// holder.pb.setVisibility(View.GONE);
+			// holder.tv.setVisibility(View.GONE);
+			// // message.setSendingStatus(Message.SENDING_STATUS_FAIL);
+			// holder.staus_iv.setVisibility(View.VISIBLE);
+			// Toast.makeText(activity,
+			// activity.getString(R.string.send_fail) +
+			// activity.getString(R.string.connect_failuer_toast), 0)
+			// .show();
+			// }
+			// });
+			// }
+			//
+			// @Override
+			// public void onProgress(final int progress, String status) {
+			// activity.runOnUiThread(new Runnable() {
+			// public void run() {
+			// holder.tv.setText(progress + "%");
+			// }
+			// });
+			// }
+			//
+			// });
+			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -931,9 +910,13 @@ public class MessageAdapter extends BaseAdapter {
 			public void run() {
 				// message.setBackSend(false);
 				// send success
+				if(message.getType() == EMMessage.Type.VIDEO){
+					holder.tv.setVisibility(View.GONE);
+				}
 				if (message.status == EMMessage.Status.SUCCESS) {
 					holder.pb.setVisibility(View.GONE);
 					holder.staus_iv.setVisibility(View.GONE);
+					
 				} else if (message.status == EMMessage.Status.FAIL) {
 					holder.pb.setVisibility(View.GONE);
 					holder.staus_iv.setVisibility(View.VISIBLE);
@@ -1004,39 +987,40 @@ public class MessageAdapter extends BaseAdapter {
 		}
 
 	}
-	
+
 	/**
 	 * 展示视频缩略图
-	 * @param localThumb 本地缩略图路径
-	 * @param iv 
-	 * @param thumbnailUrl 远程缩略图路径
-	 * @param message 
+	 * 
+	 * @param localThumb
+	 *            本地缩略图路径
+	 * @param iv
+	 * @param thumbnailUrl
+	 *            远程缩略图路径
+	 * @param message
 	 */
-	private void showVideoThumbView(String localThumb, ImageView iv, String thumbnailUrl,final EMMessage message) {
+	private void showVideoThumbView(String localThumb, ImageView iv, String thumbnailUrl, final EMMessage message) {
 		// first check if the thumbnail image already loaded into cache
-		Bitmap bitmap=ImageCache.getInstance().get(localThumb);
-		if(bitmap!=null)
-		{
+		Bitmap bitmap = ImageCache.getInstance().get(localThumb);
+		if (bitmap != null) {
 			// thumbnail image is already loaded, reuse the drawable
 			iv.setImageBitmap(bitmap);
 			iv.setClickable(true);
 			iv.setOnClickListener(new View.OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
-					VideoMessageBody videoBody=(VideoMessageBody) message.getBody();
+					VideoMessageBody videoBody = (VideoMessageBody) message.getBody();
 					System.err.println("video view is on click");
-					Intent intent=new Intent(activity,ShowVideoActivity.class);
-					File file=new File(videoBody.getLocalUrl());
-					if(file.exists())
-					{
-						Uri uri=Uri.fromFile(file);
+					Intent intent = new Intent(activity, ShowVideoActivity.class);
+					File file = new File(videoBody.getLocalUrl());
+					if (file.exists()) {
+						Uri uri = Uri.fromFile(file);
 						intent.putExtra("uri", uri);
-						
-					}else{
+
+					} else {
 						intent.putExtra("secret", videoBody.getSecret());
 						intent.putExtra("remotepath", videoBody.getRemoteUrl());
-						  
+
 					}
 					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
 							&& message.getChatType() != ChatType.GroupChat) {
@@ -1048,17 +1032,14 @@ public class MessageAdapter extends BaseAdapter {
 						}
 					}
 					activity.startActivity(intent);
-					
+
 				}
 			});
-			 
-		}else{
-			new LoadVideoImageTask().execute(localThumb,thumbnailUrl,iv,activity,message);
+
+		} else {
+			new LoadVideoImageTask().execute(localThumb, thumbnailUrl, iv, activity, message);
 		}
-		
-		
-		
-		
+
 	}
 
 	public static class ViewHolder {
