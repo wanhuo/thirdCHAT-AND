@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="新的朋友"
+            android:text="申请与通知"
             android:textColor="#fff"
             android:textSize="18sp" />
     </RelativeLayout>

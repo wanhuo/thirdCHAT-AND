@@ -131,7 +131,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 	 */
 	private void acceptInvitation(final Button button, final InviteMessage msg) {
 		final ProgressDialog pd = new ProgressDialog(context);
-		pd.setMessage("正在添加...");
+		pd.setMessage("正在同意...");
 		pd.setCanceledOnTouchOutside(false);
 		pd.show();
 
