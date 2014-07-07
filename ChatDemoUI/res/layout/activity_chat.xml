@@ -189,7 +189,7 @@
             android:layout_height="wrap_content"
             android:background="#EFEFF4"
             android:orientation="vertical"
-            android:visibility="visible" >
+            android:visibility="gone" >
 
             <!-- 表情图片 -->
 
