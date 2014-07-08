@@ -68,6 +68,7 @@ import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.GroupChangeListener;
+import com.easemob.chat.GroupReomveListener;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.LocationMessageBody;
 import com.easemob.chat.TextMessageBody;
@@ -1283,41 +1284,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	}
 	
+	
 	/**
 	 * 监测群组解散或者被T事件
 	 *
 	 */
-	class GroupListener implements GroupChangeListener{
-
-		@Override
-		public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
-			
-		}
-
-		@Override
-		public void onApplicationReceived(String groupId, String groupName, String applyer, String reason) {
-			
-		}
-
-		@Override
-		public void onApplicationAccept(String groupId, String groupName, String accepter) {
-			
-		}
-
-		@Override
-		public void onApplicationDeclined(String groupId, String groupName, String decliner, String reason) {
-			
-		}
-
-		@Override
-		public void onInvitationAccpted(String groupId, String inviter, String reason) {
-			
-		}
-
-		@Override
-		public void onInvitationDeclined(String groupId, String invitee, String reason) {
-			
-		}
+	class GroupListener extends GroupReomveListener{
 
 		@Override
 		public void onUserRemoved(final String groupId, String groupName) {
@@ -1349,4 +1321,5 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 		
 	}
+		
 }
