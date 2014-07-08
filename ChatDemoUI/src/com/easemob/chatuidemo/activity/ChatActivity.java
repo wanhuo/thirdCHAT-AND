@@ -67,6 +67,7 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.GroupChangeListener;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.LocationMessageBody;
 import com.easemob.chat.TextMessageBody;
@@ -159,6 +160,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private File cameraFile;
 	private File videoFile;
 	static int resendPos;
+	
+	private GroupListener groupListener;
 
 	private ImageView iv_emoticons_normal;
 	private ImageView iv_emoticons_checked;
@@ -320,6 +323,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getAckMessageBroadcastAction());
 		ackMessageIntentFilter.setPriority(5);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
+		
+		//监听当前会话的群聊解散被T事件
+		groupListener = new GroupListener();
+		EMGroupManager.getInstance().addGroupChangeListener(groupListener);
 
 		// show forward message if the message is not null
 		String forward_msg_id = getIntent().getStringExtra("forward_msg_id");
@@ -1139,6 +1146,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	protected void onDestroy() {
 		super.onDestroy();
 		activityInstance = null;
+		EMGroupManager.getInstance().removeGroupChangeListener(groupListener);
 		// 注销广播
 		try {
 			unregisterReceiver(receiver);
@@ -1274,5 +1282,71 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 
 	}
+	
+	/**
+	 * 监测群组解散或者被T事件
+	 *
+	 */
+	class GroupListener implements GroupChangeListener{
 
+		@Override
+		public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
+			
+		}
+
+		@Override
+		public void onApplicationReceived(String groupId, String groupName, String applyer, String reason) {
+			
+		}
+
+		@Override
+		public void onApplicationAccept(String groupId, String groupName, String accepter) {
+			
+		}
+
+		@Override
+		public void onApplicationDeclined(String groupId, String groupName, String decliner, String reason) {
+			
+		}
+
+		@Override
+		public void onInvitationAccpted(String groupId, String inviter, String reason) {
+			
+		}
+
+		@Override
+		public void onInvitationDeclined(String groupId, String invitee, String reason) {
+			
+		}
+
+		@Override
+		public void onUserRemoved(final String groupId, String groupName) {
+			runOnUiThread(new Runnable() {
+				public void run() {
+					Toast.makeText(ChatActivity.this, "你被群创建者从此群中移除", 1).show();
+					if(GroupDetailsActivity.instance != null)
+						GroupDetailsActivity.instance.finish();
+					if(toChatUsername.equals(groupId)){
+						finish();
+					}
+				}
+			});
+		}
+
+		@Override
+		public void onGroupDestroy(final String groupId, String groupName) {
+			//群组解散正好在此页面，提示群组被解散，并finish此页面
+			runOnUiThread(new Runnable() {
+				public void run() {
+					Toast.makeText(ChatActivity.this, "当前群聊已被群创建者解散", 1).show();
+					if(GroupDetailsActivity.instance != null)
+						GroupDetailsActivity.instance.finish();
+					if(toChatUsername.equals(groupId)){
+						finish();
+					}
+				}
+			});
+		}
+		
+	}
 }

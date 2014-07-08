@@ -61,6 +61,8 @@ public class GroupDetailsActivity extends BaseActivity {
 	private int referenceHeight;
 	private ProgressDialog progressDialog;
 	
+	public static GroupDetailsActivity instance;
+	
 	//清空所有聊天记录
 	private RelativeLayout clearAllHistory;
 	
@@ -69,6 +71,7 @@ public class GroupDetailsActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_group_details);
+		instance = this;
 		clearAllHistory=(RelativeLayout) findViewById(R.id.clear_all_history);
 		userGridview = (ExpandGridView) findViewById(R.id.gridview);
 		loadingPB = (ProgressBar) findViewById(R.id.progressBar);
@@ -518,7 +521,14 @@ public class GroupDetailsActivity extends BaseActivity {
 		setResult(RESULT_OK);
 		finish();
 	}
-	
+
+
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		instance = null;
+	}
 	
 	
 	
