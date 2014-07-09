@@ -1018,6 +1018,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					recordingHint.setBackgroundColor(Color.TRANSPARENT);
 					voiceRecorder.startRecording(null, toChatUsername, getApplicationContext());
 				} catch (Exception e) {
+					e.printStackTrace();
 					v.setPressed(false);
 					if (wakeLock.isHeld())
 						wakeLock.release();
