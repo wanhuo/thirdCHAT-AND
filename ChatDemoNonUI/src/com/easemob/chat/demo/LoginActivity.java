@@ -152,6 +152,6 @@ public class LoginActivity extends Activity {
 			}
 		}
 
-		return val;
+		return val.toLowerCase();
 	}
 }
