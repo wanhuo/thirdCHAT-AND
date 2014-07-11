@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -27,7 +26,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -50,9 +48,8 @@ import com.easemob.util.HanziToPinyin;
 public class LoginActivity extends BaseActivity {
 	private EditText usernameEditText;
 	private EditText passwordEditText;
-	
+
 	private boolean progressShow;
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,14 +96,14 @@ public class LoginActivity extends BaseActivity {
 		final String username = usernameEditText.getText().toString();
 		final String password = passwordEditText.getText().toString();
 		if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
-			progressShow=true;
+			progressShow = true;
 			final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
 			pd.setCancelable(true);
 			pd.setOnCancelListener(new OnCancelListener() {
-				
+
 				@Override
 				public void onCancel(DialogInterface dialog) {
-					progressShow=false;
+					progressShow = false;
 				}
 			});
 			pd.setMessage("正在登陆...");
@@ -116,8 +113,7 @@ public class LoginActivity extends BaseActivity {
 
 				@Override
 				public void onSuccess() {
-					if(!progressShow)
-					{
+					if (!progressShow) {
 						return;
 					}
 					// 登陆成功，保存用户名密码
@@ -143,15 +139,15 @@ public class LoginActivity extends BaseActivity {
 						newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
 						newFriends.setNick("申请与通知");
 						newFriends.setHeader("");
-						userlist.put(Constant.NEW_FRIENDS_USERNAME,newFriends);
-						//添加"群聊"
+						userlist.put(Constant.NEW_FRIENDS_USERNAME, newFriends);
+						// 添加"群聊"
 						User groupUser = new User();
 						groupUser.setUsername(Constant.GROUP_USERNAME);
 						groupUser.setNick("群聊");
 						groupUser.setHeader("");
 						userlist.put(Constant.GROUP_USERNAME, groupUser);
-						
-						//存入内存
+
+						// 存入内存
 						DemoApplication.getInstance().setContactList(userlist);
 						// 存入db
 						UserDao dao = new UserDao(LoginActivity.this);
@@ -162,10 +158,9 @@ public class LoginActivity extends BaseActivity {
 						EMGroupManager.getInstance().getGroupsFromServer();
 					} catch (Exception e) {
 					}
-					
-					
-					if(!LoginActivity.this.isFinishing())
-					pd.dismiss();
+
+					if (!LoginActivity.this.isFinishing())
+						pd.dismiss();
 					// 进入主页面
 					startActivity(new Intent(LoginActivity.this, MainActivity.class));
 					finish();
@@ -178,21 +173,17 @@ public class LoginActivity extends BaseActivity {
 
 				@Override
 				public void onError(int code, final String message) {
-					if(!progressShow)
-					{
+					if (!progressShow) {
 						return;
 					}
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
-							if(message.indexOf("not support the capital letters")!=-1)
-							{
+							if (message.indexOf("not support the capital letters") != -1) {
 								Toast.makeText(getApplicationContext(), "用户名不支持大写字母", 0).show();
-							}else{
+							} else {
 								Toast.makeText(getApplicationContext(), "登录失败: " + message, 0).show();
 							}
-							
-							
 
 						}
 					});
@@ -217,7 +208,6 @@ public class LoginActivity extends BaseActivity {
 			usernameEditText.setText(DemoApplication.getInstance().getUserName());
 		}
 	}
-
 
 	/**
 	 * 设置hearder属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人

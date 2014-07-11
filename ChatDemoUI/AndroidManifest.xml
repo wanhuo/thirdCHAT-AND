@@ -164,6 +164,7 @@
             android:value="easemob-demo#chatdemoui" />
         <!-- 声明sdk所需的service -->
         <service android:name="com.easemob.chat.EMChatService" />
+        
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
