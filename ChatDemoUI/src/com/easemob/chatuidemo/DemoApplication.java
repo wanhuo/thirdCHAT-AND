@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
@@ -29,6 +30,7 @@ import android.telephony.gsm.SmsMessage.MessageClass;
 import android.util.Log;
 import android.widget.SimpleAdapter;
 
+import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
@@ -38,6 +40,7 @@ import com.easemob.chat.EMNotifier;
 import com.easemob.chat.OnMessageNotifyListener;
 import com.easemob.chat.OnNotificationClickListener;
 import com.easemob.chatuidemo.activity.ChatActivity;
+import com.easemob.chatuidemo.activity.MainActivity;
 import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
@@ -112,6 +115,8 @@ public class DemoApplication extends Application {
 				return intent;
 			}
 		});
+		//设置一个connectionlistener监听账户重复登陆
+		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 		//取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
 //		options.setNotifyText(new OnMessageNotifyListener() {
 //			
@@ -248,5 +253,35 @@ public class DemoApplication extends Application {
 			}
 		}
 		return processName;
+	}
+	
+	class MyConnectionListener implements ConnectionListener{
+		@Override
+		public void onReConnecting() {
+		}
+		
+		@Override
+		public void onReConnected() {
+		}
+		
+		@Override
+		public void onDisConnected(String errorString) {
+			if (errorString != null && errorString.contains("conflict")) {
+				Intent intent =new Intent(applicationContext, MainActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.putExtra("conflict", true);
+				startActivity(intent);
+			}
+			
+		}
+		
+		@Override
+		public void onConnecting(String progress) {
+			
+		}
+		
+		@Override
+		public void onConnected() {
+		}
 	}
 }

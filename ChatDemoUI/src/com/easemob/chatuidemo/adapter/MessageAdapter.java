@@ -851,49 +851,6 @@ public class MessageAdapter extends BaseAdapter {
 				}
 
 			});
-			// } else {
-			// EMChatManager.getInstance().sendGroupMessage(message, new
-			// EMCallBack() {
-			//
-			// @Override
-			// public void onSuccess() {
-			// Log.d(TAG, "send image message successfully");
-			// activity.runOnUiThread(new Runnable() {
-			// public void run() {
-			// // send success
-			// holder.pb.setVisibility(View.GONE);
-			// holder.tv.setVisibility(View.GONE);
-			// }
-			// });
-			// }
-			//
-			// @Override
-			// public void onError(int code, String error) {
-			// activity.runOnUiThread(new Runnable() {
-			// public void run() {
-			// holder.pb.setVisibility(View.GONE);
-			// holder.tv.setVisibility(View.GONE);
-			// // message.setSendingStatus(Message.SENDING_STATUS_FAIL);
-			// holder.staus_iv.setVisibility(View.VISIBLE);
-			// Toast.makeText(activity,
-			// activity.getString(R.string.send_fail) +
-			// activity.getString(R.string.connect_failuer_toast), 0)
-			// .show();
-			// }
-			// });
-			// }
-			//
-			// @Override
-			// public void onProgress(final int progress, String status) {
-			// activity.runOnUiThread(new Runnable() {
-			// public void run() {
-			// holder.tv.setText(progress + "%");
-			// }
-			// });
-			// }
-			//
-			// });
-			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -909,7 +866,6 @@ public class MessageAdapter extends BaseAdapter {
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				// message.setBackSend(false);
 				// send success
 				if(message.getType() == EMMessage.Type.VIDEO){
 					holder.tv.setVisibility(View.GONE);

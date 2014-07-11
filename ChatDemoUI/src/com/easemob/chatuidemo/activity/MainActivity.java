@@ -57,7 +57,6 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
-import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.HanziToPinyin;
 
 public class MainActivity extends FragmentActivity {
@@ -442,6 +441,7 @@ public class MainActivity extends FragmentActivity {
 		public void onDisConnected(String errorString) {
 			if (errorString != null && errorString.contains("conflict")) {
 				// 显示帐号在其他设备登陆dialog
+				//放到了application里
 				showConflictDialog();
 			} else {
 				chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
@@ -615,12 +615,13 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private android.app.AlertDialog.Builder conflictBuilder;
+	private boolean isConflictDialogShow;
 
 	/**
 	 * 显示帐号在别处登录dialog
 	 */
 	private void showConflictDialog() {
-
+		isConflictDialogShow = true;
 		DemoApplication.getInstance().logout();
 
 		if (!MainActivity.this.isFinishing()) {
@@ -651,5 +652,10 @@ public class MainActivity extends FragmentActivity {
 
 	}
 	
-
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		if(getIntent().getBooleanExtra("conflict", false) && !isConflictDialogShow)
+			showConflictDialog();
+	}
 }
