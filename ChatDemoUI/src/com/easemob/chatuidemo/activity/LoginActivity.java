@@ -98,7 +98,7 @@ public class LoginActivity extends BaseActivity {
 		if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
 			progressShow = true;
 			final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
-			pd.setCancelable(true);
+			pd.setCanceledOnTouchOutside(false);
 			pd.setOnCancelListener(new OnCancelListener() {
 
 				@Override

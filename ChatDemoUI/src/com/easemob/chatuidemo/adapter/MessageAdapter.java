@@ -708,8 +708,6 @@ public class MessageAdapter extends BaseAdapter {
 	public void sendMsgInBackground(final EMMessage message, final ViewHolder holder) {
 		holder.staus_iv.setVisibility(View.GONE);
 		holder.pb.setVisibility(View.VISIBLE);
-		// if (chatType == ChatActivity.CHATTYPE_SINGLE) {
-		// 单聊
 		EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
 
 			@Override
@@ -727,27 +725,6 @@ public class MessageAdapter extends BaseAdapter {
 			}
 
 		});
-		// } else {
-		// // 群聊
-		// EMChatManager.getInstance().sendGroupMessage(message, new
-		// EMCallBack() {
-		//
-		// @Override
-		// public void onSuccess() {
-		// updateSendedView(message, holder);
-		// }
-		//
-		// @Override
-		// public void onError(int code, String error) {
-		// updateSendedView(message, holder);
-		// }
-		//
-		// @Override
-		// public void onProgress(int progress, String status) {
-		// }
-		//
-		// });
-		// }
 
 	}
 
