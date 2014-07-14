@@ -597,6 +597,31 @@ public class MessageAdapter extends BaseAdapter {
 			} else {
 				holder.iv_read_status.setVisibility(View.VISIBLE);
 			}
+			System.err.println("it is receive msg");
+			if (message.status == EMMessage.Status.INPROGRESS) {
+				holder.pb.setVisibility(View.VISIBLE);
+				System.err.println("!!!! back receive");
+				((FileMessageBody)message.getBody()).setDownloadCallback(new EMCallBack() {
+					
+					@Override
+					public void onSuccess() {
+						holder.pb.setVisibility(View.INVISIBLE);
+					}
+					
+					@Override
+					public void onProgress(int progress, String status) {
+					}
+					
+					@Override
+					public void onError(int code, String message) {
+						holder.pb.setVisibility(View.INVISIBLE);
+					}
+				});
+
+			} else {
+				holder.pb.setVisibility(View.INVISIBLE);
+
+			}
 			return;
 		}
 
@@ -611,6 +636,7 @@ public class MessageAdapter extends BaseAdapter {
 			holder.staus_iv.setVisibility(View.VISIBLE);
 			break;
 		case INPROGRESS:
+			
 			break;
 		default:
 			sendMsgInBackground(message, holder);
