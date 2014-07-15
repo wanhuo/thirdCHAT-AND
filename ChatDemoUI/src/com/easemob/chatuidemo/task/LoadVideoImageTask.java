@@ -59,15 +59,9 @@ public class LoadVideoImageTask extends AsyncTask<Object, Void, Bitmap>{
 					{
 						VideoMessageBody videoBody=(VideoMessageBody) message.getBody();
 						Intent intent=new Intent(activity, ShowVideoActivity.class);
-						File file=new File(videoBody.getLocalUrl());
-						if(file!=null&&file.exists())
-						{
-							Uri uri=Uri.fromFile(file);
-							intent.putExtra("uri", uri);
-						}else{
-							intent.putExtra("remotepath", videoBody.getRemoteUrl());
-							intent.putExtra("secret", videoBody.getSecret());
-						}
+						intent.putExtra("localpath", videoBody.getLocalUrl());
+						intent.putExtra("secret", videoBody.getSecret());
+						intent.putExtra("remotepath", videoBody.getRemoteUrl());
 						if(message!=null&&message.direct==EMMessage.Direct.RECEIVE&&!message.isAcked)
 						{
 							message.isAcked=true;

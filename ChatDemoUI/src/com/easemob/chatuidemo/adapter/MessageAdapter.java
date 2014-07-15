@@ -972,16 +972,9 @@ public class MessageAdapter extends BaseAdapter {
 					VideoMessageBody videoBody = (VideoMessageBody) message.getBody();
 					System.err.println("video view is on click");
 					Intent intent = new Intent(activity, ShowVideoActivity.class);
-					File file = new File(videoBody.getLocalUrl());
-					if (file.exists()) {
-						Uri uri = Uri.fromFile(file);
-						intent.putExtra("uri", uri);
-
-					} else {
-						intent.putExtra("secret", videoBody.getSecret());
-						intent.putExtra("remotepath", videoBody.getRemoteUrl());
-
-					}
+					intent.putExtra("localpath", videoBody.getLocalUrl());
+					intent.putExtra("secret", videoBody.getSecret());
+					intent.putExtra("remotepath", videoBody.getRemoteUrl());
 					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
 							&& message.getChatType() != ChatType.GroupChat) {
 						message.isAcked = true;

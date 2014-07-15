@@ -51,13 +51,14 @@ public class ShowVideoActivity extends BaseActivity implements OnTouchListener{
 		
 		mController=new MediaController(this);
 		videoView.setMediaController(mController);
-		Uri uri = getIntent().getParcelableExtra("uri");
+//		Uri uri = getIntent().getParcelableExtra("uri");
+		localFilePath=getIntent().getStringExtra("localpath");
 		String remotepath=getIntent().getStringExtra("remotepath");
 		String secret=getIntent().getStringExtra("secret");
-		System.err.println("show video view uri:"+uri+" remotepath:"+remotepath+" secret:"+secret);
-		if(uri!=null&&new File(uri.getPath()).exists())
+		System.err.println("show video view file:"+localFilePath+" remotepath:"+remotepath+" secret:"+secret);
+		if(localFilePath!=null&&new File(localFilePath).exists())
 		{
-			videoView.setVideoURI(uri);
+			videoView.setVideoURI(Uri.fromFile(new File(localFilePath)));
 			videoView.requestFocus();
 			videoView.start();
 		}else if(!TextUtils.isEmpty(remotepath)&&!remotepath.equals("null")){
@@ -120,12 +121,15 @@ public class ShowVideoActivity extends BaseActivity implements OnTouchListener{
 	private void downloadVideo(final String remoteUrl,final Map<String,String> header)
 	{
 		 
-		localFilePath = PathUtil.getInstance().getVideoPath().getAbsolutePath() + "/"
-				+ remoteUrl.substring(remoteUrl.lastIndexOf("/") + 1);
+		if(TextUtils.isEmpty(localFilePath))
+		{
+			localFilePath = PathUtil.getInstance().getVideoPath().getAbsolutePath() + "/"
+					+ remoteUrl.substring(remoteUrl.lastIndexOf("/") + 1);
+		}
 		
 		if(new File(localFilePath).exists())
 		{
-			videoView.setVideoPath(localFilePath);
+			videoView.setVideoURI(Uri.fromFile(new File(localFilePath)));
 			videoView.requestFocus();
 			videoView.start();
 			return;
