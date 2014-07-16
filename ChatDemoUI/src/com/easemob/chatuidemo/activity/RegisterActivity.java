@@ -30,13 +30,12 @@ import com.easemob.exceptions.EaseMobException;
 
 /**
  * 注册页
- *
+ * 
  */
-public class RegisterActivity extends BaseActivity{
+public class RegisterActivity extends BaseActivity {
 	private EditText userNameEditText;
 	private EditText passwordEditText;
 	private EditText confirmPwdEditText;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,53 +43,49 @@ public class RegisterActivity extends BaseActivity{
 		setContentView(R.layout.activity_register);
 		userNameEditText = (EditText) findViewById(R.id.username);
 		passwordEditText = (EditText) findViewById(R.id.password);
-		confirmPwdEditText=(EditText) findViewById(R.id.confirm_password);
+		confirmPwdEditText = (EditText) findViewById(R.id.confirm_password);
 	}
-	
-	
+
 	/**
 	 * 注册
+	 * 
 	 * @param view
 	 */
-	public void register(View view){
+	public void register(View view) {
 		final String username = userNameEditText.getText().toString().trim();
 		final String pwd = passwordEditText.getText().toString().trim();
-		String confirm_pwd=confirmPwdEditText.getText().toString().trim();
-		if(TextUtils.isEmpty(username))
-		{
+		String confirm_pwd = confirmPwdEditText.getText().toString().trim();
+		if (TextUtils.isEmpty(username)) {
 			Toast.makeText(this, "用户名不能为空！", Toast.LENGTH_SHORT).show();
 			userNameEditText.requestFocus();
 			return;
-		}else if(TextUtils.isEmpty(pwd))
-		{
+		} else if (TextUtils.isEmpty(pwd)) {
 			Toast.makeText(this, "密码不能为空！", Toast.LENGTH_SHORT).show();
 			passwordEditText.requestFocus();
 			return;
-		}else if(TextUtils.isEmpty(confirm_pwd))
-		{
+		} else if (TextUtils.isEmpty(confirm_pwd)) {
 			Toast.makeText(this, "确认密码不能为空！", Toast.LENGTH_SHORT).show();
 			confirmPwdEditText.requestFocus();
 			return;
-		}else if(!pwd.equals(confirm_pwd))
-		{
+		} else if (!pwd.equals(confirm_pwd)) {
 			Toast.makeText(this, "两次输入的密码不一致，请重新输入！", Toast.LENGTH_SHORT).show();
 			return;
 		}
-		
-		if(!TextUtils.isEmpty(username) && !TextUtils.isEmpty(pwd)){
+
+		if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(pwd)) {
 			final ProgressDialog pd = new ProgressDialog(this);
 			pd.setMessage("正在注册...");
 			pd.show();
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						//调用sdk注册方法
+						// 调用sdk注册方法
 						EMChatManager.getInstance().createAccountOnServer(username, pwd);
 						runOnUiThread(new Runnable() {
 							public void run() {
-								if(!RegisterActivity.this.isFinishing())
-								pd.dismiss();
-								//保存用户名
+								if (!RegisterActivity.this.isFinishing())
+									pd.dismiss();
+								// 保存用户名
 								DemoApplication.getInstance().setUserName(username);
 								Toast.makeText(getApplicationContext(), "注册成功", 0).show();
 								finish();
@@ -99,39 +94,35 @@ public class RegisterActivity extends BaseActivity{
 					} catch (final Exception e) {
 						runOnUiThread(new Runnable() {
 							public void run() {
-								if(!RegisterActivity.this.isFinishing())
-								pd.dismiss();
-								if(e!=null&&e.getMessage()!=null)
-								{
-									String errorMsg=e.getMessage();
-									if(errorMsg.indexOf("EMNetworkUnconnectedException")!=-1)
-									{
+								if (!RegisterActivity.this.isFinishing())
+									pd.dismiss();
+								if (e != null && e.getMessage() != null) {
+									String errorMsg = e.getMessage();
+									if (errorMsg.indexOf("EMNetworkUnconnectedException") != -1) {
 										Toast.makeText(getApplicationContext(), "网络异常，请检查网络！", 0).show();
-									}else if(errorMsg.indexOf("conflict")!=-1)
-									{
+									} else if (errorMsg.indexOf("conflict") != -1) {
 										Toast.makeText(getApplicationContext(), "用户已存在！", 0).show();
-									}else if(errorMsg.indexOf("not support the capital letters")!=-1){
+									} else if (errorMsg.indexOf("not support the capital letters") != -1) {
 										Toast.makeText(getApplicationContext(), "用户名不支持大写字母！", 0).show();
-									}else{
+									} else {
 										Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), 1).show();
 									}
-									
-								}else{
+
+								} else {
 									Toast.makeText(getApplicationContext(), "注册失败: 未知异常", 1).show();
-									
+
 								}
 							}
 						});
 					}
 				}
 			}).start();
-			
-			
+
 		}
 	}
-	
-	public void back(View view){
+
+	public void back(View view) {
 		finish();
 	}
-	
+
 }

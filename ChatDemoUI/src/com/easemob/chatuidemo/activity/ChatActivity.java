@@ -95,7 +95,6 @@ import com.easemob.util.VoiceRecorder;
  */
 public class ChatActivity extends BaseActivity implements OnClickListener {
 
-	private static final int REQUEST_CODE_PICK_PICTURE = 1;
 	private static final int REQUEST_CODE_EMPTY_HISTORY = 2;
 	public static final int REQUEST_CODE_CONTEXT_MENU = 3;
 	private static final int REQUEST_CODE_MAP = 4;
@@ -1058,6 +1057,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 							Toast.makeText(getApplicationContext(), "录音时间太短", 0).show();
 						}
 					} catch (Exception e) {
+						e.printStackTrace();
 						Toast.makeText(ChatActivity.this, "发送失败，请检测服务器是否连接", Toast.LENGTH_SHORT).show();
 					}
 
@@ -1099,6 +1099,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					if (buttonSetModeKeyboard.getVisibility() != View.VISIBLE) {
 
 						if (filename != "delete_expression") { // 不是删除键，显示表情
+							//这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
 							Class clz = Class.forName("com.easemob.chatuidemo.utils.SmileUtils");
 							Field field = clz.getField(filename);
 							mEditTextContent.append(SmileUtils.getSmiledText(ChatActivity.this, (String) field.get(null)));

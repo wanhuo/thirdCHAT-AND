@@ -441,7 +441,6 @@ public class MainActivity extends FragmentActivity {
 		public void onDisConnected(String errorString) {
 			if (errorString != null && errorString.contains("conflict")) {
 				// 显示帐号在其他设备登陆dialog
-				//放到了application里
 				showConflictDialog();
 			} else {
 				chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
