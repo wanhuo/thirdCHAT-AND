@@ -29,4 +29,6 @@
      <color name="orange">#FFA500</color>
      <color name="gray_pressed">#b5b5b6</color>
      <color name="gray_normal">#666667</color>
+     <color name="grid_state_pressed">#1Affffff</color>
+    <color name="grid_state_focused">#80000000</color>
 </resources>

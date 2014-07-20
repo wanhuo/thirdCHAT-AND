@@ -15,6 +15,7 @@ package com.easemob.chatuidemo.activity;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +118,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	public static final int REQUEST_CODE_GROUP_DETAIL = 21;
 	public static final int REQUEST_CODE_CAMERA_VIDEO = 22;
 	public static final int REQUEST_CODE_SELECT_VIDEO = 23;
+	
 
 	public static final int RESULT_CODE_COPY = 1;
 	public static final int RESULT_CODE_DELETE = 2;
@@ -421,72 +423,48 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					sendPicture(cameraFile.getAbsolutePath());
 			} else if (requestCode == REQUEST_CODE_SELECT_VIDEO) {
 
-				Uri videoUri = data.getData();
-				String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Video.Media.DURATION };
+				int duration=data.getIntExtra("dur", 0);
+				String videoPath=data.getStringExtra("path");
+				
+				
+				File file = new File(PathUtil.getInstance().getImagePath(), "thvideo" + System.currentTimeMillis());
+				Bitmap bitmap=null;
+				FileOutputStream fos=null;
+				
 				try {
-					Cursor cursor = getContentResolver().query(videoUri, proj, null, null, null);
-					if (cursor != null) {
-						if (cursor.moveToFirst()) {
-							int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-							int duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
-							String videoPath = cursor.getString(index);
-							Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, 3);
-							if (bitmap == null) {
-								EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
-								bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
-							}
-							File videoFile = new File(videoPath);
-							System.out.println("length:" + videoFile.length());
-							// 限制大小不能超过5M
-							if (videoFile.length() > 1024 * 1024 * 5) {
-								Toast.makeText(this, "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
-								return;
-							}
-
-							// get the thumb image file
-							File file = new File(PathUtil.getInstance().getVideoPath(), "th" + videoFile.getName());
-							try {
-								if (!file.getParentFile().exists()) {
-									file.getParentFile().mkdirs();
-								}
-								bitmap.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							sendVideo(videoPath, file.getAbsolutePath(), duration);
-						}
-					} else {
-						File videoFile = new File(videoUri.getPath());
-						Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoFile.getAbsolutePath(), 3);
-						if (bitmap == null) {
-							EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
-							bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
-						}
-
-						System.out.println("length:" + videoFile.length());
-						// 限制大小不能超过5M
-						if (videoFile.length() > 1024 * 1024 * 5) {
-							Toast.makeText(this, "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
-							return;
-						}
-
-						// get the thumb image file
-						File file = new File(PathUtil.getInstance().getVideoPath(), "th" + videoFile.getName());
+					if (!file.getParentFile().exists()) {
+						file.getParentFile().mkdirs();
+					}
+					bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, 3);
+					if (bitmap == null) {
+						EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
+						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
+					}
+					fos=new FileOutputStream(file);
+					
+					bitmap.compress(CompressFormat.JPEG, 100, fos);
+					 
+				} catch (Exception e) {
+					e.printStackTrace();
+				}finally{
+					if(fos!=null)
+					{
 						try {
-							if (!file.getParentFile().exists()) {
-								file.getParentFile().mkdirs();
-							}
-							bitmap.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
-						} catch (Exception e) {
+							fos.close();
+						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						sendVideo(videoFile.getAbsolutePath(), file.getAbsolutePath(), 0);
-
+						fos=null;
 					}
-
-				} catch (Exception e) {
-					System.out.println("exception:" + e.getMessage());
+					if(bitmap!=null)
+					{
+						bitmap.recycle();
+						bitmap=null;
+					}
+					
 				}
+				sendVideo(videoPath, file.getAbsolutePath(), duration);
+				 
 
 			} else if (requestCode == REQUEST_CODE_CAMERA_VIDEO) {
 				if (videoFile != null && videoFile.exists()) {
@@ -580,8 +558,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		} else if (id == R.id.btn_video) {
 			// selectVideoFromCamera();//点击摄像图标
-			selectVideoFromLocal();// 从相册选择视频文件
-
+//			selectVideoFromLocal();// 从相册选择视频文件
+			Intent intent=new Intent(ChatActivity.this,ImageGridActivity.class);
+//			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivityForResult(intent,
+					REQUEST_CODE_SELECT_VIDEO);
 		}
 	}
 

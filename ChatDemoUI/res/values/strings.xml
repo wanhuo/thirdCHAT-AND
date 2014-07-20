@@ -34,6 +34,7 @@
     <string name="clear_all_records">是否清空所有聊天记录？</string>
     <string name="location_recv">[%1$s的位置]</string>
     <string name="location_message">位置信息</string>
+    <string name="recording_video">录制视频</string>
        <string name="location_prefix">[我的位置]</string>
     <string name="voice">[语音]</string>
     <string name="picture">[图片]</string>
