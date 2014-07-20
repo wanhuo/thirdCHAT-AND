@@ -371,7 +371,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	}
 
 	/**
-	 * 
+	 * onActivityResult
 	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -442,8 +442,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				if(data != null) {
 					Uri uri = data.getData();
 					if(uri != null){
-						Toast.makeText(getApplicationContext(), uri.getPath(), 1).show();
-//						sendFile(uri.getPath());
+						sendFile(uri);
 					}
 				}
 				
@@ -851,9 +850,26 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	/**
 	 * 发送文件
 	 * 
-	 * @param filePath
+	 * @param uri
 	 */
-	private void sendFile(String filePath) {
+	private void sendFile(Uri uri) {
+		String filePath = null;
+		if ("content".equalsIgnoreCase(uri.getScheme())) {
+            String[] projection = { "_data" };
+            Cursor cursor = null;
+ 
+            try {
+                cursor = getContentResolver().query(uri, projection,null, null, null);
+                int column_index = cursor.getColumnIndexOrThrow("_data");
+                if (cursor.moveToFirst()) {
+                	filePath = cursor.getString(column_index);
+                }
+            } catch (Exception e) {
+            	e.printStackTrace();
+            }
+        }else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        	filePath = uri.getPath();
+        }
 		File file = new File(filePath);
 		if (file == null || !file.exists()) {
 			Toast.makeText(getApplicationContext(), "文件不存在", 0).show();
