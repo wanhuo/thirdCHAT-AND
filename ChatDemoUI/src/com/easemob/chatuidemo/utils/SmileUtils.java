@@ -163,11 +163,6 @@ public class SmileUtils {
 		return b;
 	}
 	
-//	public void xxx(String name){
-//		for (int i = 0; i < 35; i++) {
-//			if()
-//		}
-//	}
 	
 	
 }
