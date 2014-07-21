@@ -158,24 +158,24 @@ public class MessageAdapter extends BaseAdapter {
 	private View createViewByMessage(EMMessage message, int position) {
 		switch (message.getType()) {
 		case LOCATION:
-			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_location, null)
-					: inflater.inflate(R.layout.row_sent_location, null);
+			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_location, null) : inflater.inflate(
+					R.layout.row_sent_location, null);
 		case IMAGE:
-			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_picture, null)
-					: inflater.inflate(R.layout.row_sent_picture, null);
+			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_picture, null) : inflater.inflate(
+					R.layout.row_sent_picture, null);
 
 		case VOICE:
-			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_voice, null)
-					: inflater.inflate(R.layout.row_sent_voice, null);
+			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_voice, null) : inflater.inflate(
+					R.layout.row_sent_voice, null);
 		case VIDEO:
-			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_video, null)
-					: inflater.inflate(R.layout.row_sent_video, null);
+			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_video, null) : inflater.inflate(
+					R.layout.row_sent_video, null);
 		case FILE:
-			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_file, null)
-					: inflater.inflate(R.layout.row_sent_file, null);
+			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_file, null) : inflater.inflate(
+					R.layout.row_sent_file, null);
 		default:
-			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_message, null)
-					: inflater.inflate(R.layout.row_sent_message, null);
+			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_message, null) : inflater.inflate(
+					R.layout.row_sent_message, null);
 		}
 	}
 
@@ -202,7 +202,7 @@ public class MessageAdapter extends BaseAdapter {
 					holder.pb = (ProgressBar) convertView.findViewById(R.id.pb_sending);
 					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
 					holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
-					//这里是文字内容
+					// 这里是文字内容
 					holder.tv = (TextView) convertView.findViewById(R.id.tv_chatcontent);
 					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
 				} catch (Exception e) {
@@ -246,8 +246,9 @@ public class MessageAdapter extends BaseAdapter {
 				try {
 					holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
 					holder.tv_filename = (TextView) convertView.findViewById(R.id.tv_file_name);
-					//这里是进度值
-					holder.tv = (TextView) convertView.findViewById(R.id.pb_sending);
+					// 这里是进度值
+					// holder.tv = (TextView)
+					// convertView.findViewById(R.id.pb_sending);
 					holder.pb = (ProgressBar) convertView.findViewById(R.id.pb_sending);
 					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
 				} catch (Exception e) {
@@ -277,8 +278,7 @@ public class MessageAdapter extends BaseAdapter {
 			}
 		} else {
 			// 如果是文本或者地图消息并且不是group messgae，显示的时候给对方发送已读回执
-			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked
-					&& chatType != ChatType.GroupChat) {
+			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked && chatType != ChatType.GroupChat) {
 				try {
 					// 发送已读回执
 					message.isAcked = true;
@@ -375,9 +375,9 @@ public class MessageAdapter extends BaseAdapter {
 		holder.tv.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				activity.startActivityForResult((new Intent(activity, ContextMenu.class))
-						.putExtra("position", position).putExtra("type", EMMessage.Type.TXT.ordinal()),
-						ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+				activity.startActivityForResult(
+						(new Intent(activity, ContextMenu.class)).putExtra("position", position).putExtra("type",
+								EMMessage.Type.TXT.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
 				return true;
 			}
 		});
@@ -407,15 +407,14 @@ public class MessageAdapter extends BaseAdapter {
 	 * @param position
 	 * @param convertView
 	 */
-	private void handleImageMessage(final EMMessage message, final ViewHolder holder, final int position,
-			View convertView) {
+	private void handleImageMessage(final EMMessage message, final ViewHolder holder, final int position, View convertView) {
 		holder.pb.setTag(position);
 		holder.iv.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				activity.startActivityForResult((new Intent(activity, ContextMenu.class))
-						.putExtra("position", position).putExtra("type", EMMessage.Type.IMAGE.ordinal()),
-						ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+				activity.startActivityForResult(
+						(new Intent(activity, ContextMenu.class)).putExtra("position", position).putExtra("type",
+								EMMessage.Type.IMAGE.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
 				return true;
 			}
 		});
@@ -488,10 +487,9 @@ public class MessageAdapter extends BaseAdapter {
 								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
 								// message.setProgress(0);
 								holder.staus_iv.setVisibility(View.VISIBLE);
-								Toast.makeText(
-										activity,
-										activity.getString(R.string.send_fail)
-												+ activity.getString(R.string.connect_failuer_toast), 0).show();
+								Toast.makeText(activity,
+										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+										.show();
 								timer.cancel();
 							}
 
@@ -514,8 +512,7 @@ public class MessageAdapter extends BaseAdapter {
 	 * @param position
 	 * @param convertView
 	 */
-	private void handleVideoMessage(final EMMessage message, final ViewHolder holder, final int position,
-			View convertView) {
+	private void handleVideoMessage(final EMMessage message, final ViewHolder holder, final int position, View convertView) {
 
 		VideoMessageBody videoBody = (VideoMessageBody) message.getBody();
 		// final File image=new File(PathUtil.getInstance().getVideoPath(),
@@ -526,8 +523,9 @@ public class MessageAdapter extends BaseAdapter {
 
 			@Override
 			public boolean onLongClick(View v) {
-				activity.startActivityForResult(new Intent(activity, ContextMenu.class).putExtra("position", position)
-						.putExtra("type", EMMessage.Type.VIDEO.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+				activity.startActivityForResult(
+						new Intent(activity, ContextMenu.class).putExtra("position", position).putExtra("type",
+								EMMessage.Type.VIDEO.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
 				return true;
 			}
 		});
@@ -612,10 +610,9 @@ public class MessageAdapter extends BaseAdapter {
 								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
 								// message.setProgress(0);
 								holder.staus_iv.setVisibility(View.VISIBLE);
-								Toast.makeText(
-										activity,
-										activity.getString(R.string.send_fail)
-												+ activity.getString(R.string.connect_failuer_toast), 0).show();
+								Toast.makeText(activity,
+										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+										.show();
 								timer.cancel();
 							}
 
@@ -641,18 +638,16 @@ public class MessageAdapter extends BaseAdapter {
 	 * @param position
 	 * @param convertView
 	 */
-	private void handleVoiceMessage(final EMMessage message, final ViewHolder holder, final int position,
-			View convertView) {
+	private void handleVoiceMessage(final EMMessage message, final ViewHolder holder, final int position, View convertView) {
 		VoiceMessageBody voiceBody = (VoiceMessageBody) message.getBody();
 		holder.tv.setText(voiceBody.getLength() + "\"");
-		holder.iv.setOnClickListener(new VoicePlayClickListener(message, holder.iv, holder.iv_read_status, activity,
-				activity, username));
+		holder.iv.setOnClickListener(new VoicePlayClickListener(message, holder.iv, holder.iv_read_status, activity, activity, username));
 		holder.iv.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				activity.startActivityForResult((new Intent(activity, ContextMenu.class))
-						.putExtra("position", position).putExtra("type", EMMessage.Type.VOICE.ordinal()),
-						ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+				activity.startActivityForResult(
+						(new Intent(activity, ContextMenu.class)).putExtra("position", position).putExtra("type",
+								EMMessage.Type.VOICE.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
 				return true;
 			}
 		});
@@ -736,12 +731,6 @@ public class MessageAdapter extends BaseAdapter {
 		// });
 
 		if (message.direct == EMMessage.Direct.RECEIVE) { // 接收的消息
-			if (message.isAcked) {
-				// 隐藏语音未读标志
-				holder.iv_read_status.setVisibility(View.INVISIBLE);
-			} else {
-				holder.iv_read_status.setVisibility(View.VISIBLE);
-			}
 			System.err.println("it is receive msg");
 			if (message.status == EMMessage.Status.INPROGRESS) {
 				holder.pb.setVisibility(View.VISIBLE);
@@ -773,11 +762,11 @@ public class MessageAdapter extends BaseAdapter {
 		// until here, deal with send voice msg
 		switch (message.status) {
 		case SUCCESS:
-			holder.pb.setVisibility(View.GONE);
-			holder.staus_iv.setVisibility(View.GONE);
+			holder.pb.setVisibility(View.INVISIBLE);
+			holder.staus_iv.setVisibility(View.INVISIBLE);
 			break;
 		case FAIL:
-			holder.pb.setVisibility(View.GONE);
+			holder.pb.setVisibility(View.INVISIBLE);
 			holder.staus_iv.setVisibility(View.VISIBLE);
 			break;
 		case INPROGRESS:
@@ -792,23 +781,22 @@ public class MessageAdapter extends BaseAdapter {
 						@Override
 						public void run() {
 							holder.pb.setVisibility(View.VISIBLE);
-							holder.tv.setVisibility(View.VISIBLE);
-							holder.tv.setText(message.progress + "%");
+							// holder.tv.setVisibility(View.VISIBLE);
+							// holder.tv.setText(message.progress + "%");
 							if (message.status == EMMessage.Status.SUCCESS) {
-								holder.pb.setVisibility(View.GONE);
-								holder.tv.setVisibility(View.GONE);
+								holder.pb.setVisibility(View.INVISIBLE);
+								// holder.tv.setVisibility(View.GONE);
 								// message.setSendingStatus(Message.SENDING_STATUS_SUCCESS);
 								timer.cancel();
 							} else if (message.status == EMMessage.Status.FAIL) {
-								holder.pb.setVisibility(View.GONE);
-								holder.tv.setVisibility(View.GONE);
+								holder.pb.setVisibility(View.INVISIBLE);
+								// holder.tv.setVisibility(View.GONE);
 								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
 								// message.setProgress(0);
 								holder.staus_iv.setVisibility(View.VISIBLE);
-								Toast.makeText(
-										activity,
-										activity.getString(R.string.send_fail)
-												+ activity.getString(R.string.connect_failuer_toast), 0).show();
+								Toast.makeText(activity,
+										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+										.show();
 								timer.cancel();
 							}
 
@@ -819,7 +807,7 @@ public class MessageAdapter extends BaseAdapter {
 			}, 0, 500);
 			break;
 		default:
-			sendPictureMessage(message, holder);
+			sendMsgInBackground(message, holder);
 		}
 
 	}
@@ -832,8 +820,7 @@ public class MessageAdapter extends BaseAdapter {
 	 * @param position
 	 * @param convertView
 	 */
-	private void handleLocationMessage(final EMMessage message, final ViewHolder holder, final int position,
-			View convertView) {
+	private void handleLocationMessage(final EMMessage message, final ViewHolder holder, final int position, View convertView) {
 		TextView locationView = ((TextView) convertView.findViewById(R.id.tv_location));
 		LocationMessageBody locBody = (LocationMessageBody) message.getBody();
 		locationView.setText(locBody.getAddress());
@@ -842,9 +829,9 @@ public class MessageAdapter extends BaseAdapter {
 		locationView.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				activity.startActivityForResult((new Intent(activity, ContextMenu.class))
-						.putExtra("position", position).putExtra("type", EMMessage.Type.LOCATION.ordinal()),
-						ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+				activity.startActivityForResult(
+						(new Intent(activity, ContextMenu.class)).putExtra("position", position).putExtra("type",
+								EMMessage.Type.LOCATION.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
 				return false;
 			}
 		});
@@ -982,10 +969,8 @@ public class MessageAdapter extends BaseAdapter {
 							holder.tv.setVisibility(View.GONE);
 							// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
 							holder.staus_iv.setVisibility(View.VISIBLE);
-							Toast.makeText(
-									activity,
-									activity.getString(R.string.send_fail)
-											+ activity.getString(R.string.connect_failuer_toast), 0).show();
+							Toast.makeText(activity,
+									activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0).show();
 						}
 					});
 				}
@@ -1020,16 +1005,24 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv.setVisibility(View.GONE);
 				}
 				if (message.status == EMMessage.Status.SUCCESS) {
-					holder.pb.setVisibility(View.GONE);
-					holder.staus_iv.setVisibility(View.GONE);
+					if (message.getType() == EMMessage.Type.FILE) {
+						holder.pb.setVisibility(View.INVISIBLE);
+						holder.staus_iv.setVisibility(View.INVISIBLE);
+					} else {
+						holder.pb.setVisibility(View.GONE);
+						holder.staus_iv.setVisibility(View.GONE);
+					}
 
 				} else if (message.status == EMMessage.Status.FAIL) {
-					holder.pb.setVisibility(View.GONE);
-					holder.staus_iv.setVisibility(View.VISIBLE);
-					Toast.makeText(
-							activity,
-							activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast),
-							0).show();
+					if (message.getType() == EMMessage.Type.FILE) {
+						holder.pb.setVisibility(View.INVISIBLE);
+						holder.staus_iv.setVisibility(View.INVISIBLE);
+					} else {
+						holder.pb.setVisibility(View.GONE);
+						holder.staus_iv.setVisibility(View.GONE);
+					}
+					Toast.makeText(activity, activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+							.show();
 				}
 			}
 		});
@@ -1043,10 +1036,9 @@ public class MessageAdapter extends BaseAdapter {
 	 * @param position
 	 * @return the image exists or not
 	 */
-	private boolean showImageView(final String thumbernailPath, final ImageView iv, final String localFullSizePath,
-			String remoteDir, final EMMessage message) {
-		String imagename = localFullSizePath.substring(localFullSizePath.lastIndexOf("/") + 1,
-				localFullSizePath.length());
+	private boolean showImageView(final String thumbernailPath, final ImageView iv, final String localFullSizePath, String remoteDir,
+			final EMMessage message) {
+		String imagename = localFullSizePath.substring(localFullSizePath.lastIndexOf("/") + 1, localFullSizePath.length());
 		// final String remote = remoteDir != null ? remoteDir+imagename :
 		// imagename;
 		final String remote = remoteDir;
@@ -1091,8 +1083,7 @@ public class MessageAdapter extends BaseAdapter {
 			return true;
 		} else {
 
-			new LoadImageTask().execute(thumbernailPath, localFullSizePath, remote, message.getChatType(), iv,
-					activity, message);
+			new LoadImageTask().execute(thumbernailPath, localFullSizePath, remote, message.getChatType(), iv, activity, message);
 			return true;
 		}
 

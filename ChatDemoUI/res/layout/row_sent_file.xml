@@ -13,6 +13,7 @@
         android:layout_height="wrap_content" />
 
     <RelativeLayout
+        android:paddingLeft="30dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_chat_activity" >
@@ -30,40 +31,55 @@
 
         <LinearLayout
             android:id="@+id/ll_file_container"
-            android:layout_width="wrap_content"
+             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/margin_chat_activity"
             android:layout_toLeftOf="@id/iv_userhead"
-            android:background="@drawable/chatto_bg"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/tv_file_name"
+            android:layout_toRightOf="@+id/pb_sending"
+            android:background="@drawable/chatto_bg" >
+			<ImageView 
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:src="@drawable/chat_item_file"
+			    android:layout_margin="5dp"
+			    />
+            <LinearLayout
+                android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
-                android:maxWidth="225.0dip"
-                android:text=""
-                android:textColor="#000"
-                android:textSize="15sp" />
+                android:orientation="vertical" >
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="(文件)"
-                android:textColor="#BCD8EE"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tv_file_name"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_marginTop="3dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="(文件)"
+                    android:textColor="#818181"
+                    android:textSize="14sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <ImageView
             android:id="@+id/msg_status"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/ll_file_container"
             android:clickable="true"
-            android:scaleType="fitXY"
             android:src="@drawable/msg_state_failed_resend"
             android:visibility="gone" />
 
@@ -83,7 +99,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/ll_file_container"
+            android:layout_alignParentLeft="true"
             android:visibility="visible" />
     </RelativeLayout>
 

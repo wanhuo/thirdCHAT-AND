@@ -39,6 +39,7 @@
     <string name="voice">[语音]</string>
     <string name="picture">[图片]</string>
     <string name="video">[视频]</string>
+    <string name="file">[文件]</string>
     
       <string name="button_cancel">取消</string>
     <string name="button_save">保存</string>

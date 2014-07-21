@@ -34,10 +34,8 @@ import com.easemob.chat.EMMessage;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.util.DateUtils;
-import com.easemob.util.EasyUtils;
 
 /**
  * 聊天记录adpater
@@ -126,26 +124,32 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		switch (message.getType()) {
 		case LOCATION: // 位置消息
 			if (message.direct == EMMessage.Direct.RECEIVE) {
-				digest = EasyUtils.getAppResourceString(context, "location_recv");
+				//从sdk中提到了ui中，使用更简单不犯错的获取string方法
+//				digest = EasyUtils.getAppResourceString(context, "location_recv");
+				digest = getStrng(context, R.string.location_recv);
 				digest = String.format(digest, message.getFrom());
 				return digest;
 			} else {
-				digest = EasyUtils.getAppResourceString(context, "location_prefix");
+//				digest = EasyUtils.getAppResourceString(context, "location_prefix");
+				digest = getStrng(context, R.string.location_prefix);
 			}
 			break;
 		case IMAGE: // 图片消息
 			ImageMessageBody imageBody = (ImageMessageBody) message.getBody();
-			digest = EasyUtils.getAppResourceString(context, "picture") + imageBody.getFileName();
+			digest = getStrng(context, R.string.picture) + imageBody.getFileName();
 			break;
 		case VOICE:// 语音消息
-			digest = EasyUtils.getAppResourceString(context, "voice");
+			digest = getStrng(context, R.string.voice);
 			break;
 		case VIDEO: // 视频消息
-			digest = EasyUtils.getAppResourceString(context, "video");
+			digest = getStrng(context, R.string.voice);
 			break;
 		case TXT: // 文本消息
 			TextMessageBody txtBody = (TextMessageBody) message.getBody();
 			digest = txtBody.getMessage();
+			break;
+		case FILE: //普通文件消息
+			digest = getStrng(context, R.string.file);
 			break;
 		default:
 			System.err.println("error, unknow type");
@@ -172,5 +176,9 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		RelativeLayout list_item_layout;
 		
 		
+	}
+	
+	String getStrng(Context context, int resId){
+		return context.getResources().getString(resId);
 	}
 }

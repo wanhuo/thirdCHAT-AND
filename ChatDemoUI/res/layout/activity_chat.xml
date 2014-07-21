@@ -366,7 +366,7 @@
                                 android:layout_width="56dp"
                                 android:layout_height="56dp"
                                 android:layout_centerInParent="true"
-                                android:background="@drawable/chat_image_selector"
+                                android:background="@drawable/chat_file_selector"
                                 android:clickable="true"
                                 android:onClick="onClick"
                                 android:scaleType="fitCenter" />
