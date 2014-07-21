@@ -245,12 +245,14 @@ public class MessageAdapter extends BaseAdapter {
 			} else if (message.getType() == EMMessage.Type.FILE) {
 				try {
 					holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
-					holder.tv_filename = (TextView) convertView.findViewById(R.id.tv_file_name);
-					// 这里是进度值
-					// holder.tv = (TextView)
-					// convertView.findViewById(R.id.pb_sending);
+					holder.tv_file_name = (TextView) convertView.findViewById(R.id.tv_file_name);
+					holder.tv_file_size = (TextView) convertView.findViewById(R.id.tv_file_size);
 					holder.pb = (ProgressBar) convertView.findViewById(R.id.pb_sending);
 					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
+					holder.tv_file_download_state = (TextView) convertView.findViewById(R.id.tv_file_state);
+					holder.ll_container = (LinearLayout) convertView.findViewById(R.id.ll_file_container);
+					// 这里是进度值
+					holder.tv = (TextView)convertView.findViewById(R.id.pb_sending);
 				} catch (Exception e) {
 				}
 
@@ -715,9 +717,15 @@ public class MessageAdapter extends BaseAdapter {
 	 */
 	private void handleFileMessage(final EMMessage message, final ViewHolder holder, int position, View convertView) {
 		NormalFileMessageBody fileMessageBody = (NormalFileMessageBody) message.getBody();
-		holder.tv_filename.setText(fileMessageBody.getFileName());
-		// holder.iv.setOnClickListener(new VoicePlayClickListener(message,
-		// holder.iv, holder.iv_read_status, activity, activity, username));
+		holder.tv_file_name.setText(fileMessageBody.getFileName());
+		holder.tv_file_size.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
+		holder.ll_container.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View view) {
+				
+			}
+		});
 		// holder.iv.setOnLongClickListener(new OnLongClickListener() {
 		// @Override
 		// public boolean onLongClick(View v) {
@@ -1147,9 +1155,12 @@ public class MessageAdapter extends BaseAdapter {
 		TextView timeLength;
 		TextView size;
 		LinearLayout container_status_btn;
+		LinearLayout ll_container;
 		ImageView iv_read_status;
 		TextView tv_ack;
-		TextView tv_filename;
+		TextView tv_file_name;
+		TextView tv_file_size;
+		TextView tv_file_download_state;
 	}
 
 	/*
