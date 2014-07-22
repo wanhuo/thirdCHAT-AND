@@ -463,7 +463,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					}
 					
 				}
-				sendVideo(videoPath, file.getAbsolutePath(), duration);
+				sendVideo(videoPath, file.getAbsolutePath(), duration/1000);
 				 
 
 			} else if (requestCode == REQUEST_CODE_CAMERA_VIDEO) {
