@@ -58,6 +58,7 @@ import com.easemob.chatuidemo.activity.BaiduMapActivity;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.ContextMenu;
 import com.easemob.chatuidemo.activity.ShowBigImage;
+import com.easemob.chatuidemo.activity.ShowNormalFileActivity;
 import com.easemob.chatuidemo.activity.ShowVideoActivity;
 import com.easemob.chatuidemo.task.LoadImageTask;
 import com.easemob.chatuidemo.task.LoadVideoImageTask;
@@ -65,6 +66,7 @@ import com.easemob.chatuidemo.utils.ImageCache;
 import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.util.DateUtils;
+import com.easemob.util.FileUtils;
 import com.easemob.util.LatLng;
 import com.easemob.util.TextFormater;
 
@@ -337,7 +339,7 @@ public class MessageAdapter extends BaseAdapter {
 					else if (message.getType() == EMMessage.Type.LOCATION)
 						activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_LOCATION);
 					else if (message.getType() == EMMessage.Type.FILE)
-						activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_RESEND_NET_DISK);
+						activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_FILE);
 					else if (message.getType() == EMMessage.Type.VIDEO)
 						activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_VIDEO);
 
@@ -716,14 +718,22 @@ public class MessageAdapter extends BaseAdapter {
 	 * @param convertView
 	 */
 	private void handleFileMessage(final EMMessage message, final ViewHolder holder, int position, View convertView) {
-		NormalFileMessageBody fileMessageBody = (NormalFileMessageBody) message.getBody();
+		final NormalFileMessageBody fileMessageBody = (NormalFileMessageBody) message.getBody();
+		final String filePath = fileMessageBody.getLocalUrl();
 		holder.tv_file_name.setText(fileMessageBody.getFileName());
 		holder.tv_file_size.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
 		holder.ll_container.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View view) {
-				
+				File file = new File(filePath);
+				if(file != null && file.exists()){
+					//文件存在，直接打开
+					FileUtils.openFile(file, (Activity) context);
+				}else{
+					//下载
+					context.startActivity(new Intent(context,ShowNormalFileActivity.class).putExtra("msgbody", fileMessageBody));
+				}
 			}
 		});
 		// holder.iv.setOnLongClickListener(new OnLongClickListener() {
@@ -740,29 +750,11 @@ public class MessageAdapter extends BaseAdapter {
 
 		if (message.direct == EMMessage.Direct.RECEIVE) { // 接收的消息
 			System.err.println("it is receive msg");
-			if (message.status == EMMessage.Status.INPROGRESS) {
-				holder.pb.setVisibility(View.VISIBLE);
-				System.err.println("!!!! back receive");
-				((FileMessageBody) message.getBody()).setDownloadCallback(new EMCallBack() {
-
-					@Override
-					public void onSuccess() {
-						holder.pb.setVisibility(View.INVISIBLE);
-					}
-
-					@Override
-					public void onProgress(int progress, String status) {
-					}
-
-					@Override
-					public void onError(int code, String message) {
-						holder.pb.setVisibility(View.INVISIBLE);
-					}
-				});
-
-			} else {
-				holder.pb.setVisibility(View.INVISIBLE);
-
+			File file = new File(filePath);
+			if(file != null && file.exists()){
+				holder.tv_file_download_state.setText("已下载");
+			}else{
+				holder.tv_file_download_state.setText("未下载");
 			}
 			return;
 		}

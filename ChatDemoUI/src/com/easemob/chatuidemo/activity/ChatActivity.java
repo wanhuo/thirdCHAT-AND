@@ -104,7 +104,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	public static final int REQUEST_CODE_PICTURE = 7;
 	public static final int REQUEST_CODE_LOCATION = 8;
 	public static final int REQUEST_CODE_NET_DISK = 9;
-	public static final int REQUEST_CODE_RESEND_NET_DISK = 10;
+	public static final int REQUEST_CODE_FILE = 10;
 	public static final int REQUEST_CODE_COPY_AND_PASTE = 11;
 	public static final int REQUEST_CODE_PICK_VIDEO = 12;
 	public static final int REQUEST_CODE_DOWNLOAD_VIDEO = 13;
@@ -465,7 +465,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_LOCATION) {
 				resendMessage();
-			} else if (requestCode == REQUEST_CODE_VIDEO) {
+			} else if (requestCode == REQUEST_CODE_VIDEO || requestCode == REQUEST_CODE_FILE) {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_COPY_AND_PASTE) {
 				// 粘贴

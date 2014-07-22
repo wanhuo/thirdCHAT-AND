@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@color/common_bg"
     android:orientation="vertical" >
 
     <RelativeLayout
@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
-        android:visibility="gone"
+        android:visibility="visible"
          >
 
         <ProgressBar
@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="正在下载视频请稍候..."
+            android:text="正在下载文件请稍候..."
             android:textColor="@android:color/black"
             
             />
@@ -37,10 +37,5 @@
         
     </RelativeLayout>
 
-    <VideoView
-        android:id="@+id/videoView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
