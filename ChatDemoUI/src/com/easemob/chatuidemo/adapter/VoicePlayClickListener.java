@@ -25,6 +25,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.easemob.chat.EMChatDB;
 import com.easemob.chat.EMChatManager;
@@ -174,18 +175,30 @@ public class VoicePlayClickListener implements View.OnClickListener {
 			// for sent msg, we will try to play the voice file directly
 			playVoice(voiceBody.getLocalUrl());
 		} else {
-			// for received msg. if already download the voice file,
-			// play direclty
-			File file = new File(voiceBody.getLocalUrl());
-			if (file.exists() && file.isFile())
-				playVoice(voiceBody.getLocalUrl());
-			else {
-//				System.err.println("!!! need to check!!!!! download voice changed in sdk2.0");
-//				Intent intent = new Intent(activity, AlertDialog.class).putExtra("msg", "语音文件接收失败，是否下载此文件").putExtra("isCanceShow", true)
-//						.putExtra("voicePath", voiceBody.localUrl);
-//				activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_DOWNLOAD_VOICE);
-
+			
+			if(message.status==EMMessage.Status.SUCCESS)
+			{
+				File file = new File(voiceBody.getLocalUrl());
+				if (file.exists() && file.isFile())
+					playVoice(voiceBody.getLocalUrl());
+				else
+					System.err.println("file not exist");
+				
+			}else if(message.status==EMMessage.Status.INPROGRESS)
+			{
+				Toast.makeText(context, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
+			}else if(message.status==EMMessage.Status.FAIL)
+			{
+				Toast.makeText(context, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
+				new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						EMChatManager.getInstance().asyncFetchMessage(message);
+					}
+				}).start();
 			}
+ 
 		}
 	}
 
