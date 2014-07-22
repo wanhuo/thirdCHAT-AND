@@ -65,6 +65,7 @@ import com.easemob.chatuidemo.task.LoadVideoImageTask;
 import com.easemob.chatuidemo.utils.ImageCache;
 import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.DateUtils;
 import com.easemob.util.FileUtils;
 import com.easemob.util.LatLng;
@@ -734,19 +735,17 @@ public class MessageAdapter extends BaseAdapter {
 					//下载
 					context.startActivity(new Intent(context,ShowNormalFileActivity.class).putExtra("msgbody", fileMessageBody));
 				}
+				if(!message.isAcked){
+					try {
+						EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+						message.isAcked = true;
+					} catch (EaseMobException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 		});
-		// holder.iv.setOnLongClickListener(new OnLongClickListener() {
-		// @Override
-		// public boolean onLongClick(View v) {
-		// activity.startActivityForResult(
-		// (new Intent(activity, ContextMenu.class)).putExtra("position",
-		// position).putExtra("type",
-		// EMMessage.Type.VOICE.ordinal()),
-		// ChatActivity.REQUEST_CODE_CONTEXT_MENU);
-		// return true;
-		// }
-		// });
 
 		if (message.direct == EMMessage.Direct.RECEIVE) { // 接收的消息
 			System.err.println("it is receive msg");
@@ -1070,9 +1069,9 @@ public class MessageAdapter extends BaseAdapter {
 					}
 					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
 							&& message.getChatType() != ChatType.GroupChat) {
-						message.isAcked = true;
 						try {
 							EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+							message.isAcked = true;
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
