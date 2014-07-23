@@ -113,10 +113,7 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 						}
 					}).start();
 		    	}
-		    }else if(message.status==EMMessage.Status.INPROGRESS)
-		    {
-		    	Toast.makeText(activity, "正在下载图片，稍后点击", Toast.LENGTH_SHORT).show();
-		    }
+		    } 
 		     
 		}
 	}
