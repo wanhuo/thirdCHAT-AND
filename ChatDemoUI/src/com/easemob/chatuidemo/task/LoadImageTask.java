@@ -100,7 +100,6 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 				}
 			});
 		} else {
-		    iv.setImageResource(R.drawable.default_image);
 		    if(message.status==EMMessage.Status.FAIL)
 		    {
 		    	if(CommonUtils.isNetWorkConnected(activity))
