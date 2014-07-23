@@ -569,7 +569,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 //			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivityForResult(intent,
 					REQUEST_CODE_SELECT_VIDEO);
-			selectVideoFromLocal();// 从相册选择视频文件
 
 		} else if(id == R.id.btn_file){ //点击文件图标
 			selectFileFromLocal();
@@ -927,7 +926,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 
 		// 创建一个文件消息
-		final EMMessage message = EMMessage.createSendMessage(EMMessage.Type.FILE);
+		EMMessage message = EMMessage.createSendMessage(EMMessage.Type.FILE);
 		// 如果是群聊，设置chattype,默认是单聊
 		if (chatType == CHATTYPE_GROUP)
 			message.setChatType(ChatType.GroupChat);
