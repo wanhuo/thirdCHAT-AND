@@ -131,6 +131,12 @@
             android:name=".activity.ShowBigImage"
             android:theme="@style/horizontal_slide" >
         </activity>
+        <!-- 下载文件 -->
+        <activity
+            android:name=".activity.ShowNormalFileActivity"
+            android:theme="@style/horizontal_slide" >
+        </activity>
+        
         <!-- 公开的群聊列表 -->
         <activity
             android:name=".activity.PublicGroupsActivity"

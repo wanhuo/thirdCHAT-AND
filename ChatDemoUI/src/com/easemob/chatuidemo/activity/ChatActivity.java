@@ -72,6 +72,7 @@ import com.easemob.chat.GroupChangeListener;
 import com.easemob.chat.GroupReomveListener;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.LocationMessageBody;
+import com.easemob.chat.NormalFileMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VideoMessageBody;
 import com.easemob.chat.VoiceMessageBody;
@@ -104,7 +105,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	public static final int REQUEST_CODE_PICTURE = 7;
 	public static final int REQUEST_CODE_LOCATION = 8;
 	public static final int REQUEST_CODE_NET_DISK = 9;
-	public static final int REQUEST_CODE_RESEND_NET_DISK = 10;
+	public static final int REQUEST_CODE_FILE = 10;
 	public static final int REQUEST_CODE_COPY_AND_PASTE = 11;
 	public static final int REQUEST_CODE_PICK_VIDEO = 12;
 	public static final int REQUEST_CODE_DOWNLOAD_VIDEO = 13;
@@ -118,7 +119,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	public static final int REQUEST_CODE_GROUP_DETAIL = 21;
 	public static final int REQUEST_CODE_CAMERA_VIDEO = 22;
 	public static final int REQUEST_CODE_SELECT_VIDEO = 23;
-	
+	public static final int REQUEST_CODE_SELECT_FILE = 24;
 
 	public static final int RESULT_CODE_COPY = 1;
 	public static final int RESULT_CODE_DELETE = 2;
@@ -162,7 +163,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private File cameraFile;
 	private File videoFile;
 	static int resendPos;
-	
+
 	private GroupListener groupListener;
 
 	private ImageView iv_emoticons_normal;
@@ -325,8 +326,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getAckMessageBroadcastAction());
 		ackMessageIntentFilter.setPriority(5);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
-		
-		//监听当前会话的群聊解散被T事件
+
+		// 监听当前会话的群聊解散被T事件
 		groupListener = new GroupListener();
 		EMGroupManager.getInstance().addGroupChangeListener(groupListener);
 
@@ -371,7 +372,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	}
 
 	/**
-	 * 
+	 * onActivityResult
 	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -421,7 +422,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			} else if (requestCode == REQUEST_CODE_CAMERA) { // 发送照片
 				if (cameraFile != null && cameraFile.exists())
 					sendPicture(cameraFile.getAbsolutePath());
-			} else if (requestCode == REQUEST_CODE_SELECT_VIDEO) {
+			} else if (requestCode == REQUEST_CODE_SELECT_VIDEO) { //发送本地选择的视频
 
 				int duration=data.getIntExtra("dur", 0);
 				String videoPath=data.getStringExtra("path");
@@ -478,7 +479,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					if (selectedImage != null)
 						sendPicByUri(selectedImage);
 				}
-			} else if (requestCode == REQUEST_CODE_MAP) { // 地图
+			} else if(requestCode == REQUEST_CODE_SELECT_FILE){ //发送选择的文件
+				if(data != null) {
+					Uri uri = data.getData();
+					if(uri != null){
+						sendFile(uri);
+					}
+				}
+				
+			}else if (requestCode == REQUEST_CODE_MAP) { // 地图
 				double latitude = data.getDoubleExtra("latitude", 0);
 				double longitude = data.getDoubleExtra("longitude", 0);
 				String locationAddress = data.getStringExtra("address");
@@ -497,7 +506,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_LOCATION) {
 				resendMessage();
-			} else if (requestCode == REQUEST_CODE_VIDEO) {
+			} else if (requestCode == REQUEST_CODE_VIDEO || requestCode == REQUEST_CODE_FILE) {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_COPY_AND_PASTE) {
 				// 粘贴
@@ -519,8 +528,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
+	
+
 	/**
-	 * 点击事件
+	 * 消息图标点击事件
 	 * 
 	 * @param view
 	 */
@@ -537,19 +548,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			selectPicFromLocal(); // 点击图片图标
 		} else if (id == R.id.btn_location) { // 位置
 			startActivityForResult(new Intent(this, BaiduMapActivity.class), REQUEST_CODE_MAP);
-		} else if (id == R.id.btn_smile) { // 点击表情图标
-			onSendSmile();
-		} else if (id == R.id.iv_emoticons_normal) // 点击显示表情框
-		{
+		}else if (id == R.id.iv_emoticons_normal){ // 点击显示表情框
 			more.setVisibility(View.VISIBLE);
 			iv_emoticons_normal.setVisibility(View.INVISIBLE);
 			iv_emoticons_checked.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.GONE);
 			expressionContainer.setVisibility(View.VISIBLE);
 			hideKeyboard();
-		} else if (id == R.id.iv_emoticons_checked) // 点击隐藏表情框
-		{
-
+		} else if (id == R.id.iv_emoticons_checked){ // 点击隐藏表情框
 			iv_emoticons_normal.setVisibility(View.VISIBLE);
 			iv_emoticons_checked.setVisibility(View.INVISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
@@ -563,6 +569,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 //			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivityForResult(intent,
 					REQUEST_CODE_SELECT_VIDEO);
+			selectVideoFromLocal();// 从相册选择视频文件
+
+		} else if(id == R.id.btn_file){ //点击文件图标
+			selectFileFromLocal();
 		}
 	}
 
@@ -618,6 +628,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	}
 
 	/**
+	 * 选择文件
+	 */
+	private void selectFileFromLocal(){
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("*/*");
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		startActivityForResult(intent, REQUEST_CODE_SELECT_FILE);
+	}
+	
+	/**
 	 * 从图库获取图片
 	 */
 	public void selectPicFromLocal() {
@@ -632,14 +652,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		startActivityForResult(intent, REQUEST_CODE_LOCAL);
 	}
 
-	/**
-	 * 点击表情图标
-	 */
-	private void onSendSmile() {
-		btnContainer.setVisibility(View.GONE);
-		expressionContainer.setVisibility(View.VISIBLE);
-
-	}
 
 	/**
 	 * 发送文本消息
@@ -663,7 +675,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			message.setReceipt(toChatUsername);
 			// 把messgage加到conversation中
 			conversation.addMessage(message);
-			
+
 			// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
 			adapter.refresh();
 			listView.setSelection(listView.getCount() - 1);
@@ -714,7 +726,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param filePath
 	 */
 	private void sendPicture(final String filePath) {
-		int rowId = 0;
 		String to = toChatUsername;
 		// create and add image message in view
 		final EMMessage message = EMMessage.createSendMessage(EMMessage.Type.IMAGE);
@@ -735,9 +746,81 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		setResult(RESULT_OK);
 		// more(more);
 	}
-
+	
 	/**
-	 * 发送视频
+	 * 发送本地视频
+	 * @param videoUri
+	 */
+	private void sendVideoMsg(Uri videoUri) {
+		String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Video.Media.DURATION };
+		try {
+			Cursor cursor = getContentResolver().query(videoUri, proj, null, null, null);
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+					int duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
+					String videoPath = cursor.getString(index);
+					Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, 3);
+					if (bitmap == null) {
+						EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
+						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
+					}
+					File videoFile = new File(videoPath);
+					System.out.println("length:" + videoFile.length());
+					// 限制大小不能超过5M
+					if (videoFile.length() > 1024 * 1024 * 5) {
+						Toast.makeText(this, "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
+						return;
+					}
+
+					// get the thumb image file
+					File file = new File(PathUtil.getInstance().getVideoPath(), "th" + videoFile.getName());
+					try {
+						if (!file.getParentFile().exists()) {
+							file.getParentFile().mkdirs();
+						}
+						bitmap.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					sendVideo(videoPath, file.getAbsolutePath(), duration);
+				}
+			} else {
+				File videoFile = new File(videoUri.getPath());
+				Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoFile.getAbsolutePath(), 3);
+				if (bitmap == null) {
+					EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
+					bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
+				}
+
+				System.out.println("length:" + videoFile.length());
+				// 限制大小不能超过5M
+				if (videoFile.length() > 1024 * 1024 * 5) {
+					Toast.makeText(this, "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
+					return;
+				}
+
+				// get the thumb image file
+				File file = new File(PathUtil.getInstance().getVideoPath(), "th" + videoFile.getName());
+				try {
+					if (!file.getParentFile().exists()) {
+						file.getParentFile().mkdirs();
+					}
+					bitmap.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				sendVideo(videoFile.getAbsolutePath(), file.getAbsolutePath(), 0);
+
+			}
+
+		} catch (Exception e) {
+			System.out.println("exception:" + e.getMessage());
+		}
+	}
+	
+	/**
+	 * 发送视频消息
 	 */
 	private void sendVideo(final String filePath, String thumbPath, int length) {
 		File videoFile = new File(filePath);
@@ -808,6 +891,53 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		listView.setSelection(listView.getCount() - 1);
 		setResult(RESULT_OK);
 
+	}
+
+	/**
+	 * 发送文件
+	 * 
+	 * @param uri
+	 */
+	private void sendFile(Uri uri) {
+		String filePath = null;
+		if ("content".equalsIgnoreCase(uri.getScheme())) {
+            String[] projection = { "_data" };
+            Cursor cursor = null;
+ 
+            try {
+                cursor = getContentResolver().query(uri, projection,null, null, null);
+                int column_index = cursor.getColumnIndexOrThrow("_data");
+                if (cursor.moveToFirst()) {
+                	filePath = cursor.getString(column_index);
+                }
+            } catch (Exception e) {
+            	e.printStackTrace();
+            }
+        }else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        	filePath = uri.getPath();
+        }
+		File file = new File(filePath);
+		if (file == null || !file.exists()) {
+			Toast.makeText(getApplicationContext(), "文件不存在", 0).show();
+			return;
+		}
+
+		// 创建一个文件消息
+		final EMMessage message = EMMessage.createSendMessage(EMMessage.Type.FILE);
+		// 如果是群聊，设置chattype,默认是单聊
+		if (chatType == CHATTYPE_GROUP)
+			message.setChatType(ChatType.GroupChat);
+
+		message.setReceipt(toChatUsername);
+		// add message body
+		NormalFileMessageBody body = new NormalFileMessageBody(new File(filePath));
+		message.addBody(body);
+
+		conversation.addMessage(message);
+		listView.setAdapter(adapter);
+		adapter.refresh();
+		listView.setSelection(listView.getCount() - 1);
+		setResult(RESULT_OK);
 	}
 
 	/**
@@ -1080,7 +1210,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					if (buttonSetModeKeyboard.getVisibility() != View.VISIBLE) {
 
 						if (filename != "delete_expression") { // 不是删除键，显示表情
-							//这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
+							// 这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
 							Class clz = Class.forName("com.easemob.chatuidemo.utils.SmileUtils");
 							Field field = clz.getField(filename);
 							mEditTextContent.append(SmileUtils.getSmiledText(ChatActivity.this, (String) field.get(null)));
@@ -1148,7 +1278,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	protected void onResume() {
 		super.onResume();
 		adapter.refresh();
-
 	}
 
 	@Override
@@ -1266,22 +1395,21 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 
 	}
-	
-	
+
 	/**
 	 * 监测群组解散或者被T事件
-	 *
+	 * 
 	 */
-	class GroupListener extends GroupReomveListener{
+	class GroupListener extends GroupReomveListener {
 
 		@Override
 		public void onUserRemoved(final String groupId, String groupName) {
 			runOnUiThread(new Runnable() {
 				public void run() {
 					Toast.makeText(ChatActivity.this, "你被群创建者从此群中移除", 1).show();
-					if(GroupDetailsActivity.instance != null)
+					if (GroupDetailsActivity.instance != null)
 						GroupDetailsActivity.instance.finish();
-					if(toChatUsername.equals(groupId)){
+					if (toChatUsername.equals(groupId)) {
 						finish();
 					}
 				}
@@ -1290,19 +1418,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		@Override
 		public void onGroupDestroy(final String groupId, String groupName) {
-			//群组解散正好在此页面，提示群组被解散，并finish此页面
+			// 群组解散正好在此页面，提示群组被解散，并finish此页面
 			runOnUiThread(new Runnable() {
 				public void run() {
 					Toast.makeText(ChatActivity.this, "当前群聊已被群创建者解散", 1).show();
-					if(GroupDetailsActivity.instance != null)
+					if (GroupDetailsActivity.instance != null)
 						GroupDetailsActivity.instance.finish();
-					if(toChatUsername.equals(groupId)){
+					if (toChatUsername.equals(groupId)) {
 						finish();
 					}
 				}
 			});
 		}
-		
+
 	}
-		
+
 }

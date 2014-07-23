@@ -48,6 +48,7 @@ import com.easemob.chat.EMMessage.Type;
 import com.easemob.chat.FileMessageBody;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.LocationMessageBody;
+import com.easemob.chat.NormalFileMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VideoMessageBody;
 import com.easemob.chat.VoiceMessageBody;
@@ -57,15 +58,17 @@ import com.easemob.chatuidemo.activity.BaiduMapActivity;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.ContextMenu;
 import com.easemob.chatuidemo.activity.ShowBigImage;
+import com.easemob.chatuidemo.activity.ShowNormalFileActivity;
 import com.easemob.chatuidemo.activity.ShowVideoActivity;
 import com.easemob.chatuidemo.task.LoadImageTask;
 import com.easemob.chatuidemo.task.LoadVideoImageTask;
 import com.easemob.chatuidemo.utils.ImageCache;
 import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.DateUtils;
+import com.easemob.util.FileUtils;
 import com.easemob.util.LatLng;
-import com.easemob.util.PathUtil;
 import com.easemob.util.TextFormater;
 
 public class MessageAdapter extends BaseAdapter {
@@ -82,6 +85,8 @@ public class MessageAdapter extends BaseAdapter {
 	private static final int MESSAGE_TYPE_RECV_VOICE = 7;
 	private static final int MESSAGE_TYPE_SENT_VIDEO = 8;
 	private static final int MESSAGE_TYPE_RECV_VIDEO = 9;
+	private static final int MESSAGE_TYPE_SENT_FILE = 10;
+	private static final int MESSAGE_TYPE_RECV_FILE = 11;
 
 	public static final String IMAGE_DIR = "chat/image/";
 	public static final String VOICE_DIR = "chat/audio/";
@@ -142,12 +147,15 @@ public class MessageAdapter extends BaseAdapter {
 		if (message.getType() == EMMessage.Type.VIDEO) {
 			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_VIDEO : MESSAGE_TYPE_SENT_VIDEO;
 		}
+		if (message.getType() == EMMessage.Type.FILE) {
+			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_FILE : MESSAGE_TYPE_SENT_FILE;
+		}
 
 		return -1;// invalid
 	}
 
 	public int getViewTypeCount() {
-		return 10;
+		return 12;
 	}
 
 	private View createViewByMessage(EMMessage message, int position) {
@@ -165,6 +173,9 @@ public class MessageAdapter extends BaseAdapter {
 		case VIDEO:
 			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_video, null) : inflater.inflate(
 					R.layout.row_sent_video, null);
+		case FILE:
+			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_file, null) : inflater.inflate(
+					R.layout.row_sent_file, null);
 		default:
 			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_message, null) : inflater.inflate(
 					R.layout.row_sent_message, null);
@@ -194,6 +205,7 @@ public class MessageAdapter extends BaseAdapter {
 					holder.pb = (ProgressBar) convertView.findViewById(R.id.pb_sending);
 					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
 					holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
+					// 这里是文字内容
 					holder.tv = (TextView) convertView.findViewById(R.id.tv_chatcontent);
 					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
 				} catch (Exception e) {
@@ -233,6 +245,20 @@ public class MessageAdapter extends BaseAdapter {
 
 				} catch (Exception e) {
 				}
+			} else if (message.getType() == EMMessage.Type.FILE) {
+				try {
+					holder.head_iv = (ImageView) convertView.findViewById(R.id.iv_userhead);
+					holder.tv_file_name = (TextView) convertView.findViewById(R.id.tv_file_name);
+					holder.tv_file_size = (TextView) convertView.findViewById(R.id.tv_file_size);
+					holder.pb = (ProgressBar) convertView.findViewById(R.id.pb_sending);
+					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
+					holder.tv_file_download_state = (TextView) convertView.findViewById(R.id.tv_file_state);
+					holder.ll_container = (LinearLayout) convertView.findViewById(R.id.ll_file_container);
+					// 这里是进度值
+					holder.tv = (TextView)convertView.findViewById(R.id.pb_sending);
+				} catch (Exception e) {
+				}
+
 			}
 
 			convertView.setTag(holder);
@@ -285,6 +311,9 @@ public class MessageAdapter extends BaseAdapter {
 		case VIDEO:
 			handleVideoMessage(message, holder, position, convertView);
 			break;
+		case FILE:
+			handleFileMessage(message, holder, position, convertView);
+			break;
 		default:
 			// not supported
 		}
@@ -311,7 +340,7 @@ public class MessageAdapter extends BaseAdapter {
 					else if (message.getType() == EMMessage.Type.LOCATION)
 						activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_LOCATION);
 					else if (message.getType() == EMMessage.Type.FILE)
-						activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_RESEND_NET_DISK);
+						activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_FILE);
 					else if (message.getType() == EMMessage.Type.VIDEO)
 						activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_VIDEO);
 
@@ -335,6 +364,44 @@ public class MessageAdapter extends BaseAdapter {
 		}
 		// convertView.setOnClickListener(null);
 		return convertView;
+	}
+
+	/**
+	 * 文本消息
+	 * 
+	 * @param message
+	 * @param holder
+	 * @param position
+	 */
+	private void handleTextMessage(EMMessage message, ViewHolder holder, final int position) {
+		TextMessageBody txtBody = (TextMessageBody) message.getBody();
+		Spannable span = SmileUtils.getSmiledText(context, txtBody.getMessage());
+		holder.tv.setText(span, BufferType.SPANNABLE);
+		holder.tv.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				activity.startActivityForResult(
+						(new Intent(activity, ContextMenu.class)).putExtra("position", position).putExtra("type",
+								EMMessage.Type.TXT.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
+				return true;
+			}
+		});
+		if (message.direct == EMMessage.Direct.SEND) {
+			switch (message.status) {
+			case SUCCESS:
+				holder.pb.setVisibility(View.GONE);
+				holder.staus_iv.setVisibility(View.GONE);
+				break;
+			case FAIL:
+				holder.pb.setVisibility(View.GONE);
+				holder.staus_iv.setVisibility(View.VISIBLE);
+				break;
+			case INPROGRESS:
+				break;
+			default:
+				sendMsgInBackground(message, holder);
+			}
+		}
 	}
 
 	/**
@@ -561,7 +628,7 @@ public class MessageAdapter extends BaseAdapter {
 			}, 0, 500);
 			break;
 		default:
-//			sendMsgInBackground(message, holder);
+			// sendMsgInBackground(message, holder);
 			sendPictureMessage(message, holder);
 
 		}
@@ -601,17 +668,17 @@ public class MessageAdapter extends BaseAdapter {
 			if (message.status == EMMessage.Status.INPROGRESS) {
 				holder.pb.setVisibility(View.VISIBLE);
 				System.err.println("!!!! back receive");
-				((FileMessageBody)message.getBody()).setDownloadCallback(new EMCallBack() {
-					
+				((FileMessageBody) message.getBody()).setDownloadCallback(new EMCallBack() {
+
 					@Override
 					public void onSuccess() {
 						holder.pb.setVisibility(View.INVISIBLE);
 					}
-					
+
 					@Override
 					public void onProgress(int progress, String status) {
 					}
-					
+
 					@Override
 					public void onError(int code, String message) {
 						holder.pb.setVisibility(View.INVISIBLE);
@@ -636,11 +703,112 @@ public class MessageAdapter extends BaseAdapter {
 			holder.staus_iv.setVisibility(View.VISIBLE);
 			break;
 		case INPROGRESS:
-			
+
 			break;
 		default:
 			sendMsgInBackground(message, holder);
 		}
+	}
+
+	/**
+	 * 文件消息
+	 * 
+	 * @param message
+	 * @param holder
+	 * @param position
+	 * @param convertView
+	 */
+	private void handleFileMessage(final EMMessage message, final ViewHolder holder, int position, View convertView) {
+		final NormalFileMessageBody fileMessageBody = (NormalFileMessageBody) message.getBody();
+		final String filePath = fileMessageBody.getLocalUrl();
+		holder.tv_file_name.setText(fileMessageBody.getFileName());
+		holder.tv_file_size.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
+		holder.ll_container.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View view) {
+				File file = new File(filePath);
+				if(file != null && file.exists()){
+					//文件存在，直接打开
+					FileUtils.openFile(file, (Activity) context);
+				}else{
+					//下载
+					context.startActivity(new Intent(context,ShowNormalFileActivity.class).putExtra("msgbody", fileMessageBody));
+				}
+				if(message.direct == EMMessage.Direct.RECEIVE && !message.isAcked){
+					try {
+						EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+						message.isAcked = true;
+					} catch (EaseMobException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+
+		if (message.direct == EMMessage.Direct.RECEIVE) { // 接收的消息
+			System.err.println("it is receive msg");
+			File file = new File(filePath);
+			if(file != null && file.exists()){
+				holder.tv_file_download_state.setText("已下载");
+			}else{
+				holder.tv_file_download_state.setText("未下载");
+			}
+			return;
+		}
+
+		// until here, deal with send voice msg
+		switch (message.status) {
+		case SUCCESS:
+			holder.pb.setVisibility(View.INVISIBLE);
+			holder.staus_iv.setVisibility(View.INVISIBLE);
+			break;
+		case FAIL:
+			holder.pb.setVisibility(View.INVISIBLE);
+			holder.staus_iv.setVisibility(View.VISIBLE);
+			break;
+		case INPROGRESS:
+			// set a timer
+			final Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					activity.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							holder.pb.setVisibility(View.VISIBLE);
+							// holder.tv.setVisibility(View.VISIBLE);
+							// holder.tv.setText(message.progress + "%");
+							if (message.status == EMMessage.Status.SUCCESS) {
+								holder.pb.setVisibility(View.INVISIBLE);
+								// holder.tv.setVisibility(View.GONE);
+								// message.setSendingStatus(Message.SENDING_STATUS_SUCCESS);
+								timer.cancel();
+							} else if (message.status == EMMessage.Status.FAIL) {
+								holder.pb.setVisibility(View.INVISIBLE);
+								// holder.tv.setVisibility(View.GONE);
+								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
+								// message.setProgress(0);
+								holder.staus_iv.setVisibility(View.VISIBLE);
+								Toast.makeText(activity,
+										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
+										.show();
+								timer.cancel();
+							}
+
+						}
+					});
+
+				}
+			}, 0, 500);
+			break;
+		default:
+			sendMsgInBackground(message, holder);
+		}
+
 	}
 
 	/**
@@ -684,44 +852,6 @@ public class MessageAdapter extends BaseAdapter {
 			break;
 		default:
 			sendMsgInBackground(message, holder);
-		}
-	}
-
-	/**
-	 * 文本消息
-	 * 
-	 * @param message
-	 * @param holder
-	 * @param position
-	 */
-	private void handleTextMessage(EMMessage message, ViewHolder holder, final int position) {
-		TextMessageBody txtBody = (TextMessageBody) message.getBody();
-		Spannable span = SmileUtils.getSmiledText(context, txtBody.getMessage());
-		holder.tv.setText(span, BufferType.SPANNABLE);
-		holder.tv.setOnLongClickListener(new OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				activity.startActivityForResult(
-						(new Intent(activity, ContextMenu.class)).putExtra("position", position).putExtra("type",
-								EMMessage.Type.TXT.ordinal()), ChatActivity.REQUEST_CODE_CONTEXT_MENU);
-				return true;
-			}
-		});
-		if (message.direct == EMMessage.Direct.SEND) {
-			switch (message.status) {
-			case SUCCESS:
-				holder.pb.setVisibility(View.GONE);
-				holder.staus_iv.setVisibility(View.GONE);
-				break;
-			case FAIL:
-				holder.pb.setVisibility(View.GONE);
-				holder.staus_iv.setVisibility(View.VISIBLE);
-				break;
-			case INPROGRESS:
-				break;
-			default:
-				sendMsgInBackground(message, holder);
-			}
 		}
 	}
 
@@ -870,16 +1000,26 @@ public class MessageAdapter extends BaseAdapter {
 			@Override
 			public void run() {
 				// send success
-				if(message.getType() == EMMessage.Type.VIDEO){
+				if (message.getType() == EMMessage.Type.VIDEO) {
 					holder.tv.setVisibility(View.GONE);
 				}
 				if (message.status == EMMessage.Status.SUCCESS) {
-					holder.pb.setVisibility(View.GONE);
-					holder.staus_iv.setVisibility(View.GONE);
-					
+					if (message.getType() == EMMessage.Type.FILE) {
+						holder.pb.setVisibility(View.INVISIBLE);
+						holder.staus_iv.setVisibility(View.INVISIBLE);
+					} else {
+						holder.pb.setVisibility(View.GONE);
+						holder.staus_iv.setVisibility(View.GONE);
+					}
+
 				} else if (message.status == EMMessage.Status.FAIL) {
-					holder.pb.setVisibility(View.GONE);
-					holder.staus_iv.setVisibility(View.VISIBLE);
+					if (message.getType() == EMMessage.Type.FILE) {
+						holder.pb.setVisibility(View.INVISIBLE);
+						holder.staus_iv.setVisibility(View.INVISIBLE);
+					} else {
+						holder.pb.setVisibility(View.GONE);
+						holder.staus_iv.setVisibility(View.GONE);
+					}
 					Toast.makeText(activity, activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
 							.show();
 				}
@@ -929,9 +1069,9 @@ public class MessageAdapter extends BaseAdapter {
 					}
 					if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
 							&& message.getChatType() != ChatType.GroupChat) {
-						message.isAcked = true;
 						try {
 							EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+							message.isAcked = true;
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -1006,8 +1146,12 @@ public class MessageAdapter extends BaseAdapter {
 		TextView timeLength;
 		TextView size;
 		LinearLayout container_status_btn;
+		LinearLayout ll_container;
 		ImageView iv_read_status;
 		TextView tv_ack;
+		TextView tv_file_name;
+		TextView tv_file_size;
+		TextView tv_file_download_state;
 	}
 
 	/*
