@@ -56,10 +56,17 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 //		}
 		message = (EMMessage) args[6];
 		File file = new File(thumbnailPath);
-		if(file.exists())
+		if(file.exists()){
 			return ImageUtils.decodeScaleImage(thumbnailPath, 120, 120);
-		else
-			return null;
+		}
+		else{
+			if(message.direct==EMMessage.Direct.SEND)
+			{
+				return ImageUtils.decodeScaleImage(localFullSizePath, 120, 120);
+			}else{
+				return null;
+			}
+		}
 		
 	}
 	
