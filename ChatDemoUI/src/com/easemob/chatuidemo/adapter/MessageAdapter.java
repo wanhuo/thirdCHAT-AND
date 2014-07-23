@@ -735,7 +735,7 @@ public class MessageAdapter extends BaseAdapter {
 					//下载
 					context.startActivity(new Intent(context,ShowNormalFileActivity.class).putExtra("msgbody", fileMessageBody));
 				}
-				if(!message.isAcked){
+				if(message.direct == EMMessage.Direct.RECEIVE && !message.isAcked){
 					try {
 						EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
 						message.isAcked = true;
