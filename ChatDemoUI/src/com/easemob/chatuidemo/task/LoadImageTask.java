@@ -56,10 +56,17 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 //		}
 		message = (EMMessage) args[6];
 		File file = new File(thumbnailPath);
-		if(file.exists())
+		if(file.exists()){
 			return ImageUtils.decodeScaleImage(thumbnailPath, 120, 120);
-		else
-			return null;
+		}
+		else{
+			if(message.direct==EMMessage.Direct.SEND)
+			{
+				return ImageUtils.decodeScaleImage(localFullSizePath, 120, 120);
+			}else{
+				return null;
+			}
+		}
 		
 	}
 	
@@ -100,7 +107,6 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 				}
 			});
 		} else {
-		    iv.setImageResource(R.drawable.default_image);
 		    if(message.status==EMMessage.Status.FAIL)
 		    {
 		    	if(CommonUtils.isNetWorkConnected(activity))
@@ -113,10 +119,7 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 						}
 					}).start();
 		    	}
-		    }else if(message.status==EMMessage.Status.INPROGRESS)
-		    {
-		    	Toast.makeText(activity, "正在下载图片，稍后点击", Toast.LENGTH_SHORT).show();
-		    }
+		    } 
 		     
 		}
 	}
