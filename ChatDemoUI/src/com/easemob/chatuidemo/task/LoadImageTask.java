@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
@@ -29,6 +30,7 @@ import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.ShowBigImage;
+import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.ImageCache;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.ImageUtils;
@@ -57,7 +59,7 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 		if(file.exists())
 			return ImageUtils.decodeScaleImage(thumbnailPath, 120, 120);
 		else
-			return ImageUtils.decodeScaleImage(localFullSizePath, 120, 120);
+			return null;
 		
 	}
 	
@@ -99,6 +101,23 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 			});
 		} else {
 		    iv.setImageResource(R.drawable.default_image);
+		    if(message.status==EMMessage.Status.FAIL)
+		    {
+		    	if(CommonUtils.isNetWorkConnected(activity))
+		    	{
+		    		new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							EMChatManager.getInstance().asyncFetchMessage(message);
+						}
+					}).start();
+		    	}
+		    }else if(message.status==EMMessage.Status.INPROGRESS)
+		    {
+		    	Toast.makeText(activity, "正在下载图片，稍后点击", Toast.LENGTH_SHORT).show();
+		    }
+		     
 		}
 	}
 	
