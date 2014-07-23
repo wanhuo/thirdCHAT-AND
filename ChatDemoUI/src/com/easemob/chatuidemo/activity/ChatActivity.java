@@ -767,9 +767,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					}
 					File videoFile = new File(videoPath);
 					System.out.println("length:" + videoFile.length());
-					// 限制大小不能超过5M
-					if (videoFile.length() > 1024 * 1024 * 5) {
-						Toast.makeText(this, "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
+					// 限制大小不能超过10M
+					if (videoFile.length() > 1024 * 1024 * 10) {
+						Toast.makeText(this, "不支持大于10M的视频！", Toast.LENGTH_SHORT).show();
 						return;
 					}
 
@@ -794,9 +794,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				}
 
 				System.out.println("length:" + videoFile.length());
-				// 限制大小不能超过5M
-				if (videoFile.length() > 1024 * 1024 * 5) {
-					Toast.makeText(this, "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
+				// 限制大小不能超过10M
+				if (videoFile.length() > 1024 * 1024 * 10) {
+					Toast.makeText(this, "暂不支持大于10M的视频！", Toast.LENGTH_SHORT).show();
 					return;
 				}
 
@@ -919,6 +919,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		File file = new File(filePath);
 		if (file == null || !file.exists()) {
 			Toast.makeText(getApplicationContext(), "文件不存在", 0).show();
+			return;
+		}
+		if(file.length() > 10 * 1024 * 1024){
+			Toast.makeText(getApplicationContext(), "文件不能大于10M", 0).show();
 			return;
 		}
 

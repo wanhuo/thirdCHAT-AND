@@ -178,9 +178,9 @@ public class ImageGridFragment extends Fragment implements OnItemClickListener {
 //			VideoEntity vEntty=(VideoEntity) parent.getItemAtPosition(position); 
 			VideoEntity vEntty=mList.get(position-1);
 			
-			// 限制大小不能超过5M
-			if (vEntty.size > 1024 * 1024 * 5) {
-				Toast.makeText(getActivity(), "暂不支持大于5M的视频！", Toast.LENGTH_SHORT).show();
+			// 限制大小不能超过10M
+			if (vEntty.size > 1024 * 1024 * 10) {
+				Toast.makeText(getActivity(), "暂不支持大于10M的视频！", Toast.LENGTH_SHORT).show();
 				return;
 			}
 			Intent intent=getActivity().getIntent().putExtra("path", vEntty.filePath).putExtra("dur", vEntty.duration);
