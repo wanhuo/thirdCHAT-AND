@@ -673,6 +673,7 @@ public class MessageAdapter extends BaseAdapter {
 					@Override
 					public void onSuccess() {
 						holder.pb.setVisibility(View.INVISIBLE);
+						notifyDataSetChanged();
 					}
 
 					@Override
