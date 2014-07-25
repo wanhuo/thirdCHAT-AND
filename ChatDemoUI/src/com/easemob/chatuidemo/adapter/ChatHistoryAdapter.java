@@ -142,7 +142,7 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 			digest = getStrng(context, R.string.voice);
 			break;
 		case VIDEO: // 视频消息
-			digest = getStrng(context, R.string.voice);
+			digest = getStrng(context, R.string.video);
 			break;
 		case TXT: // 文本消息
 			TextMessageBody txtBody = (TextMessageBody) message.getBody();

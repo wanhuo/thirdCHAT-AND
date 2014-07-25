@@ -57,8 +57,6 @@ public class LoginActivity extends Activity {
 				// TODO Auto-generated method stub
 				showLoginProgressDialog();
 				// 登录到聊天服务器
-				//5Iy82j671n
-
 				EMChatManager.getInstance().login(account.getText().toString(), pwd.getText().toString(), new EMCallBack() {
 
 					@Override

@@ -274,7 +274,7 @@ public class MessageAdapter extends BaseAdapter {
 		// 如果是发送的消息并且不是群聊消息，显示已读textview
 		if (message.direct == EMMessage.Direct.SEND && chatType != ChatType.GroupChat) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
-			if (holder.tv_ack != null) {
+			if (holder.tv_ack != null) { 
 				if (message.isAcked) {
 					holder.tv_ack.setVisibility(View.VISIBLE);
 				} else {
@@ -677,6 +677,7 @@ public class MessageAdapter extends BaseAdapter {
 							@Override
 							public void run() {
 								holder.pb.setVisibility(View.INVISIBLE);
+								notifyDataSetChanged();
 							}
 						});
 						
@@ -1029,11 +1030,10 @@ public class MessageAdapter extends BaseAdapter {
 				} else if (message.status == EMMessage.Status.FAIL) {
 					if (message.getType() == EMMessage.Type.FILE) {
 						holder.pb.setVisibility(View.INVISIBLE);
-						holder.staus_iv.setVisibility(View.INVISIBLE);
 					} else {
 						holder.pb.setVisibility(View.GONE);
-						holder.staus_iv.setVisibility(View.GONE);
 					}
+					holder.staus_iv.setVisibility(View.VISIBLE);
 					Toast.makeText(activity, activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
 							.show();
 				}
