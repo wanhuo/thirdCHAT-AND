@@ -856,17 +856,34 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private void sendPicByUri(Uri selectedImage) {
 		// String[] filePathColumn = { MediaStore.Images.Media.DATA };
 		Cursor cursor = getContentResolver().query(selectedImage, null, null, null, null);
-		cursor.moveToFirst();
-		int columnIndex = cursor.getColumnIndex("_data");
-		String picturePath = cursor.getString(columnIndex);
-		cursor.close();
-		if (picturePath == null || picturePath.equals("null")) {
-			Toast toast = Toast.makeText(this, "找不到图片", Toast.LENGTH_SHORT);
-			toast.setGravity(Gravity.CENTER, 0, 0);
-			toast.show();
-			return;
+		if(cursor!=null)
+		{
+			cursor.moveToFirst();
+			int columnIndex = cursor.getColumnIndex("_data");
+			String picturePath = cursor.getString(columnIndex);
+			cursor.close();
+			cursor=null;
+			
+			
+			if (picturePath == null || picturePath.equals("null")) {
+				Toast toast = Toast.makeText(this, "找不到图片", Toast.LENGTH_SHORT);
+				toast.setGravity(Gravity.CENTER, 0, 0);
+				toast.show();
+				return;
+			}
+			sendPicture(picturePath);
+		}else{
+			File file = new File(selectedImage.getPath());
+			if (!file.exists()) {
+				Toast toast = Toast.makeText(this, "找不到图片", Toast.LENGTH_SHORT);
+				toast.setGravity(Gravity.CENTER, 0, 0);
+				toast.show();
+				return;
+
+			}
+			sendPicture(file.getAbsolutePath());
 		}
-		sendPicture(picturePath);
+		
 	}
 
 	/**

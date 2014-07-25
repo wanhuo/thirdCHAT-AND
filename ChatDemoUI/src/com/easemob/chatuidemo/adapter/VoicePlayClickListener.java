@@ -24,12 +24,15 @@ import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatDB;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.FileMessageBody;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.R;
@@ -44,10 +47,10 @@ public class VoicePlayClickListener implements View.OnClickListener {
 	private AnimationDrawable voiceAnimation = null;
 	MediaPlayer mediaPlayer = null;
 	ImageView iv_read_status;
-	private Context context;
 	Activity activity;
 	private String username;
 	private ChatType chatType;
+	private BaseAdapter adapter;
 
 	public static boolean isPlaying = false;
 	public static VoicePlayClickListener currentPlayListener = null;
@@ -64,12 +67,12 @@ public class VoicePlayClickListener implements View.OnClickListener {
 	 * @param user
 	 * @param chatType
 	 */
-	public VoicePlayClickListener(EMMessage message, ImageView v, ImageView iv_read_status, Context context, Activity activity,
+	public VoicePlayClickListener(EMMessage message, ImageView v, ImageView iv_read_status, BaseAdapter adapter, Activity activity,
 			String username) {
 		this.message = message;
 		voiceBody = (VoiceMessageBody) message.getBody();
 		this.iv_read_status = iv_read_status;
-		this.context = context;
+		this.adapter=adapter;
 		voiceIconView = v;
 		this.activity = activity;
 		this.username = username;
@@ -186,10 +189,12 @@ public class VoicePlayClickListener implements View.OnClickListener {
 				
 			}else if(message.status==EMMessage.Status.INPROGRESS)
 			{
-				Toast.makeText(context, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
+				Toast.makeText(activity, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
+				 
+				
 			}else if(message.status==EMMessage.Status.FAIL)
 			{
-				Toast.makeText(context, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
+				Toast.makeText(activity, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
 				new Thread(new Runnable() {
 					
 					@Override
@@ -197,6 +202,8 @@ public class VoicePlayClickListener implements View.OnClickListener {
 						EMChatManager.getInstance().asyncFetchMessage(message);
 					}
 				}).start();
+				adapter.notifyDataSetChanged();
+			
 			}
  
 		}

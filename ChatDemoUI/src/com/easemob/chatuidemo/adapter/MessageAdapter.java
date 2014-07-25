@@ -646,7 +646,7 @@ public class MessageAdapter extends BaseAdapter {
 	private void handleVoiceMessage(final EMMessage message, final ViewHolder holder, final int position, View convertView) {
 		VoiceMessageBody voiceBody = (VoiceMessageBody) message.getBody();
 		holder.tv.setText(voiceBody.getLength() + "\"");
-		holder.iv.setOnClickListener(new VoicePlayClickListener(message, holder.iv, holder.iv_read_status, activity, activity, username));
+		holder.iv.setOnClickListener(new VoicePlayClickListener(message, holder.iv, holder.iv_read_status, this, activity, username));
 		holder.iv.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -672,7 +672,14 @@ public class MessageAdapter extends BaseAdapter {
 
 					@Override
 					public void onSuccess() {
-						holder.pb.setVisibility(View.INVISIBLE);
+						activity.runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
+								holder.pb.setVisibility(View.INVISIBLE);
+							}
+						});
+						
 					}
 
 					@Override
@@ -681,7 +688,14 @@ public class MessageAdapter extends BaseAdapter {
 
 					@Override
 					public void onError(int code, String message) {
-						holder.pb.setVisibility(View.INVISIBLE);
+						activity.runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
+								holder.pb.setVisibility(View.INVISIBLE);
+							}
+						});
+						
 					}
 				});
 
