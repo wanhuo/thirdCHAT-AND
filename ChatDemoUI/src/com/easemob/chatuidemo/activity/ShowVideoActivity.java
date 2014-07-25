@@ -198,7 +198,7 @@ public class ShowVideoActivity extends BaseActivity implements OnTouchListener{
 			
 			@Override
 			public void run() {
-				httpFileMgr.downloadFile(remoteUrl, localFilePath, EMChatConfig.getInstance().APPKEY,null,header,callback);
+				httpFileMgr.downloadFile(remoteUrl, localFilePath, EMChatConfig.getInstance().APPKEY,header,callback);
 			}
 		}).start();
 		

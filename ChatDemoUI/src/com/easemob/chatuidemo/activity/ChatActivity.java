@@ -117,7 +117,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	public static final int REQUEST_CODE_LOCAL = 19;
 	public static final int REQUEST_CODE_CLICK_DESTORY_IMG = 20;
 	public static final int REQUEST_CODE_GROUP_DETAIL = 21;
-	public static final int REQUEST_CODE_CAMERA_VIDEO = 22;
 	public static final int REQUEST_CODE_SELECT_VIDEO = 23;
 	public static final int REQUEST_CODE_SELECT_FILE = 24;
 
@@ -161,7 +160,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private VoiceRecorder voiceRecorder;
 	private MessageAdapter adapter;
 	private File cameraFile;
-	private File videoFile;
 	static int resendPos;
 
 	private GroupListener groupListener;
@@ -467,13 +465,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				sendVideo(videoPath, file.getAbsolutePath(), duration/1000);
 				 
 
-			} else if (requestCode == REQUEST_CODE_CAMERA_VIDEO) {
-				if (videoFile != null && videoFile.exists()) {
-					// 保存缩略图
-					String thumbPath = com.easemob.util.ImageUtils.saveVideoThumb(videoFile, 120, 120, Thumbnails.MINI_KIND);
-					sendVideo(videoFile.getAbsolutePath(), thumbPath, 1);
-				}
-			} else if (requestCode == REQUEST_CODE_LOCAL) { // 发送本地图片
+			}  else if (requestCode == REQUEST_CODE_LOCAL) { // 发送本地图片
 				if (data != null) {
 					Uri selectedImage = data.getData();
 					if (selectedImage != null)
@@ -563,14 +555,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			more.setVisibility(View.GONE);
 
 		} else if (id == R.id.btn_video) {
-			// selectVideoFromCamera();//点击摄像图标
-//			selectVideoFromLocal();// 从相册选择视频文件
+			  //点击摄像图标
 			Intent intent=new Intent(ChatActivity.this,ImageGridActivity.class);
-//			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivityForResult(intent,
 					REQUEST_CODE_SELECT_VIDEO);
-			selectVideoFromLocal();// 从相册选择视频文件
-
 		} else if(id == R.id.btn_file){ //点击文件图标
 			selectFileFromLocal();
 		}
@@ -592,41 +580,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				REQUEST_CODE_CAMERA);
 	}
 
-	/**
-	 * 拍摄视频
-	 */
-	public void selectVideoFromCamera() {
-		if (!CommonUtils.isExitsSdcard()) {
-			Toast.makeText(getApplicationContext(), "SD卡不存在，不能拍摄", 0).show();
-			return;
-		}
-
-		videoFile = new File(PathUtil.getInstance().getVideoPath(), DemoApplication.getInstance().getUserName()
-				+ System.currentTimeMillis() + ".mp4");
-		videoFile.getParentFile().mkdirs();
-		startActivityForResult(new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(videoFile)),
-				REQUEST_CODE_CAMERA_VIDEO);
-
-	}
-
-	/**
-	 * 选择视频文件
-	 */
-	public void selectVideoFromLocal() {
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-
-		if (Build.VERSION.SDK_INT < 19) {
-			intent = new Intent(Intent.ACTION_GET_CONTENT);
-			intent.setType("video/*");
-
-		} else {
-			// change to below intent to support 4.4 content resolver change
-			// http://developer.android.com/about/versions/android-4.4.html
-			intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-		}
-		startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
-	}
-
+	 
+	 
 	/**
 	 * 选择文件
 	 */

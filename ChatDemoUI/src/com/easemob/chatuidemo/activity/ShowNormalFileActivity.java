@@ -40,7 +40,7 @@ public class ShowNormalFileActivity extends BaseActivity {
 		new Thread(new Runnable() {
 			public void run() {
 				HttpFileManager fileManager = new HttpFileManager(ShowNormalFileActivity.this, EMChatConfig.getInstance().getStorageUrl());
-				fileManager.downloadFile(messageBody.getRemoteUrl(), messageBody.getLocalUrl(), EMChatConfig.getInstance().APPKEY, null, maps,
+				fileManager.downloadFile(messageBody.getRemoteUrl(), messageBody.getLocalUrl(), EMChatConfig.getInstance().APPKEY,maps,
 						new CloudOperationCallback() {
 							
 							@Override

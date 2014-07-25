@@ -200,7 +200,7 @@ public class ShowBigImage extends BaseActivity {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				httpFileMgr.downloadFile(remoteFilePath, localFilePath, EMChatConfig.getInstance().APPKEY,null,headers,callback);
+				httpFileMgr.downloadFile(remoteFilePath, localFilePath, EMChatConfig.getInstance().APPKEY,headers,callback);
 			}
 		}).start();
 
