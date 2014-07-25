@@ -425,14 +425,14 @@ public class MessageAdapter extends BaseAdapter {
 		});
 
 		if (message.direct == EMMessage.Direct.RECEIVE) {
-			System.err.println("it is receive msg");
+			//"it is receive msg";
 			if (message.status == EMMessage.Status.INPROGRESS) {
-				System.err.println("!!!! back receive");
+				//"!!!! back receive";
 				holder.iv.setImageResource(R.drawable.default_image);
 				showDownloadImageProgress(message, holder);
 				// downloadImage(message, holder);
 			} else {
-				System.err.println("!!!! not back receive, show image directly");
+				//"!!!! not back receive, show image directly");
 				holder.pb.setVisibility(View.GONE);
 				holder.tv.setVisibility(View.GONE);
 				holder.iv.setImageResource(R.drawable.default_image);
@@ -448,7 +448,6 @@ public class MessageAdapter extends BaseAdapter {
 		}
 
 		// process send message
-		System.err.println("!!!! it is send msg");
 		// send pic, show the pic directly
 		ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
 		String filePath = imgBody.getLocalUrl();
