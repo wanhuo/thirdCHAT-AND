@@ -5,9 +5,7 @@ import java.util.HashMap;
 
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
-import android.media.ImageReader.OnImageAvailableListener;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore.Video.Thumbnails;
 
 public class AsyncImageLoader {
