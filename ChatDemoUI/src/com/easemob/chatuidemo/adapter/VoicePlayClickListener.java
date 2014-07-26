@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -195,14 +196,22 @@ public class VoicePlayClickListener implements View.OnClickListener {
 			}else if(message.status==EMMessage.Status.FAIL)
 			{
 				Toast.makeText(activity, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
-				new Thread(new Runnable() {
+				new AsyncTask<Void, Void, Void>() {
+
+					@Override
+					protected Void doInBackground(Void... params) {
+						EMChatManager.getInstance().asyncFetchMessage(message);
+						return null;
+					}
 					
 					@Override
-					public void run() {
-						EMChatManager.getInstance().asyncFetchMessage(message);
+					protected void onPostExecute(Void result) {
+						super.onPostExecute(result);
+						adapter.notifyDataSetChanged();
 					}
-				}).start();
-				adapter.notifyDataSetChanged();
+					
+				}.execute();
+				
 			
 			}
  

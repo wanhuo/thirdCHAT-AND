@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -164,7 +165,7 @@ public class ImageGridFragment extends Fragment implements OnItemClickListener {
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
 		
 		mImageResizer.setPauseWork(true);
 		
@@ -175,9 +176,7 @@ public class ImageGridFragment extends Fragment implements OnItemClickListener {
 			intent.setClass(getActivity(), RecorderVideoActivity.class);
 			startActivityForResult(intent, 100);
 		}else{
-//			VideoEntity vEntty=(VideoEntity) parent.getItemAtPosition(position); 
 			VideoEntity vEntty=mList.get(position-1);
-			
 			// 限制大小不能超过10M
 			if (vEntty.size > 1024 * 1024 * 10) {
 				Toast.makeText(getActivity(), "暂不支持大于10M的视频！", Toast.LENGTH_SHORT).show();

@@ -32,6 +32,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -422,47 +423,48 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					sendPicture(cameraFile.getAbsolutePath());
 			} else if (requestCode == REQUEST_CODE_SELECT_VIDEO) { //发送本地选择的视频
 
-				int duration=data.getIntExtra("dur", 0);
-				String videoPath=data.getStringExtra("path");
-				
-				
-				File file = new File(PathUtil.getInstance().getImagePath(), "thvideo" + System.currentTimeMillis());
-				Bitmap bitmap=null;
-				FileOutputStream fos=null;
-				
+				int duration = data.getIntExtra("dur", 0);
+				String videoPath = data.getStringExtra("path");
+				File file = new File(PathUtil.getInstance()
+						.getImagePath(), "thvideo" + System.currentTimeMillis());
+				Bitmap bitmap = null;
+				FileOutputStream fos = null;
 				try {
 					if (!file.getParentFile().exists()) {
 						file.getParentFile().mkdirs();
 					}
-					bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, 3);
+					bitmap = ThumbnailUtils.createVideoThumbnail(
+							videoPath, 3);
 					if (bitmap == null) {
-						EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
-						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
+						EMLog.d("chatactivity",
+								"problem load video thumbnail bitmap,use default icon");
+						bitmap = BitmapFactory.decodeResource(
+								getResources(),
+								R.drawable.app_panel_video_icon);
 					}
-					fos=new FileOutputStream(file);
-					
+					fos = new FileOutputStream(file);
+
 					bitmap.compress(CompressFormat.JPEG, 100, fos);
-					 
+
 				} catch (Exception e) {
 					e.printStackTrace();
-				}finally{
-					if(fos!=null)
-					{
+				} finally {
+					if (fos != null) {
 						try {
 							fos.close();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						fos=null;
+						fos = null;
 					}
-					if(bitmap!=null)
-					{
+					if (bitmap != null) {
 						bitmap.recycle();
-						bitmap=null;
+						bitmap = null;
 					}
-					
+
 				}
-				sendVideo(videoPath, file.getAbsolutePath(), duration/1000);
+				sendVideo(videoPath, file.getAbsolutePath(),
+						duration / 1000);
 				 
 
 			}  else if (requestCode == REQUEST_CODE_LOCAL) { // 发送本地图片
@@ -616,27 +618,45 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param isResend
 	 *            boolean resend
 	 */
-	private void sendText(String content) {
+	private void sendText(final String content) {
 
 		if (content.length() > 0) {
-			EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
-			// 如果是群聊，设置chattype,默认是单聊
-			if (chatType == CHATTYPE_GROUP)
-				message.setChatType(ChatType.GroupChat);
-			TextMessageBody txtBody = new TextMessageBody(content);
-			// 设置消息body
-			message.addBody(txtBody);
-			// 设置要发给谁,用户username或者群聊groupid
-			message.setReceipt(toChatUsername);
-			// 把messgage加到conversation中
-			conversation.addMessage(message);
+			
+			new AsyncTask<Void, Void, Void>() {
 
-			// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
-			adapter.refresh();
-			listView.setSelection(listView.getCount() - 1);
-			mEditTextContent.setText("");
+				@Override
+				protected Void doInBackground(Void... params) {
+					EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
+					// 如果是群聊，设置chattype,默认是单聊
+					if (chatType == CHATTYPE_GROUP)
+						message.setChatType(ChatType.GroupChat);
+					TextMessageBody txtBody = new TextMessageBody(content);
+					// 设置消息body
+					message.addBody(txtBody);
+					// 设置要发给谁,用户username或者群聊groupid
+					message.setReceipt(toChatUsername);
+					// 把messgage加到conversation中
+					conversation.addMessage(message);
+					return null;
+				}
+				
+				@Override
+				protected void onPostExecute(Void result) {
+					super.onPostExecute(result);
+					// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
+					adapter.refresh();
+					listView.setSelection(listView.getCount() - 1);
+					mEditTextContent.setText("");
 
-			setResult(RESULT_OK);
+					setResult(RESULT_OK);
+				}
+				
+			}.execute();
+			
+			
+			
+
+			
 
 		}
 	}
@@ -702,89 +722,18 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		// more(more);
 	}
 	
-	/**
-	 * 发送本地视频
-	 * @param videoUri
-	 */
-	private void sendVideoMsg(Uri videoUri) {
-		String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Video.Media.DURATION };
-		try {
-			Cursor cursor = getContentResolver().query(videoUri, proj, null, null, null);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-					int duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
-					String videoPath = cursor.getString(index);
-					Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, 3);
-					if (bitmap == null) {
-						EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
-						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
-					}
-					File videoFile = new File(videoPath);
-					System.out.println("length:" + videoFile.length());
-					// 限制大小不能超过10M
-					if (videoFile.length() > 1024 * 1024 * 10) {
-						Toast.makeText(this, "不支持大于10M的视频！", Toast.LENGTH_SHORT).show();
-						return;
-					}
-
-					// get the thumb image file
-					File file = new File(PathUtil.getInstance().getVideoPath(), "th" + videoFile.getName());
-					try {
-						if (!file.getParentFile().exists()) {
-							file.getParentFile().mkdirs();
-						}
-						bitmap.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					sendVideo(videoPath, file.getAbsolutePath(), duration);
-				}
-			} else {
-				File videoFile = new File(videoUri.getPath());
-				Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoFile.getAbsolutePath(), 3);
-				if (bitmap == null) {
-					EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
-					bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
-				}
-
-				System.out.println("length:" + videoFile.length());
-				// 限制大小不能超过10M
-				if (videoFile.length() > 1024 * 1024 * 10) {
-					Toast.makeText(this, "暂不支持大于10M的视频！", Toast.LENGTH_SHORT).show();
-					return;
-				}
-
-				// get the thumb image file
-				File file = new File(PathUtil.getInstance().getVideoPath(), "th" + videoFile.getName());
-				try {
-					if (!file.getParentFile().exists()) {
-						file.getParentFile().mkdirs();
-					}
-					bitmap.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				sendVideo(videoFile.getAbsolutePath(), file.getAbsolutePath(), 0);
-
-			}
-
-		} catch (Exception e) {
-			System.out.println("exception:" + e.getMessage());
-		}
-	}
+	 
 	
 	/**
 	 * 发送视频消息
 	 */
-	private void sendVideo(final String filePath, String thumbPath, int length) {
-		File videoFile = new File(filePath);
+	private void sendVideo(final String filePath, final String thumbPath, final int length) {
+		final File videoFile = new File(filePath);
 		if (!videoFile.exists()) {
 			return;
 		}
 		try {
 			EMMessage message = EMMessage.createSendMessage(EMMessage.Type.VIDEO);
-
 			// 如果是群聊，设置chattype,默认是单聊
 			if (chatType == CHATTYPE_GROUP)
 				message.setChatType(ChatType.GroupChat);

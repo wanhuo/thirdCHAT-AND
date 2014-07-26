@@ -1144,7 +1144,7 @@ public class MessageAdapter extends BaseAdapter {
 			});
 
 		} else {
-			new LoadVideoImageTask().execute(localThumb, thumbnailUrl, iv, activity, message);
+			new LoadVideoImageTask().execute(localThumb, thumbnailUrl, iv,activity, message,this);
 		}
 
 	}
