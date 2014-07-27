@@ -188,7 +188,8 @@ public class DemoApplication extends Application {
 
 	/**
 	 * 设置密码
-	 * 
+	 * 下面的实例代码 只是demo，实际的应用中需要加password 加密后存入 preference
+	 * 环信sdk 内部的自动登录需要的密码，已经加密存储了
 	 * @param pwd
 	 */
 	public void setPassword(String pwd) {
