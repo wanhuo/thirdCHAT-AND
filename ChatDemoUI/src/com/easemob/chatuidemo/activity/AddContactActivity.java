@@ -102,6 +102,9 @@ public class AddContactActivity extends BaseActivity{
 			public void run() {
 				
 				try {
+//					EMContactManager.getInstance().addUserToBlackList(toAddUsername);
+//					EMContactManager.getInstance().deleteUserFromBlackList(toAddUsername);
+					
 					//demo写死了个reason，实际应该让用户手动填入
 					EMContactManager.getInstance().addContact(toAddUsername, "加个好友呗");
 					runOnUiThread(new Runnable() {
