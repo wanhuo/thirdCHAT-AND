@@ -156,6 +156,8 @@ public class LoginActivity extends BaseActivity {
 
 						// 获取群聊列表,sdk会把群组存入到EMGroupManager和db中
 						EMGroupManager.getInstance().getGroupsFromServer();
+						// after login, we join groups in separate threads;
+						EMGroupManager.getInstance().joinGroupsAfterLogin();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
