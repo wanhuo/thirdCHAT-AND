@@ -296,8 +296,8 @@ public class GroupDetailsActivity extends BaseActivity {
 					}
 					runOnUiThread(new Runnable() {
 						public void run() {
-							progressDialog.dismiss();
 							adapter.notifyDataSetChanged();
+							progressDialog.dismiss();
 						}
 					});
 				} catch (final Exception e) {

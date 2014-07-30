@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import java.util.List;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -102,6 +104,7 @@ public class AddContactActivity extends BaseActivity{
 			public void run() {
 				
 				try {
+					
 //					EMContactManager.getInstance().addUserToBlackList(toAddUsername);
 //					EMContactManager.getInstance().deleteUserFromBlackList(toAddUsername);
 					

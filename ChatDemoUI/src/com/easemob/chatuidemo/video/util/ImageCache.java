@@ -345,7 +345,7 @@ public class ImageCache {
 	 * @return true if <code>candidate</code> can be used for inBitmap re-use
 	 *         with <code>targetOptions</code>
 	 */
-	@TargetApi(VERSION_CODES.KITKAT)
+	@TargetApi(19)
 	private static boolean canUseForInBitmap(Bitmap candidate,
 			BitmapFactory.Options targetOptions) {
 		// BEGIN_INCLUDE(can_use_for_inbitmap)
@@ -364,7 +364,7 @@ public class ImageCache {
 		int height = targetOptions.outHeight / targetOptions.inSampleSize;
 		int byteCount = width * height
 				* getBytesPerPixel(candidate.getConfig());
-		return byteCount <= candidate.getAllocationByteCount();
+		return byteCount <= candidate.getByteCount();
 		// END_INCLUDE(can_use_for_inbitmap)
 	}
 
@@ -447,16 +447,16 @@ public class ImageCache {
 	 * @param value
 	 * @return size in bytes
 	 */
-	@TargetApi(VERSION_CODES.KITKAT)
+	@TargetApi(19)
 	public static int getBitmapSize(BitmapDrawable value) {
 		Bitmap bitmap = value.getBitmap();
 
 		// From KitKat onward use getAllocationByteCount() as allocated bytes
 		// can potentially be
 		// larger than bitmap byte count.
-		if (Utils.hasKitKat()) {
-			return bitmap.getAllocationByteCount();
-		}
+//		if (Utils.hasKitKat()) {
+//			return bitmap.getAllocationByteCount();
+//		}
 
 		if (Utils.hasHoneycombMR1()) {
 			return bitmap.getByteCount();
