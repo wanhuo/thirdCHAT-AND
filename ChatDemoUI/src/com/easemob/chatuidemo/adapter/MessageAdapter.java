@@ -347,6 +347,20 @@ public class MessageAdapter extends BaseAdapter {
 				}
 			});
 
+		}else{
+			//长按头像，移入黑名单
+			holder.head_iv.setOnLongClickListener(new OnLongClickListener() {
+				
+				@Override
+				public boolean onLongClick(View v) {
+					Intent intent = new Intent(activity, AlertDialog.class);
+					intent.putExtra("msg", "移入到黑名单？");
+					intent.putExtra("cancel", true);
+					intent.putExtra("position", position);
+					activity.startActivityForResult(intent,ChatActivity.REQUEST_CODE_ADD_TO_BLACKLIST);
+					return true;
+				}
+			});
 		}
 
 		TextView timestamp = (TextView) convertView.findViewById(R.id.timestamp);

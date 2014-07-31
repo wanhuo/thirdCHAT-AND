@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.protocol.RequestConnControl;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -69,6 +71,7 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.EMContactManager;
 import com.easemob.chat.GroupChangeListener;
 import com.easemob.chat.GroupReomveListener;
 import com.easemob.chat.ImageMessageBody;
@@ -88,6 +91,7 @@ import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.chatuidemo.widget.PasteEditText;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
 import com.easemob.util.VoiceRecorder;
@@ -120,6 +124,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	public static final int REQUEST_CODE_GROUP_DETAIL = 21;
 	public static final int REQUEST_CODE_SELECT_VIDEO = 23;
 	public static final int REQUEST_CODE_SELECT_FILE = 24;
+	public static final int REQUEST_CODE_ADD_TO_BLACKLIST = 25;
 
 	public static final int RESULT_CODE_COPY = 1;
 	public static final int RESULT_CODE_DELETE = 2;
@@ -512,6 +517,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					}
 
 				}
+			}else if(requestCode == REQUEST_CODE_ADD_TO_BLACKLIST){ //移入黑名单
+				EMMessage deleteMsg = (EMMessage) adapter.getItem(data.getIntExtra("position", -1));
+				addUserToBlacklist(deleteMsg.getFrom());
 			} else if (conversation.getMsgCount() > 0) {
 				adapter.refresh();
 				setResult(RESULT_OK);
@@ -1231,6 +1239,21 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 	}
+	
+	/**
+	 * 加入到黑名单
+	 * @param username
+	 */
+	private void addUserToBlacklist(String username){
+		try {
+			EMContactManager.getInstance().addUserToBlackList(username, true);
+			Toast.makeText(getApplicationContext(), "移入黑名单成功", 0).show();
+		} catch (EaseMobException e) {
+			e.printStackTrace();
+			Toast.makeText(getApplicationContext(), "移入黑名单失败", 0).show();
+		}
+	}
+	
 
 	/**
 	 * 返回

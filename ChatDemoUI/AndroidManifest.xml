@@ -32,7 +32,7 @@
     <application
         android:name="DemoApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/logo_uidemo"
         android:label="@string/app_name" >
         <activity
             android:name=".activity.MainActivity"
@@ -134,6 +134,11 @@
         <!-- 下载文件 -->
         <activity
             android:name=".activity.ShowNormalFileActivity"
+            android:theme="@style/horizontal_slide" >
+        </activity>
+        <!-- 黑名单 -->
+        <activity
+            android:name=".activity.BlacklistActivity"
             android:theme="@style/horizontal_slide" >
         </activity>
         

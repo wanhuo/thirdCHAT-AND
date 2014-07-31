@@ -22,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,13 +31,15 @@ import com.easemob.chat.EMChatOptions;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.utils.PreferenceUtils;
+
 /**
  * 设置界面
+ * 
  * @author Administrator
- *
+ * 
  */
-public class SettingsFragment extends Fragment implements OnClickListener{
-	
+public class SettingsFragment extends Fragment implements OnClickListener {
+
 	/**
 	 * 设置新消息通知布局
 	 */
@@ -53,8 +56,7 @@ public class SettingsFragment extends Fragment implements OnClickListener{
 	 * 设置扬声器布局
 	 */
 	private RelativeLayout rl_switch_speaker;
-	
-	
+
 	/**
 	 * 打开新消息通知imageView
 	 */
@@ -87,104 +89,94 @@ public class SettingsFragment extends Fragment implements OnClickListener{
 	 * 关闭扬声器播放语音
 	 */
 	private ImageView iv_switch_close_speaker;
-	
+
 	/**
 	 * 声音和震动中间的那条线
 	 */
-	private TextView textview1,textview2;
-	
+	private TextView textview1, textview2;
+
+	private LinearLayout blacklistContainer;
 	
 	/**
 	 * 退出按钮
 	 */
 	private Button logoutBtn;
-	
-	
+
 	private EMChatOptions chatOptions;
-	
-	
-	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_conversation_settings, container, false);
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		rl_switch_notification=(RelativeLayout) getView().findViewById(R.id.rl_switch_notification);
-		rl_switch_sound=(RelativeLayout) getView().findViewById(R.id.rl_switch_sound);
-		rl_switch_vibrate=(RelativeLayout) getView().findViewById(R.id.rl_switch_vibrate);
-		rl_switch_speaker=(RelativeLayout) getView().findViewById(R.id.rl_switch_speaker);
-		
-		iv_switch_open_notification=(ImageView) getView().findViewById(R.id.iv_switch_open_notification);
-		iv_switch_close_notification=(ImageView) getView().findViewById(R.id.iv_switch_close_notification);
-		iv_switch_open_sound=(ImageView) getView().findViewById(R.id.iv_switch_open_sound);
-		iv_switch_close_sound=(ImageView) getView().findViewById(R.id.iv_switch_close_sound);
-		iv_switch_open_vibrate=(ImageView) getView().findViewById(R.id.iv_switch_open_vibrate);
-		iv_switch_close_vibrate=(ImageView) getView().findViewById(R.id.iv_switch_close_vibrate);
-		iv_switch_open_speaker=(ImageView) getView().findViewById(R.id.iv_switch_open_speaker);
-		iv_switch_close_speaker=(ImageView) getView().findViewById(R.id.iv_switch_close_speaker);
+		rl_switch_notification = (RelativeLayout) getView().findViewById(R.id.rl_switch_notification);
+		rl_switch_sound = (RelativeLayout) getView().findViewById(R.id.rl_switch_sound);
+		rl_switch_vibrate = (RelativeLayout) getView().findViewById(R.id.rl_switch_vibrate);
+		rl_switch_speaker = (RelativeLayout) getView().findViewById(R.id.rl_switch_speaker);
+
+		iv_switch_open_notification = (ImageView) getView().findViewById(R.id.iv_switch_open_notification);
+		iv_switch_close_notification = (ImageView) getView().findViewById(R.id.iv_switch_close_notification);
+		iv_switch_open_sound = (ImageView) getView().findViewById(R.id.iv_switch_open_sound);
+		iv_switch_close_sound = (ImageView) getView().findViewById(R.id.iv_switch_close_sound);
+		iv_switch_open_vibrate = (ImageView) getView().findViewById(R.id.iv_switch_open_vibrate);
+		iv_switch_close_vibrate = (ImageView) getView().findViewById(R.id.iv_switch_close_vibrate);
+		iv_switch_open_speaker = (ImageView) getView().findViewById(R.id.iv_switch_open_speaker);
+		iv_switch_close_speaker = (ImageView) getView().findViewById(R.id.iv_switch_close_speaker);
 		logoutBtn = (Button) getView().findViewById(R.id.btn_logout);
+
+		textview1 = (TextView) getView().findViewById(R.id.textview1);
+		textview2 = (TextView) getView().findViewById(R.id.textview2);
 		
-		textview1=(TextView) getView().findViewById(R.id.textview1);
-		textview2=(TextView) getView().findViewById(R.id.textview2);
+		blacklistContainer = (LinearLayout) getView().findViewById(R.id.ll_black_list);
 		
+		blacklistContainer.setOnClickListener(this);
 		rl_switch_notification.setOnClickListener(this);
 		rl_switch_sound.setOnClickListener(this);
 		rl_switch_vibrate.setOnClickListener(this);
 		rl_switch_speaker.setOnClickListener(this);
 		logoutBtn.setOnClickListener(this);
-		
+
 		chatOptions = EMChatManager.getInstance().getChatOptions();
-		if(chatOptions.getNotificationEnable())
-		{
+		if (chatOptions.getNotificationEnable()) {
 			iv_switch_open_notification.setVisibility(View.VISIBLE);
 			iv_switch_close_notification.setVisibility(View.INVISIBLE);
-		}else{
+		} else {
 			iv_switch_open_notification.setVisibility(View.INVISIBLE);
 			iv_switch_close_notification.setVisibility(View.VISIBLE);
 		}
-		if(chatOptions.getNoticedBySound())
-		{
+		if (chatOptions.getNoticedBySound()) {
 			iv_switch_open_sound.setVisibility(View.VISIBLE);
 			iv_switch_close_sound.setVisibility(View.INVISIBLE);
-		}else{
+		} else {
 			iv_switch_open_sound.setVisibility(View.INVISIBLE);
 			iv_switch_close_sound.setVisibility(View.VISIBLE);
 		}
-		if(chatOptions.getNoticedByVibrate())
-		{
+		if (chatOptions.getNoticedByVibrate()) {
 			iv_switch_open_vibrate.setVisibility(View.VISIBLE);
 			iv_switch_close_vibrate.setVisibility(View.INVISIBLE);
-		}else{
+		} else {
 			iv_switch_open_vibrate.setVisibility(View.INVISIBLE);
 			iv_switch_close_vibrate.setVisibility(View.VISIBLE);
 		}
-		
-		if(chatOptions.getUseSpeaker())
-		{
+
+		if (chatOptions.getUseSpeaker()) {
 			iv_switch_open_speaker.setVisibility(View.VISIBLE);
 			iv_switch_close_speaker.setVisibility(View.INVISIBLE);
-		}else{
+		} else {
 			iv_switch_open_speaker.setVisibility(View.INVISIBLE);
 			iv_switch_close_speaker.setVisibility(View.VISIBLE);
 		}
-		
-		
-		
-		 
-	}
 
-	 
+	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.rl_switch_notification:
-			if(iv_switch_open_notification.getVisibility()==View.VISIBLE)
-			{
+			if (iv_switch_open_notification.getVisibility() == View.VISIBLE) {
 				iv_switch_open_notification.setVisibility(View.INVISIBLE);
 				iv_switch_close_notification.setVisibility(View.VISIBLE);
 				rl_switch_sound.setVisibility(View.GONE);
@@ -193,9 +185,9 @@ public class SettingsFragment extends Fragment implements OnClickListener{
 				textview2.setVisibility(View.GONE);
 				chatOptions.setNotificationEnable(false);
 				EMChatManager.getInstance().setChatOptions(chatOptions);
-				
+
 				PreferenceUtils.getInstance(getActivity()).setSettingMsgNotification(false);
-			}else{
+			} else {
 				iv_switch_open_notification.setVisibility(View.VISIBLE);
 				iv_switch_close_notification.setVisibility(View.INVISIBLE);
 				rl_switch_sound.setVisibility(View.VISIBLE);
@@ -208,14 +200,13 @@ public class SettingsFragment extends Fragment implements OnClickListener{
 			}
 			break;
 		case R.id.rl_switch_sound:
-			if(iv_switch_open_sound.getVisibility()==View.VISIBLE)
-			{
+			if (iv_switch_open_sound.getVisibility() == View.VISIBLE) {
 				iv_switch_open_sound.setVisibility(View.INVISIBLE);
 				iv_switch_close_sound.setVisibility(View.VISIBLE);
 				chatOptions.setNoticeBySound(false);
 				EMChatManager.getInstance().setChatOptions(chatOptions);
 				PreferenceUtils.getInstance(getActivity()).setSettingMsgSound(false);
-			}else{
+			} else {
 				iv_switch_open_sound.setVisibility(View.VISIBLE);
 				iv_switch_close_sound.setVisibility(View.INVISIBLE);
 				chatOptions.setNoticeBySound(true);
@@ -224,14 +215,13 @@ public class SettingsFragment extends Fragment implements OnClickListener{
 			}
 			break;
 		case R.id.rl_switch_vibrate:
-			if(iv_switch_open_vibrate.getVisibility()==View.VISIBLE)
-			{
+			if (iv_switch_open_vibrate.getVisibility() == View.VISIBLE) {
 				iv_switch_open_vibrate.setVisibility(View.INVISIBLE);
 				iv_switch_close_vibrate.setVisibility(View.VISIBLE);
 				chatOptions.setNoticedByVibrate(false);
 				EMChatManager.getInstance().setChatOptions(chatOptions);
 				PreferenceUtils.getInstance(getActivity()).setSettingMsgVibrate(false);
-			}else{
+			} else {
 				iv_switch_open_vibrate.setVisibility(View.VISIBLE);
 				iv_switch_close_vibrate.setVisibility(View.INVISIBLE);
 				chatOptions.setNoticedByVibrate(true);
@@ -240,14 +230,13 @@ public class SettingsFragment extends Fragment implements OnClickListener{
 			}
 			break;
 		case R.id.rl_switch_speaker:
-			if(iv_switch_open_speaker.getVisibility()==View.VISIBLE)
-			{
+			if (iv_switch_open_speaker.getVisibility() == View.VISIBLE) {
 				iv_switch_open_speaker.setVisibility(View.INVISIBLE);
 				iv_switch_close_speaker.setVisibility(View.VISIBLE);
 				chatOptions.setUseSpeaker(false);
 				EMChatManager.getInstance().setChatOptions(chatOptions);
 				PreferenceUtils.getInstance(getActivity()).setSettingMsgSpeaker(false);
-			}else{
+			} else {
 				iv_switch_open_speaker.setVisibility(View.VISIBLE);
 				iv_switch_close_speaker.setVisibility(View.INVISIBLE);
 				chatOptions.setUseSpeaker(true);
@@ -258,14 +247,17 @@ public class SettingsFragment extends Fragment implements OnClickListener{
 		case R.id.btn_logout:
 			DemoApplication.getInstance().logout();
 			// 重新显示登陆页面
-			((MainActivity)getActivity()).finish();
+			((MainActivity) getActivity()).finish();
 			startActivity(new Intent(getActivity(), LoginActivity.class));
+			break;
+		case R.id.ll_black_list:
+			startActivity(new Intent(getActivity(), BlacklistActivity.class));
+			
 			break;
 		default:
 			break;
 		}
-		
+
 	}
-	
-	
+
 }
