@@ -320,7 +320,7 @@ public class MessageAdapter extends BaseAdapter {
 
 		if (message.direct == EMMessage.Direct.SEND) {
 			View statusView = convertView.findViewById(R.id.msg_status);
-
+			//重发按钮点击事件
 			statusView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -369,6 +369,7 @@ public class MessageAdapter extends BaseAdapter {
 			timestamp.setText(DateUtils.getTimestampString(new Date(message.getMsgTime())));
 			timestamp.setVisibility(View.VISIBLE);
 		} else {
+			//两条消息时间离得如果稍长，显示时间
 			if (DateUtils.isCloseEnough(message.getMsgTime(), conversation.getMessage(position - 1).getMsgTime())) {
 				timestamp.setVisibility(View.GONE);
 			} else {
@@ -376,7 +377,6 @@ public class MessageAdapter extends BaseAdapter {
 				timestamp.setVisibility(View.VISIBLE);
 			}
 		}
-		// convertView.setOnClickListener(null);
 		return convertView;
 	}
 

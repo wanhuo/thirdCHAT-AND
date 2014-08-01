@@ -15,7 +15,9 @@ package com.easemob.chatuidemo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.renderscript.Program.TextureType;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -126,6 +128,9 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 		iv_switch_open_speaker = (ImageView) getView().findViewById(R.id.iv_switch_open_speaker);
 		iv_switch_close_speaker = (ImageView) getView().findViewById(R.id.iv_switch_close_speaker);
 		logoutBtn = (Button) getView().findViewById(R.id.btn_logout);
+		if(!TextUtils.isEmpty(EMChatManager.getInstance().getCurrentUser())){
+			logoutBtn.setText(getString(R.string.button_logout) + "(" + EMChatManager.getInstance().getCurrentUser() + ")");
+		}
 
 		textview1 = (TextView) getView().findViewById(R.id.textview1);
 		textview2 = (TextView) getView().findViewById(R.id.textview2);

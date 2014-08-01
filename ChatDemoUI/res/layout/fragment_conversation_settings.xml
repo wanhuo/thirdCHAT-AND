@@ -289,7 +289,7 @@
                     android:layout_marginBottom="12dp"
                     android:layout_marginLeft="10dip"
                     android:layout_marginRight="10dip"
-                    android:layout_marginTop="26dp"
+                    android:layout_marginTop="12dp"
                     android:background="@drawable/btn_style_alert_dialog_special"
                     android:text="@string/button_logout"
                     android:textColor="@android:color/white"

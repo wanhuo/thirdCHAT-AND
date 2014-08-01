@@ -426,26 +426,21 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			} else if (requestCode == REQUEST_CODE_CAMERA) { // 发送照片
 				if (cameraFile != null && cameraFile.exists())
 					sendPicture(cameraFile.getAbsolutePath());
-			} else if (requestCode == REQUEST_CODE_SELECT_VIDEO) { //发送本地选择的视频
+			} else if (requestCode == REQUEST_CODE_SELECT_VIDEO) { // 发送本地选择的视频
 
 				int duration = data.getIntExtra("dur", 0);
 				String videoPath = data.getStringExtra("path");
-				File file = new File(PathUtil.getInstance()
-						.getImagePath(), "thvideo" + System.currentTimeMillis());
+				File file = new File(PathUtil.getInstance().getImagePath(), "thvideo" + System.currentTimeMillis());
 				Bitmap bitmap = null;
 				FileOutputStream fos = null;
 				try {
 					if (!file.getParentFile().exists()) {
 						file.getParentFile().mkdirs();
 					}
-					bitmap = ThumbnailUtils.createVideoThumbnail(
-							videoPath, 3);
+					bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, 3);
 					if (bitmap == null) {
-						EMLog.d("chatactivity",
-								"problem load video thumbnail bitmap,use default icon");
-						bitmap = BitmapFactory.decodeResource(
-								getResources(),
-								R.drawable.app_panel_video_icon);
+						EMLog.d("chatactivity", "problem load video thumbnail bitmap,use default icon");
+						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_panel_video_icon);
 					}
 					fos = new FileOutputStream(file);
 
@@ -468,25 +463,24 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					}
 
 				}
-				sendVideo(videoPath, file.getAbsolutePath(),
-						duration / 1000);
-				 
+				sendVideo(videoPath, file.getAbsolutePath(), duration / 1000);
 
-			}  else if (requestCode == REQUEST_CODE_LOCAL) { // 发送本地图片
+			} else if (requestCode == REQUEST_CODE_LOCAL) { // 发送本地图片
 				if (data != null) {
 					Uri selectedImage = data.getData();
-					if (selectedImage != null)
+					if (selectedImage != null) {
 						sendPicByUri(selectedImage);
+					}
 				}
-			} else if(requestCode == REQUEST_CODE_SELECT_FILE){ //发送选择的文件
-				if(data != null) {
+			} else if (requestCode == REQUEST_CODE_SELECT_FILE) { // 发送选择的文件
+				if (data != null) {
 					Uri uri = data.getData();
-					if(uri != null){
+					if (uri != null) {
 						sendFile(uri);
 					}
 				}
-				
-			}else if (requestCode == REQUEST_CODE_MAP) { // 地图
+
+			} else if (requestCode == REQUEST_CODE_MAP) { // 地图
 				double latitude = data.getDoubleExtra("latitude", 0);
 				double longitude = data.getDoubleExtra("longitude", 0);
 				String locationAddress = data.getStringExtra("address");
@@ -517,7 +511,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					}
 
 				}
-			}else if(requestCode == REQUEST_CODE_ADD_TO_BLACKLIST){ //移入黑名单
+			} else if (requestCode == REQUEST_CODE_ADD_TO_BLACKLIST) { // 移入黑名单
 				EMMessage deleteMsg = (EMMessage) adapter.getItem(data.getIntExtra("position", -1));
 				addUserToBlacklist(deleteMsg.getFrom());
 			} else if (conversation.getMsgCount() > 0) {
@@ -529,8 +523,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			}
 		}
 	}
-
-	
 
 	/**
 	 * 消息图标点击事件
@@ -550,14 +542,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			selectPicFromLocal(); // 点击图片图标
 		} else if (id == R.id.btn_location) { // 位置
 			startActivityForResult(new Intent(this, BaiduMapActivity.class), REQUEST_CODE_MAP);
-		}else if (id == R.id.iv_emoticons_normal){ // 点击显示表情框
+		} else if (id == R.id.iv_emoticons_normal) { // 点击显示表情框
 			more.setVisibility(View.VISIBLE);
 			iv_emoticons_normal.setVisibility(View.INVISIBLE);
 			iv_emoticons_checked.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.GONE);
 			expressionContainer.setVisibility(View.VISIBLE);
 			hideKeyboard();
-		} else if (id == R.id.iv_emoticons_checked){ // 点击隐藏表情框
+		} else if (id == R.id.iv_emoticons_checked) { // 点击隐藏表情框
 			iv_emoticons_normal.setVisibility(View.VISIBLE);
 			iv_emoticons_checked.setVisibility(View.INVISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
@@ -565,11 +557,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			more.setVisibility(View.GONE);
 
 		} else if (id == R.id.btn_video) {
-			  //点击摄像图标
-			Intent intent=new Intent(ChatActivity.this,ImageGridActivity.class);
-			startActivityForResult(intent,
-					REQUEST_CODE_SELECT_VIDEO);
-		} else if(id == R.id.btn_file){ //点击文件图标
+			// 点击摄像图标
+			Intent intent = new Intent(ChatActivity.this, ImageGridActivity.class);
+			startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
+		} else if (id == R.id.btn_file) { // 点击文件图标
 			selectFileFromLocal();
 		}
 	}
@@ -590,18 +581,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				REQUEST_CODE_CAMERA);
 	}
 
-	 
-	 
 	/**
 	 * 选择文件
 	 */
-	private void selectFileFromLocal(){
+	private void selectFileFromLocal() {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 		intent.setType("*/*");
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 		startActivityForResult(intent, REQUEST_CODE_SELECT_FILE);
 	}
-	
+
 	/**
 	 * 从图库获取图片
 	 */
@@ -617,7 +606,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		startActivityForResult(intent, REQUEST_CODE_LOCAL);
 	}
 
-
 	/**
 	 * 发送文本消息
 	 * 
@@ -629,7 +617,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private void sendText(final String content) {
 
 		if (content.length() > 0) {
-			
+
 			new AsyncTask<Void, Void, Void>() {
 
 				@Override
@@ -647,7 +635,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					conversation.addMessage(message);
 					return null;
 				}
-				
+
 				@Override
 				protected void onPostExecute(Void result) {
 					super.onPostExecute(result);
@@ -658,13 +646,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 					setResult(RESULT_OK);
 				}
-				
-			}.execute();
-			
-			
-			
 
-			
+			}.execute();
 
 		}
 	}
@@ -711,6 +694,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private void sendPicture(final String filePath) {
 		String to = toChatUsername;
 		// create and add image message in view
+		
 		final EMMessage message = EMMessage.createSendMessage(EMMessage.Type.IMAGE);
 		// 如果是群聊，设置chattype,默认是单聊
 		if (chatType == CHATTYPE_GROUP)
@@ -721,17 +705,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
 		// body.setSendOriginalImage(true);
 		message.addBody(body);
-
 		conversation.addMessage(message);
+
 		listView.setAdapter(adapter);
 		adapter.refresh();
 		listView.setSelection(listView.getCount() - 1);
 		setResult(RESULT_OK);
 		// more(more);
 	}
-	
-	 
-	
+
 	/**
 	 * 发送视频消息
 	 */
@@ -768,15 +750,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private void sendPicByUri(Uri selectedImage) {
 		// String[] filePathColumn = { MediaStore.Images.Media.DATA };
 		Cursor cursor = getContentResolver().query(selectedImage, null, null, null, null);
-		if(cursor!=null)
-		{
+		if (cursor != null) {
 			cursor.moveToFirst();
 			int columnIndex = cursor.getColumnIndex("_data");
 			String picturePath = cursor.getString(columnIndex);
 			cursor.close();
-			cursor=null;
-			
-			
+			cursor = null;
+
 			if (picturePath == null || picturePath.equals("null")) {
 				Toast toast = Toast.makeText(this, "找不到图片", Toast.LENGTH_SHORT);
 				toast.setGravity(Gravity.CENTER, 0, 0);
@@ -784,7 +764,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				return;
 			}
 			sendPicture(picturePath);
-		}else{
+		} else {
 			File file = new File(selectedImage.getPath());
 			if (!file.exists()) {
 				Toast toast = Toast.makeText(this, "找不到图片", Toast.LENGTH_SHORT);
@@ -795,7 +775,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			}
 			sendPicture(file.getAbsolutePath());
 		}
-		
+
 	}
 
 	/**
@@ -830,27 +810,27 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private void sendFile(Uri uri) {
 		String filePath = null;
 		if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = { "_data" };
-            Cursor cursor = null;
- 
-            try {
-                cursor = getContentResolver().query(uri, projection,null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow("_data");
-                if (cursor.moveToFirst()) {
-                	filePath = cursor.getString(column_index);
-                }
-            } catch (Exception e) {
-            	e.printStackTrace();
-            }
-        }else if ("file".equalsIgnoreCase(uri.getScheme())) {
-        	filePath = uri.getPath();
-        }
+			String[] projection = { "_data" };
+			Cursor cursor = null;
+
+			try {
+				cursor = getContentResolver().query(uri, projection, null, null, null);
+				int column_index = cursor.getColumnIndexOrThrow("_data");
+				if (cursor.moveToFirst()) {
+					filePath = cursor.getString(column_index);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if ("file".equalsIgnoreCase(uri.getScheme())) {
+			filePath = uri.getPath();
+		}
 		File file = new File(filePath);
 		if (file == null || !file.exists()) {
 			Toast.makeText(getApplicationContext(), "文件不存在", 0).show();
 			return;
 		}
-		if(file.length() > 10 * 1024 * 1024){
+		if (file.length() > 10 * 1024 * 1024) {
 			Toast.makeText(getApplicationContext(), "文件不能大于10M", 0).show();
 			return;
 		}
@@ -1239,12 +1219,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 	}
-	
+
 	/**
 	 * 加入到黑名单
+	 * 
 	 * @param username
 	 */
-	private void addUserToBlacklist(String username){
+	private void addUserToBlacklist(String username) {
 		try {
 			EMContactManager.getInstance().addUserToBlackList(username, true);
 			Toast.makeText(getApplicationContext(), "移入黑名单成功", 0).show();
@@ -1253,7 +1234,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			Toast.makeText(getApplicationContext(), "移入黑名单失败", 0).show();
 		}
 	}
-	
 
 	/**
 	 * 返回
