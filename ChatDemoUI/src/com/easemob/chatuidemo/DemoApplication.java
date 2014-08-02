@@ -32,7 +32,6 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
-import com.easemob.chat.OnMessageNotifyListener;
 import com.easemob.chat.OnNotificationClickListener;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.MainActivity;
@@ -133,7 +132,10 @@ public class DemoApplication extends Application {
 	public static DemoApplication getInstance() {
 		return instance;
 	}
-
+	
+//	List<String> list = new ArrayList<String>();
+//	list.add("1406713081205");
+//	options.setReceiveNotNoifyGroup(list);
 	/**
 	 * 获取内存中好友user list
 	 * 

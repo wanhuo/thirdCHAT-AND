@@ -41,6 +41,7 @@ public class BlacklistActivity extends Activity {
 
 		List<String> blacklist = null;
 		try {
+			//获取黑名单
 			blacklist = EMContactManager.getInstance().getBlackListUsernames();
 		} catch (Exception e) {
 			e.printStackTrace();
