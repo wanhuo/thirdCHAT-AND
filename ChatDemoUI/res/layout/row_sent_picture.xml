@@ -40,7 +40,7 @@
                 android:layout_height="100dp"
                 android:adjustViewBounds="true"
                 android:background="@drawable/chatto_bg"
-                android:scaleType="fitXY" />
+                android:scaleType="centerCrop" />
         </RelativeLayout>	
         
 		<!-- 进度框如果放在里边可能会看不清 -->
