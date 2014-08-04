@@ -120,7 +120,7 @@ public class RecorderVideoActivity extends BaseActivity implements OnClickListen
 				mediarecorder.prepare();
 				 // 开始录制
 				mediarecorder.start();
-				Toast.makeText(this, "录音开始", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "录像开始", Toast.LENGTH_SHORT).show();
 				btnStart.setVisibility(View.INVISIBLE);
 				btnStop.setVisibility(View.VISIBLE);
 			} catch (IllegalStateException e) {
