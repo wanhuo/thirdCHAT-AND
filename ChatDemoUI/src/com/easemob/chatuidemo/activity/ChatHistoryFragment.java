@@ -16,6 +16,7 @@ package com.easemob.chatuidemo.activity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -197,6 +198,8 @@ public class ChatHistoryFragment extends Fragment {
 		adapter.notifyDataSetChanged();
 	}
 
+	
+	
 	/**
 	 * 获取有聊天记录的users和groups
 	 * 
@@ -205,6 +208,7 @@ public class ChatHistoryFragment extends Fragment {
 	 */
 	private List<EMContact> loadUsersWithRecentChat() {
 		List<EMContact> resultList = new ArrayList<EMContact>();
+		//获取有聊天记录的users，不包括陌生人
 		for (User user : contactList.values()) {
 			EMConversation conversation = EMChatManager.getInstance().getConversation(user.getUsername());
 			if (conversation.getMsgCount() > 0) {
@@ -218,6 +222,7 @@ public class ChatHistoryFragment extends Fragment {
 			}
 			
 		}
+		
 		// 排序
 		sortUserByLastChatTime(resultList);
 		return resultList;

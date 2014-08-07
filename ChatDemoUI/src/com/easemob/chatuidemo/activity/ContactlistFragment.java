@@ -152,14 +152,8 @@ public class ContactlistFragment extends Fragment {
 			return true;
 		}else if(item.getItemId() == R.id.add_to_blacklist){
 			User user = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
-			try {
-				//加入到黑名单
-				EMContactManager.getInstance().addUserToBlackList(user.getUsername(),true);
-				Toast.makeText(getActivity(), "移入黑名单成功", 0).show();
-			} catch (EaseMobException e) {
-				e.printStackTrace();
-				Toast.makeText(getActivity(), "移入黑名单失败", 0).show();
-			}
+			moveToBlacklist(user.getUsername());
+			return true;
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -222,6 +216,39 @@ public class ContactlistFragment extends Fragment {
 
 	}
 
+	/**
+	 * 把user移入到黑名单
+	 */
+	private void moveToBlacklist(final String username){
+		final ProgressDialog pd = new ProgressDialog(getActivity());
+		pd.setMessage("正在移入黑名单...");
+		pd.setCanceledOnTouchOutside(false);
+		pd.show();
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					//加入到黑名单
+					EMContactManager.getInstance().addUserToBlackList(username,true);
+					getActivity().runOnUiThread(new Runnable() {
+						public void run() {
+							pd.dismiss();
+							Toast.makeText(getActivity(), "移入黑名单成功", 0).show();
+						}
+					});
+				} catch (EaseMobException e) {
+					e.printStackTrace();
+					getActivity().runOnUiThread(new Runnable() {
+						public void run() {
+							pd.dismiss();
+							Toast.makeText(getActivity(), "移入黑名单失败", 0).show();
+						}
+					});
+				}
+			}
+		}).start();
+		
+	}
+	
 	// 刷新ui
 	public void refresh() {
 		try {

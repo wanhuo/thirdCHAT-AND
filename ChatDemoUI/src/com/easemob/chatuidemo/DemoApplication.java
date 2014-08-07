@@ -159,6 +159,11 @@ public class DemoApplication extends Application {
 	public void setContactList(Map<String, User> contactList) {
 		this.contactList = contactList;
 	}
+	
+	public void setStrangerList(Map<String, User> List){
+		
+	}
+	
 
 	/**
 	 * 获取当前登陆用户名

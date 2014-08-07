@@ -58,6 +58,7 @@ import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.util.HanziToPinyin;
+import com.easemob.util.NetUtils;
 
 public class MainActivity extends FragmentActivity {
 
@@ -444,7 +445,11 @@ public class MainActivity extends FragmentActivity {
 				showConflictDialog();
 			} else {
 				chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
-				chatHistoryFragment.errorText.setText("连接不到聊天服务器");
+				if(NetUtils.hasNetwork(MainActivity.this))
+					chatHistoryFragment.errorText.setText("连接不到聊天服务器");
+				else
+					chatHistoryFragment.errorText.setText("当前网络不可用，请检查网络设置");
+					
 			}
 		}
 
