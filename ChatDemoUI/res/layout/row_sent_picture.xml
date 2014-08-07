@@ -40,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/chatto_bg"
                 android:scaleType="fitCenter"
+                />
         </RelativeLayout>	
         <LinearLayout
             android:id="@+id/ll_loading"
