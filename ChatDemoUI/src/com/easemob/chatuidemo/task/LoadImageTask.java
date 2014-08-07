@@ -22,17 +22,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.RelativeLayout.LayoutParams;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
-import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.ShowBigImage;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.ImageCache;
-import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.ImageUtils;
 
 public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
@@ -65,6 +62,7 @@ public class LoadImageTask extends AsyncTask<Object, Void, Bitmap> {
 				return null;
 			}
 		}
+		
 
 	}
 

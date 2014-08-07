@@ -76,7 +76,7 @@
 //		// contact list
 //		contactList = DemoApplication.getInstance().getContactList();
 //		listView = (ListView) getView().findViewById(R.id.list);
-//		adapter = new ChatHistoryAdapter(getActivity(), 1, loadUsersWithRecentChat());
+//		adapter = new ChatHistoryAdapter(getActivity(), 1, );
 //		// 设置adapter
 //		listView.setAdapter(adapter);
 //		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -192,23 +192,22 @@
 //	 * @param context
 //	 * @return
 //	 */
-////	private List<EMConversation> loadUsersWithRecentChat() {
-////		
-//////		//获取所有会话，包括陌生人
-//////		Hashtable<String, EMConversation> conversations = EMChatManager.getInstance().getAllConversations();
-//////		
-//////		
-//////		// 排序
-//////		sortUserByLastChatTime(resultList);
-//////		return resultList;
-////	}
+//	private List<EMConversation> loadConversationsWithRecentChat() {
+//		//获取所有会话，包括陌生人
+//		Hashtable<String, EMConversation> conversations = EMChatManager.getInstance().getAllConversations();
+//		List<EMConversation> conversationList = new ArrayList<EMConversation>(conversations.values());
+//		
+//		// 排序
+//		sortUserByLastChatTime(resultList);
+//		return resultList;
+//	}
 //
 //	/**
 //	 * 根据最后一条消息的时间排序
 //	 * 
 //	 * @param usernames
 //	 */
-//	private void sortUserByLastChatTime(List<EMContact> contactList) {
+//	private void sortConversationByLastChatTime(List<EMContact> contactList) {
 //		Collections.sort(contactList, new Comparator<EMContact>() {
 //			@Override
 //			public int compare(final EMContact user1, final EMContact user2) {
