@@ -36,11 +36,11 @@
 
             <ImageView
                 android:id="@+id/iv_sendPicture"
-                android:layout_width="133dp"
-                android:layout_height="100dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:background="@drawable/chatfrom_bg"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitCenter"/>
 
             <LinearLayout
                  android:id="@+id/ll_loading"
