@@ -70,7 +70,8 @@ public class MainActivity extends FragmentActivity {
 
 	private Button[] mTabs;
 	private ContactlistFragment contactListFragment;
-	private ChatHistoryFragment chatHistoryFragment;
+//	private ChatHistoryFragment chatHistoryFragment;
+	private ChatAllHistoryFragment chatHistoryFragment;
 	private SettingsFragment settingFragment;
 	private Fragment[] fragments;
 	private int index;
@@ -88,7 +89,10 @@ public class MainActivity extends FragmentActivity {
 		initView();
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
-		chatHistoryFragment = new ChatHistoryFragment();
+		//这个fragment只显示好友和群组的聊天记录
+//		chatHistoryFragment = new ChatHistoryFragment();
+		//显示所有人消息记录的fragment
+		chatHistoryFragment = new ChatAllHistoryFragment();
 		contactListFragment = new ContactlistFragment();
 		settingFragment = new SettingsFragment();
 		fragments = new Fragment[] { chatHistoryFragment, contactListFragment, settingFragment };
