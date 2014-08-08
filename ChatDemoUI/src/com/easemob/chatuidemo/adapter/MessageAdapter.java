@@ -113,10 +113,16 @@ public class MessageAdapter extends BaseAdapter {
 	// this.user = user;
 	// }
 
+	/**
+	 * 获取item数
+	 */
 	public int getCount() {
 		return conversation.getMsgCount();
 	}
-
+	
+	/**
+	 * 刷新页面
+	 */
 	public void refresh() {
 		notifyDataSetChanged();
 	}
@@ -129,6 +135,9 @@ public class MessageAdapter extends BaseAdapter {
 		return position;
 	}
 
+	/**
+	 * 获取item类型
+	 */
 	public int getItemViewType(int position) {
 		EMMessage message = conversation.getMessage(position);
 		if (message.getType() == EMMessage.Type.TXT) {
@@ -296,22 +305,22 @@ public class MessageAdapter extends BaseAdapter {
 
 		switch (message.getType()) {
 		// 根据消息type显示item
-		case IMAGE:
+		case IMAGE: //图片
 			handleImageMessage(message, holder, position, convertView);
 			break;
-		case TXT:
+		case TXT: //文本
 			handleTextMessage(message, holder, position);
 			break;
-		case LOCATION:
+		case LOCATION: //位置
 			handleLocationMessage(message, holder, position, convertView);
 			break;
-		case VOICE:
+		case VOICE: //语音
 			handleVoiceMessage(message, holder, position, convertView);
 			break;
-		case VIDEO:
+		case VIDEO: //视频
 			handleVideoMessage(message, holder, position, convertView);
 			break;
-		case FILE:
+		case FILE: //一般文件
 			handleFileMessage(message, holder, position, convertView);
 			break;
 		default:
@@ -411,6 +420,7 @@ public class MessageAdapter extends BaseAdapter {
 				holder.staus_iv.setVisibility(View.VISIBLE);
 				break;
 			case INPROGRESS:
+				holder.pb.setVisibility(View.VISIBLE);
 				break;
 			default:
 				sendMsgInBackground(message, holder);
@@ -834,6 +844,7 @@ public class MessageAdapter extends BaseAdapter {
 			}, 0, 500);
 			break;
 		default:
+			//发送消息
 			sendMsgInBackground(message, holder);
 		}
 
@@ -877,6 +888,7 @@ public class MessageAdapter extends BaseAdapter {
 			holder.staus_iv.setVisibility(View.VISIBLE);
 			break;
 		case INPROGRESS:
+			holder.pb.setVisibility(View.VISIBLE);
 			break;
 		default:
 			sendMsgInBackground(message, holder);

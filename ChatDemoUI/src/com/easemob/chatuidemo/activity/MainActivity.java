@@ -58,6 +58,7 @@ import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.util.HanziToPinyin;
+import com.easemob.util.NetUtils;
 
 public class MainActivity extends FragmentActivity {
 
@@ -69,7 +70,8 @@ public class MainActivity extends FragmentActivity {
 
 	private Button[] mTabs;
 	private ContactlistFragment contactListFragment;
-	private ChatHistoryFragment chatHistoryFragment;
+//	private ChatHistoryFragment chatHistoryFragment;
+	private ChatAllHistoryFragment chatHistoryFragment;
 	private SettingsFragment settingFragment;
 	private Fragment[] fragments;
 	private int index;
@@ -87,7 +89,10 @@ public class MainActivity extends FragmentActivity {
 		initView();
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
-		chatHistoryFragment = new ChatHistoryFragment();
+		//这个fragment只显示好友和群组的聊天记录
+//		chatHistoryFragment = new ChatHistoryFragment();
+		//显示所有人消息记录的fragment
+		chatHistoryFragment = new ChatAllHistoryFragment();
 		contactListFragment = new ContactlistFragment();
 		settingFragment = new SettingsFragment();
 		fragments = new Fragment[] { chatHistoryFragment, contactListFragment, settingFragment };
@@ -444,7 +449,11 @@ public class MainActivity extends FragmentActivity {
 				showConflictDialog();
 			} else {
 				chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
-				chatHistoryFragment.errorText.setText("连接不到聊天服务器");
+				if(NetUtils.hasNetwork(MainActivity.this))
+					chatHistoryFragment.errorText.setText("连接不到聊天服务器");
+				else
+					chatHistoryFragment.errorText.setText("当前网络不可用，请检查网络设置");
+					
 			}
 		}
 

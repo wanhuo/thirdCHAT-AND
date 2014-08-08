@@ -16,8 +16,6 @@ package com.easemob.chatuidemo.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jivesoftware.smackx.InitStaticCode;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -25,7 +23,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
-import com.easemob.chatuidemo.domain.User;
 
 public class InviteMessgeDao {
 	public static final String TABLE_NAME = "new_friends_msgs";
@@ -100,7 +97,6 @@ public class InviteMessgeDao {
 				String groupname = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_GROUP_Name));
 				String reason = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_REASON));
 				long time = cursor.getLong(cursor.getColumnIndex(COLUMN_NAME_TIME));
-				int isIniviteFromMe = cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_ISINVITEFROMME));
 				int status = cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_STATUS));
 				
 				msg.setId(id);

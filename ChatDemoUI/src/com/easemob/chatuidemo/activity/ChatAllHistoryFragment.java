@@ -1,16 +1,3 @@
-/**
- * Copyright (C) 2013-2014 EaseMob Technologies. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.easemob.chatuidemo.activity;
 
 import java.util.ArrayList;
@@ -27,25 +14,25 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContact;
@@ -53,28 +40,29 @@ import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
-import com.easemob.chat.GroupChangeListener;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.adapter.ChatAllHistoryAdapter;
 import com.easemob.chatuidemo.adapter.ChatHistoryAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.domain.User;
 
 /**
- * 聊天记录Fragment
+ * 所有会话记录
  * 
  */
-public class ChatHistoryFragment extends Fragment {
+public class ChatAllHistoryFragment extends Fragment {
 
 	private InputMethodManager inputMethodManager;
 	private ListView listView;
 	private Map<String, User> contactList;
-	private ChatHistoryAdapter adapter;
+	private ChatAllHistoryAdapter adapter;
 	private EditText query;
 	private ImageButton clearSearch;
 	public RelativeLayout errorItem;
 	public TextView errorText;
 	private boolean hidden;
+	private List<EMGroup> groups;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,27 +78,38 @@ public class ChatHistoryFragment extends Fragment {
 		// contact list
 		contactList = DemoApplication.getInstance().getContactList();
 		listView = (ListView) getView().findViewById(R.id.list);
-		adapter = new ChatHistoryAdapter(getActivity(), 1, loadUsersWithRecentChat());
+		adapter = new ChatAllHistoryAdapter(getActivity(), 1, loadConversationsWithRecentChat());
+
+		groups = EMGroupManager.getInstance().getAllGroups();
+
 		// 设置adapter
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				EMContact emContact = adapter.getItem(position);
-				if (adapter.getItem(position).getUsername().equals(DemoApplication.getInstance().getUserName()))
+				EMConversation conversation = adapter.getItem(position);
+				String username = conversation.getUserName();
+				if (username.equals(DemoApplication.getInstance().getUserName()))
 					Toast.makeText(getActivity(), "不能和自己聊天", 0).show();
 				else {
 					// 进入聊天页面
-					  Intent intent = new Intent(getActivity(), ChatActivity.class);
-					 if (emContact instanceof EMGroup) {
-		                    //it is group chat
-		                    intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
-		                    intent.putExtra("groupId", ((EMGroup) emContact).getGroupId());
-		                } else {
-		                    //it is single chat
-		                    intent.putExtra("userId", emContact.getUsername());
-		                } 
+					Intent intent = new Intent(getActivity(), ChatActivity.class);
+					EMContact emContact = null;
+					for (EMGroup group : groups) {
+						if (group.getGroupId().equals(username)) {
+							emContact = group;
+							break;
+						}
+					}
+					if (emContact != null && emContact instanceof EMGroup) {
+						// it is group chat
+						intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
+						intent.putExtra("groupId", ((EMGroup) emContact).getGroupId());
+					} else {
+						// it is single chat
+						intent.putExtra("userId", username);
+					}
 					startActivity(intent);
 				}
 			}
@@ -137,7 +136,7 @@ public class ChatHistoryFragment extends Fragment {
 		clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
 		query.addTextChangedListener(new TextWatcher() {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				
+
 				adapter.getFilter().filter(s);
 				if (s.length() > 0) {
 					clearSearch.setVisibility(View.VISIBLE);
@@ -173,12 +172,12 @@ public class ChatHistoryFragment extends Fragment {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.delete_message) {
-			EMContact tobeDeleteUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
+			EMConversation tobeDeleteCons = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
 			// 删除此会话
-			EMChatManager.getInstance().deleteConversation(tobeDeleteUser.getUsername());
+			EMChatManager.getInstance().deleteConversation(tobeDeleteCons.getUserName());
 			InviteMessgeDao inviteMessgeDao = new InviteMessgeDao(getActivity());
-			inviteMessgeDao.deleteMessage(tobeDeleteUser.getUsername());
-			adapter.remove(tobeDeleteUser);
+			inviteMessgeDao.deleteMessage(tobeDeleteCons.getUserName());
+			adapter.remove(tobeDeleteCons);
 			adapter.notifyDataSetChanged();
 
 			// 更新消息未读数
@@ -193,39 +192,25 @@ public class ChatHistoryFragment extends Fragment {
 	 * 刷新页面
 	 */
 	public void refresh() {
-		adapter = new ChatHistoryAdapter(getActivity(), R.layout.row_chat_history, loadUsersWithRecentChat());
+		adapter = new ChatAllHistoryAdapter(getActivity(), R.layout.row_chat_history, loadConversationsWithRecentChat());
 		listView.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
 	}
 
-	
-	
 	/**
 	 * 获取有聊天记录的users和groups
 	 * 
 	 * @param context
 	 * @return
 	 */
-	private List<EMContact> loadUsersWithRecentChat() {
-		List<EMContact> resultList = new ArrayList<EMContact>();
-		//获取有聊天记录的users，不包括陌生人
-		for (User user : contactList.values()) {
-			EMConversation conversation = EMChatManager.getInstance().getConversation(user.getUsername());
-			if (conversation.getMsgCount() > 0) {
-				resultList.add(user);
-			}
-		}
-		for(EMGroup group : EMGroupManager.getInstance().getAllGroups()){
-			EMConversation conversation = EMChatManager.getInstance().getConversation(group.getGroupId());
-			if(conversation.getMsgCount() > 0){
-				resultList.add(group);
-			}
-			
-		}
-		
+	private List<EMConversation> loadConversationsWithRecentChat() {
+		// 获取所有会话，包括陌生人
+		Hashtable<String, EMConversation> conversations = EMChatManager.getInstance().getAllConversations();
+		List<EMConversation> conversationList = new ArrayList<EMConversation>(conversations.values());
+
 		// 排序
-		sortUserByLastChatTime(resultList);
-		return resultList;
+		sortConversationByLastChatTime(conversationList);
+		return conversationList;
 	}
 
 	/**
@@ -233,18 +218,16 @@ public class ChatHistoryFragment extends Fragment {
 	 * 
 	 * @param usernames
 	 */
-	private void sortUserByLastChatTime(List<EMContact> contactList) {
-		Collections.sort(contactList, new Comparator<EMContact>() {
+	private void sortConversationByLastChatTime(List<EMConversation> conversationList) {
+		Collections.sort(conversationList, new Comparator<EMConversation>() {
 			@Override
-			public int compare(final EMContact user1, final EMContact user2) {
-				EMConversation conversation1 = EMChatManager.getInstance().getConversation(user1.getUsername());
-				EMConversation conversation2 = EMChatManager.getInstance().getConversation(user2.getUsername());
+			public int compare(final EMConversation con1, final EMConversation con2) {
 
-				EMMessage user2LastMessage = conversation2.getLastMessage();
-				EMMessage user1LastMessage = conversation1.getLastMessage();
-				if (user2LastMessage.getMsgTime() == user1LastMessage.getMsgTime()) {
+				EMMessage con2LastMessage = con2.getLastMessage();
+				EMMessage con1LastMessage = con1.getLastMessage();
+				if (con2LastMessage.getMsgTime() == con1LastMessage.getMsgTime()) {
 					return 0;
-				} else if (user2LastMessage.getMsgTime() > user1LastMessage.getMsgTime()) {
+				} else if (con2LastMessage.getMsgTime() > con1LastMessage.getMsgTime()) {
 					return 1;
 				} else {
 					return -1;
@@ -270,6 +253,5 @@ public class ChatHistoryFragment extends Fragment {
 			refresh();
 		}
 	}
-	
-	
+
 }

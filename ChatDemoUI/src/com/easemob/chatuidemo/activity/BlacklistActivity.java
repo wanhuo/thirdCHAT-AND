@@ -11,6 +11,7 @@ import com.easemob.chatuidemo.domain.User;
 import com.easemob.exceptions.EaseMobException;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -41,7 +42,7 @@ public class BlacklistActivity extends Activity {
 
 		List<String> blacklist = null;
 		try {
-			//获取黑名单
+			// 获取黑名单
 			blacklist = EMContactManager.getInstance().getBlackListUsernames();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,18 +69,32 @@ public class BlacklistActivity extends Activity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.remove) {
-			String tobeRemoveUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
-			// 移出黑民单
-			try {
-				EMContactManager.getInstance().deleteUserFromBlackList(tobeRemoveUser);
-				adapter.remove(tobeRemoveUser);
-			} catch (EaseMobException e) {
-				e.printStackTrace();
-				Toast.makeText(getApplicationContext(), "移出失败", 0).show();
-			}
+			final String tobeRemoveUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
+			// 把目标user移出黑名单
+			removeOutBlacklist(tobeRemoveUser);
 			return true;
 		}
 		return super.onContextItemSelected(item);
+	}
+
+	/**
+	 * 移出黑民单
+	 * 
+	 * @param tobeRemoveUser
+	 */
+	void removeOutBlacklist(final String tobeRemoveUser) {
+		try {
+			// 移出黑民单
+			EMContactManager.getInstance().deleteUserFromBlackList(tobeRemoveUser);
+			adapter.remove(tobeRemoveUser);
+		} catch (EaseMobException e) {
+			e.printStackTrace();
+			runOnUiThread(new Runnable() {
+				public void run() {
+					Toast.makeText(getApplicationContext(), "移出失败", 0).show();
+				}
+			});
+		}
 	}
 
 	/**
