@@ -5,18 +5,15 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
-import com.easemob.chatuidemo.BuildConfig;
-import com.easemob.chatuidemo.video.util.Utils;
-
 public class ImageGridActivity extends FragmentActivity {
 
 	private static final String TAG = "ImageGridActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
-            Utils.enableStrictMode();
-        }
+//        if (BuildConfig.DEBUG) {
+//            Utils.enableStrictMode();
+//        }
         super.onCreate(savedInstanceState);
 
         if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
