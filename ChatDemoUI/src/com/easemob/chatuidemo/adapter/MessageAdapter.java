@@ -399,7 +399,9 @@ public class MessageAdapter extends BaseAdapter {
 	private void handleTextMessage(EMMessage message, ViewHolder holder, final int position) {
 		TextMessageBody txtBody = (TextMessageBody) message.getBody();
 		Spannable span = SmileUtils.getSmiledText(context, txtBody.getMessage());
+		//设置内容
 		holder.tv.setText(span, BufferType.SPANNABLE);
+		//设置长按事件监听
 		holder.tv.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -409,20 +411,22 @@ public class MessageAdapter extends BaseAdapter {
 				return true;
 			}
 		});
+		
 		if (message.direct == EMMessage.Direct.SEND) {
 			switch (message.status) {
-			case SUCCESS:
+			case SUCCESS: //发送成功
 				holder.pb.setVisibility(View.GONE);
 				holder.staus_iv.setVisibility(View.GONE);
 				break;
-			case FAIL:
+			case FAIL: //发送失败
 				holder.pb.setVisibility(View.GONE);
 				holder.staus_iv.setVisibility(View.VISIBLE);
 				break;
-			case INPROGRESS:
+			case INPROGRESS: //发送中
 				holder.pb.setVisibility(View.VISIBLE);
 				break;
 			default:
+				//发送消息
 				sendMsgInBackground(message, holder);
 			}
 		}
@@ -904,6 +908,7 @@ public class MessageAdapter extends BaseAdapter {
 	public void sendMsgInBackground(final EMMessage message, final ViewHolder holder) {
 		holder.staus_iv.setVisibility(View.GONE);
 		holder.pb.setVisibility(View.VISIBLE);
+		//调用sdk发送异步发送方法
 		EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
 
 			@Override

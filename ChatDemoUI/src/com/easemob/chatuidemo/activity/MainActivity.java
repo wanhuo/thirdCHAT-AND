@@ -252,6 +252,8 @@ public class MainActivity extends FragmentActivity {
 	private class NewMessageBroadcastReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			//主页面收到消息后，主要为了提示未读，实际消息内容需要到chat页面查看
+			
 			// 消息id
 			String msgId = intent.getStringExtra("msgid");
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象

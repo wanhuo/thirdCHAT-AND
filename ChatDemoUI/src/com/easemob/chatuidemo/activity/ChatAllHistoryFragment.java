@@ -205,8 +205,12 @@ public class ChatAllHistoryFragment extends Fragment {
 	private List<EMConversation> loadConversationsWithRecentChat() {
 		// 获取所有会话，包括陌生人
 		Hashtable<String, EMConversation> conversations = EMChatManager.getInstance().getAllConversations();
-		List<EMConversation> conversationList = new ArrayList<EMConversation>(conversations.values());
-
+		List<EMConversation> conversationList = new ArrayList<EMConversation>();
+		//过滤掉messages seize为0的conversation
+		for(EMConversation conversation : conversations.values()){
+			if(conversation.getAllMessages().size() != 0)
+				conversationList.add(conversation);
+		}
 		// 排序
 		sortConversationByLastChatTime(conversationList);
 		return conversationList;

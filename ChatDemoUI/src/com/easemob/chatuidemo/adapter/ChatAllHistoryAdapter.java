@@ -66,46 +66,45 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 			holder.time = (TextView) convertView.findViewById(R.id.time);
 			holder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
 			holder.msgState = convertView.findViewById(R.id.msg_state);
-			holder.list_item_layout=(RelativeLayout) convertView.findViewById(R.id.list_item_layout);
+			holder.list_item_layout = (RelativeLayout) convertView.findViewById(R.id.list_item_layout);
 			convertView.setTag(holder);
 		}
-		if(position%2==0)
-		{
+		if (position % 2 == 0) {
 			holder.list_item_layout.setBackgroundResource(R.drawable.mm_listitem);
-		}else{
+		} else {
 			holder.list_item_layout.setBackgroundResource(R.drawable.mm_listitem_grey);
 		}
-		
+
 		// 获取与此用户/群组的会话
 		EMConversation conversation = getItem(position);
-		//获取用户username或者群组groupid
+		// 获取用户username或者群组groupid
 		String username = conversation.getUserName();
 		List<EMGroup> groups = EMGroupManager.getInstance().getAllGroups();
 		EMContact contact = null;
 		boolean isGroup = false;
-		for(EMGroup group : groups){
-			if(group.getGroupId().equals(username)){
+		for (EMGroup group : groups) {
+			if (group.getGroupId().equals(username)) {
 				isGroup = true;
 				contact = group;
 				break;
 			}
 		}
-		if(isGroup){
-			//群聊消息，显示群聊头像
+		if (isGroup) {
+			// 群聊消息，显示群聊头像
 			holder.avatar.setImageResource(R.drawable.group_icon);
 			holder.name.setText(contact.getNick() != null ? contact.getNick() : username);
-		}else{
-			//本地或者服务器获取用户详情，以用来显示头像和nick
+		} else {
+			// 本地或者服务器获取用户详情，以用来显示头像和nick
 			holder.avatar.setImageResource(R.drawable.default_avatar);
-			if(username.equals(Constant.GROUP_USERNAME)){
+			if (username.equals(Constant.GROUP_USERNAME)) {
 				holder.name.setText("群聊");
-				
-			}else if(username.equals(Constant.NEW_FRIENDS_USERNAME)){
+
+			} else if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
 				holder.name.setText("申请与通知");
 			}
 			holder.name.setText(username);
 		}
-		
+
 		if (conversation.getUnreadMsgCount() > 0) {
 			// 显示与此用户的消息未读数
 			holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
@@ -143,13 +142,15 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 		switch (message.getType()) {
 		case LOCATION: // 位置消息
 			if (message.direct == EMMessage.Direct.RECEIVE) {
-				//从sdk中提到了ui中，使用更简单不犯错的获取string的方法
-//				digest = EasyUtils.getAppResourceString(context, "location_recv");
+				// 从sdk中提到了ui中，使用更简单不犯错的获取string的方法
+				// digest = EasyUtils.getAppResourceString(context,
+				// "location_recv");
 				digest = getStrng(context, R.string.location_recv);
 				digest = String.format(digest, message.getFrom());
 				return digest;
 			} else {
-//				digest = EasyUtils.getAppResourceString(context, "location_prefix");
+				// digest = EasyUtils.getAppResourceString(context,
+				// "location_prefix");
 				digest = getStrng(context, R.string.location_prefix);
 			}
 			break;
@@ -167,7 +168,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 			TextMessageBody txtBody = (TextMessageBody) message.getBody();
 			digest = txtBody.getMessage();
 			break;
-		case FILE: //普通文件消息
+		case FILE: // 普通文件消息
 			digest = getStrng(context, R.string.file);
 			break;
 		default:
@@ -191,13 +192,12 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 		ImageView avatar;
 		/** 最后一条消息的发送状态 */
 		View msgState;
-		/**整个list中每一行总布局*/
+		/** 整个list中每一行总布局 */
 		RelativeLayout list_item_layout;
-		
-		
+
 	}
-	
-	String getStrng(Context context, int resId){
+
+	String getStrng(Context context, int resId) {
 		return context.getResources().getString(resId);
 	}
 }
