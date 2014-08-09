@@ -282,6 +282,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
 			((TextView) findViewById(R.id.name)).setText(toChatUsername);
+//			conversation = EMChatManager.getInstance().getConversation(toChatUsername,false);
 		} else {
 			// 群聊
 			findViewById(R.id.container_to_group).setVisibility(View.VISIBLE);
@@ -289,6 +290,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			toChatUsername = getIntent().getStringExtra("groupId");
 			group = EMGroupManager.getInstance().getGroup(toChatUsername);
 			((TextView) findViewById(R.id.name)).setText(group.getGroupName());
+//			conversation = EMChatManager.getInstance().getConversation(toChatUsername,true);
 		}
 		conversation = EMChatManager.getInstance().getConversation(toChatUsername);
 		// 把此会话的未读数置为0
@@ -514,7 +516,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				adapter.refresh();
 				setResult(RESULT_OK);
 			} else if (requestCode == REQUEST_CODE_GROUP_DETAIL) {
-				EMChatManager.getInstance().getConversation(toChatUsername);
 				adapter.refresh();
 			}
 		}

@@ -14,25 +14,25 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContact;
@@ -43,12 +43,11 @@ import com.easemob.chat.EMMessage;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ChatAllHistoryAdapter;
-import com.easemob.chatuidemo.adapter.ChatHistoryAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.domain.User;
 
 /**
- * 所有会话记录
+ * 显示所有会话记录，比较简单的实现，更好的可能是把陌生人存入本地，这样取到的聊天记录是可控的
  * 
  */
 public class ChatAllHistoryFragment extends Fragment {
@@ -174,7 +173,7 @@ public class ChatAllHistoryFragment extends Fragment {
 		if (item.getItemId() == R.id.delete_message) {
 			EMConversation tobeDeleteCons = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
 			// 删除此会话
-			EMChatManager.getInstance().deleteConversation(tobeDeleteCons.getUserName());
+			EMChatManager.getInstance().deleteConversation(tobeDeleteCons.getUserName(),tobeDeleteCons.isGroup());
 			InviteMessgeDao inviteMessgeDao = new InviteMessgeDao(getActivity());
 			inviteMessgeDao.deleteMessage(tobeDeleteCons.getUserName());
 			adapter.remove(tobeDeleteCons);
