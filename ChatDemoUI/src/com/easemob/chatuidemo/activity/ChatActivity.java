@@ -32,7 +32,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -611,40 +610,26 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param isResend
 	 *            boolean resend
 	 */
-	private void sendText(final String content) {
+	private void sendText(String content) {
 
 		if (content.length() > 0) {
+			EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
+			// 如果是群聊，设置chattype,默认是单聊
+			if (chatType == CHATTYPE_GROUP)
+				message.setChatType(ChatType.GroupChat);
+			TextMessageBody txtBody = new TextMessageBody(content);
+			// 设置消息body
+			message.addBody(txtBody);
+			// 设置要发给谁,用户username或者群聊groupid
+			message.setReceipt(toChatUsername);
+			// 把messgage加到conversation中
+			conversation.addMessage(message);
+			// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
+			adapter.refresh();
+			listView.setSelection(listView.getCount() - 1);
+			mEditTextContent.setText("");
 
-			new AsyncTask<Void, Void, Void>() {
-
-				@Override
-				protected Void doInBackground(Void... params) {
-					EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
-					// 如果是群聊，设置chattype,默认是单聊
-					if (chatType == CHATTYPE_GROUP)
-						message.setChatType(ChatType.GroupChat);
-					TextMessageBody txtBody = new TextMessageBody(content);
-					// 设置消息body
-					message.addBody(txtBody);
-					// 设置要发给谁,用户username或者群聊groupid
-					message.setReceipt(toChatUsername);
-					// 把messgage加到conversation中
-					conversation.addMessage(message);
-					return null;
-				}
-
-				@Override
-				protected void onPostExecute(Void result) {
-					super.onPostExecute(result);
-					// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
-					adapter.refresh();
-					listView.setSelection(listView.getCount() - 1);
-					mEditTextContent.setText("");
-
-					setResult(RESULT_OK);
-				}
-
-			}.execute();
+			setResult(RESULT_OK);
 
 		}
 	}
