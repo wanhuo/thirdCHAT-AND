@@ -46,6 +46,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -53,6 +54,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -172,6 +174,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private boolean isloading;
 	private final int pagesize = 20;
 	private boolean haveMoreData = true;
+	private Button btnMore;
 
 	private Handler micImageHandler = new Handler() {
 		@Override
@@ -211,6 +214,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		iv_emoticons_normal = (ImageView) findViewById(R.id.iv_emoticons_normal);
 		iv_emoticons_checked = (ImageView) findViewById(R.id.iv_emoticons_checked);
 		loadmorePB = (ProgressBar) findViewById(R.id.pb_load_more);
+		btnMore=(Button) findViewById(R.id.btn_more);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		more = findViewById(R.id.more);
@@ -243,14 +247,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				if (!TextUtils.isEmpty(s)) {
-					buttonSetModeVoice.setVisibility(View.GONE);
+					btnMore.setVisibility(View.GONE);
 					buttonSend.setVisibility(View.VISIBLE);
 				} else {
-					if (buttonSetModeKeyboard.getVisibility() != View.VISIBLE) {
-						buttonSetModeVoice.setVisibility(View.VISIBLE);
-						buttonSend.setVisibility(View.GONE);
-					}
-
+					btnMore.setVisibility(View.VISIBLE);
+					buttonSend.setVisibility(View.GONE);
 				}
 			}
 
@@ -853,20 +854,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeVoice(View view) {
-		edittext_layout.setVisibility(View.GONE);
 		hideKeyboard();
+		edittext_layout.setVisibility(View.GONE);
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
 		buttonSetModeKeyboard.setVisibility(View.VISIBLE);
-		// mEditTextContent.setVisibility(View.GONE);
-		// buttonSend.setVisibility(View.GONE);
-		// buttonSetModeVoice.setVisibility(View.GONE);
+		 buttonSend.setVisibility(View.GONE);
+		btnMore.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.VISIBLE);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		btnContainer.setVisibility(View.VISIBLE);
 		expressionContainer.setVisibility(View.GONE);
-
+		
 	}
 
 	/**
@@ -875,6 +875,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeKeyboard(View view) {
+		mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(hasFocus){
+					getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+				}
+			}
+		});
 		edittext_layout.setVisibility(View.VISIBLE);
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
@@ -883,6 +891,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		mEditTextContent.requestFocus();
 		// buttonSend.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.GONE);
+		if(TextUtils.isEmpty(mEditTextContent.getText()))
+		{
+			btnMore.setVisibility(View.VISIBLE);
+			buttonSend.setVisibility(View.GONE);
+		}else{
+			btnMore.setVisibility(View.GONE);
+			buttonSend.setVisibility(View.VISIBLE);
+		}
+		
 
 	}
 
