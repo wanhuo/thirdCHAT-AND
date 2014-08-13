@@ -67,6 +67,7 @@ import com.easemob.chatuidemo.utils.ImageUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.DateUtils;
+import com.easemob.util.EMLog;
 import com.easemob.util.FileUtils;
 import com.easemob.util.LatLng;
 import com.easemob.util.TextFormater;
@@ -466,9 +467,11 @@ public class MessageAdapter extends BaseAdapter {
 				holder.iv.setImageResource(R.drawable.default_image);
 				ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
 				if (imgBody.getLocalUrl() != null) {
-					String filePath = imgBody.getLocalUrl();
-
-					String thumbnailPath = ImageUtils.getThumbnailImagePath(filePath);
+//					String filePath = imgBody.getLocalUrl();
+					String remotePath=imgBody.getRemoteUrl();
+					String filePath=ImageUtils.getImagePath(remotePath);
+					String thumbRemoteUrl=imgBody.getThumbnailUrl();
+					String thumbnailPath = ImageUtils.getThumbnailImagePath(thumbRemoteUrl);
 					showImageView(thumbnailPath, holder.iv, filePath, imgBody.getRemoteUrl(), message);
 				}
 			}
@@ -479,11 +482,12 @@ public class MessageAdapter extends BaseAdapter {
 		// send pic, show the pic directly
 		ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
 		String filePath = imgBody.getLocalUrl();
-		if (new File(filePath).exists())
-			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, null, message);
-		else {
-			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
-		}
+		if (filePath!=null&&new File(filePath).exists())
+			showImageView(filePath, holder.iv, filePath, null, message);
+//		else 
+//		{
+//			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
+//		}
 
 		switch (message.status) {
 		case SUCCESS:
@@ -1081,11 +1085,11 @@ public class MessageAdapter extends BaseAdapter {
 	 */
 	private boolean showImageView(final String thumbernailPath, final ImageView iv, final String localFullSizePath, String remoteDir,
 			final EMMessage message) {
-		String imagename = localFullSizePath.substring(localFullSizePath.lastIndexOf("/") + 1, localFullSizePath.length());
+//		String imagename = localFullSizePath.substring(localFullSizePath.lastIndexOf("/") + 1, localFullSizePath.length());
 		// final String remote = remoteDir != null ? remoteDir+imagename :
 		// imagename;
 		final String remote = remoteDir;
-
+		EMLog.d("###", "local = " + localFullSizePath + " remote: " + remote);
 		// first check if the thumbnail image already loaded into cache
 		Bitmap bitmap = ImageCache.getInstance().get(thumbernailPath);
 		if (bitmap != null) {

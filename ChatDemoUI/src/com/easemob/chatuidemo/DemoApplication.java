@@ -89,7 +89,6 @@ public class DemoApplication extends Application {
 		options.setNoticedByVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgVibrate());
 		// 设置语音消息播放是否设置为扬声器播放 默认为true
 		options.setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker());
-		
 		//设置notification消息点击时，跳转的intent为自定义的intent
 		options.setOnNotificationClickListener(new OnNotificationClickListener() {
 			
