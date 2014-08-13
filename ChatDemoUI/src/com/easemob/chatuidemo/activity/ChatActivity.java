@@ -218,6 +218,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		more = findViewById(R.id.more);
+		edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_normal);
 
 		// 动画资源文件,用于录制语音时
 		micImages = new Drawable[] { getResources().getDrawable(R.drawable.record_animate_01),
@@ -237,10 +238,29 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		views.add(gv1);
 		views.add(gv2);
 		expressionViewpager.setAdapter(new ExpressionPagerAdapter(views));
-
+		edittext_layout.requestFocus();
 		voiceRecorder = new VoiceRecorder(micImageHandler);
 		buttonPressToSpeak.setOnTouchListener(new PressToSpeakListen());
-
+		mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(hasFocus)
+				{
+					edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_active);
+				}else{
+					edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_normal);
+				}
+				
+			}
+		});
+		mEditTextContent.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_active);
+			}
+		});
 		// 监听文字框
 		mEditTextContent.addTextChangedListener(new TextWatcher() {
 
@@ -875,14 +895,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeKeyboard(View view) {
-		mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if(hasFocus){
-					getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-				}
-			}
-		});
+//		mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener() {
+//			@Override
+//			public void onFocusChange(View v, boolean hasFocus) {
+//				if(hasFocus){
+//					getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+//				}
+//			}
+//		});
 		edittext_layout.setVisibility(View.VISIBLE);
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);

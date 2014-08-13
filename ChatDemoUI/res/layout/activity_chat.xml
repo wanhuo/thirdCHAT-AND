@@ -67,7 +67,7 @@
         android:orientation="vertical"
         android:paddingBottom="2dip"
         android:paddingTop="2dip" >
-
+        <View android:layout_width="match_parent" android:layout_height="0.5dp" android:background="@color/gray_normal"/>
         <LinearLayout
             android:id="@+id/rl_bottom"
             android:layout_width="match_parent"
@@ -75,7 +75,6 @@
             android:background="#aaffffff"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingBottom="4dp"
             android:paddingTop="4dp" >
 
             <Button
@@ -102,8 +101,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
-                android:layout_marginTop="4.5dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
                 android:layout_weight="1"
                 android:background="@drawable/chat_press_speak_btn"
                 android:gravity="center"
@@ -124,9 +123,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
+                android:layout_marginBottom="3dp"
                 android:gravity="bottom"
                 android:layout_weight="1"
-                android:background="@drawable/input_bar_bg_normal" >
+                >
 
                 <com.easemob.chatuidemo.widget.PasteEditText
                     android:id="@+id/et_sendmessage"
