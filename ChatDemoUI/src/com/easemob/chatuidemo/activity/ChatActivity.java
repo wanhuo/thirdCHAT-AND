@@ -302,7 +302,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
 			((TextView) findViewById(R.id.name)).setText(toChatUsername);
-//			conversation = EMChatManager.getInstance().getConversation(toChatUsername,false);
+			// conversation =
+			// EMChatManager.getInstance().getConversation(toChatUsername,false);
 		} else {
 			// 群聊
 			findViewById(R.id.container_to_group).setVisibility(View.VISIBLE);
@@ -310,7 +311,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			toChatUsername = getIntent().getStringExtra("groupId");
 			group = EMGroupManager.getInstance().getGroup(toChatUsername);
 			((TextView) findViewById(R.id.name)).setText(group.getGroupName());
-//			conversation = EMChatManager.getInstance().getConversation(toChatUsername,true);
+			// conversation =
+			// EMChatManager.getInstance().getConversation(toChatUsername,true);
 		}
 		conversation = EMChatManager.getInstance().getConversation(toChatUsername);
 		// 把此会话的未读数置为0
@@ -1352,10 +1354,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		public void onUserRemoved(final String groupId, String groupName) {
 			runOnUiThread(new Runnable() {
 				public void run() {
-					Toast.makeText(ChatActivity.this, "你被群创建者从此群中移除", 1).show();
-					if (GroupDetailsActivity.instance != null)
-						GroupDetailsActivity.instance.finish();
 					if (toChatUsername.equals(groupId)) {
+						Toast.makeText(ChatActivity.this, "你被群创建者从此群中移除", 1).show();
+						if (GroupDetailsActivity.instance != null)
+							GroupDetailsActivity.instance.finish();
 						finish();
 					}
 				}
@@ -1367,10 +1369,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 群组解散正好在此页面，提示群组被解散，并finish此页面
 			runOnUiThread(new Runnable() {
 				public void run() {
-					Toast.makeText(ChatActivity.this, "当前群聊已被群创建者解散", 1).show();
-					if (GroupDetailsActivity.instance != null)
-						GroupDetailsActivity.instance.finish();
 					if (toChatUsername.equals(groupId)) {
+						Toast.makeText(ChatActivity.this, "当前群聊已被群创建者解散", 1).show();
+						if (GroupDetailsActivity.instance != null)
+							GroupDetailsActivity.instance.finish();
 						finish();
 					}
 				}
@@ -1378,5 +1380,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 
 	}
+	
 
 }

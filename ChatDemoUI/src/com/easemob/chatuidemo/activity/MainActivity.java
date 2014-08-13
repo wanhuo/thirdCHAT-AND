@@ -309,26 +309,7 @@ public class MainActivity extends FragmentActivity {
 			Map<String, User> localUsers = DemoApplication.getInstance().getContactList();
 			Map<String, User> toAddUsers = new HashMap<String, User>();
 			for (String username : usernameList) {
-				User user = new User();
-				user.setUsername(username);
-				String headerName = null;
-				if (!TextUtils.isEmpty(user.getNick())) {
-					headerName = user.getNick();
-				} else {
-					headerName = user.getUsername();
-				}
-				if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
-					user.setHeader("");
-				} else if (Character.isDigit(headerName.charAt(0))) {
-					user.setHeader("#");
-				} else {
-					user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(
-							0, 1).toUpperCase());
-					char header = user.getHeader().toLowerCase().charAt(0);
-					if (header < 'a' || header > 'z') {
-						user.setHeader("#");
-					}
-				}
+				User user = setUserHead(username);
 				// 暂时有个bug，添加好友时可能会回调added方法两次
 				if (!localUsers.containsKey(username)) {
 					userDao.saveContact(user);
@@ -342,6 +323,7 @@ public class MainActivity extends FragmentActivity {
 
 		}
 
+		
 		@Override
 		public void onContactDeleted(List<String> usernameList) {
 			// 被删除
@@ -432,6 +414,37 @@ public class MainActivity extends FragmentActivity {
 		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 		user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
 	}
+	
+	
+	/**
+	 * set head
+	 * @param username
+	 * @return
+	 */
+	User setUserHead(String username) {
+		User user = new User();
+		user.setUsername(username);
+		String headerName = null;
+		if (!TextUtils.isEmpty(user.getNick())) {
+			headerName = user.getNick();
+		} else {
+			headerName = user.getUsername();
+		}
+		if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
+			user.setHeader("");
+		} else if (Character.isDigit(headerName.charAt(0))) {
+			user.setHeader("#");
+		} else {
+			user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(
+					0, 1).toUpperCase());
+			char header = user.getHeader().toLowerCase().charAt(0);
+			if (header < 'a' || header > 'z') {
+				user.setHeader("#");
+			}
+		}
+		return user;
+	}
+
 
 	/**
 	 * 连接监听listener

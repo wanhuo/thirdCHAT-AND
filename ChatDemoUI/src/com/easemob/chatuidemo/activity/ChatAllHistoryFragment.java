@@ -95,6 +95,7 @@ public class ChatAllHistoryFragment extends Fragment {
 					// 进入聊天页面
 					Intent intent = new Intent(getActivity(), ChatActivity.class);
 					EMContact emContact = null;
+					groups = EMGroupManager.getInstance().getAllGroups();
 					for (EMGroup group : groups) {
 						if (group.getGroupId().equals(username)) {
 							emContact = group;
@@ -197,7 +198,7 @@ public class ChatAllHistoryFragment extends Fragment {
 	}
 
 	/**
-	 * 获取有聊天记录的users和groups
+	 * 获取所有会话
 	 * 
 	 * @param context
 	 * @return
