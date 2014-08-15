@@ -13,6 +13,7 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,12 +27,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.easemob.EMCallBack;
+import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.utils.PreferenceUtils;
+import com.easemob.util.EMLog;
 
 /**
  * 设置界面
@@ -105,6 +110,11 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 
 	private EMChatOptions chatOptions;
 
+	
+	/**
+	 * 日志上传按钮
+	 */
+	private Button uploadLogBtn;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_conversation_settings, container, false);
@@ -135,7 +145,8 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 		textview2 = (TextView) getView().findViewById(R.id.textview2);
 		
 		blacklistContainer = (LinearLayout) getView().findViewById(R.id.ll_black_list);
-		
+		uploadLogBtn=(Button) getView().findViewById(R.id.button_uploadlog);
+		uploadLogBtn.setOnClickListener(this);
 		blacklistContainer.setOnClickListener(this);
 		rl_switch_notification.setOnClickListener(this);
 		rl_switch_sound.setOnClickListener(this);
@@ -176,6 +187,73 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 
 	}
 
+	private ProgressDialog progressDialog;
+	public void uploadlog(View view)
+	{
+		
+		if(progressDialog==null)
+			progressDialog=new ProgressDialog(getActivity());
+		progressDialog.setMessage("上传日志中...");
+		progressDialog.setCancelable(false);
+		progressDialog.show();
+		
+		EMChat.getInstance().uploadLog(new EMCallBack() {
+			
+			@Override
+			public void onSuccess() {
+				 getActivity().runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						progressDialog.dismiss();
+						Toast.makeText(getActivity(), "日志上传成功", Toast.LENGTH_SHORT).show();
+					}
+				});
+			}
+			
+			@Override
+			public void onProgress(final int progress, String status) {
+//				 getActivity().runOnUiThread(new Runnable() {
+//					
+//					@Override
+//					public void run() {
+//						progressDialog.setMessage("上传中 "+progress+"%");
+//						
+//					}
+//				});
+				
+			}
+			
+			@Override
+			public void onError(int code, String message) {
+				 EMLog.e("###", message);
+				 getActivity().runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						progressDialog.dismiss();
+						Toast.makeText(getActivity(), "log上传失败", Toast.LENGTH_SHORT).show();
+					}
+				});
+				
+			}
+		});
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -257,6 +335,9 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 		case R.id.ll_black_list:
 			startActivity(new Intent(getActivity(), BlacklistActivity.class));
 			
+			break;
+		case R.id.button_uploadlog:
+			uploadlog(null);
 			break;
 		default:
 			break;
