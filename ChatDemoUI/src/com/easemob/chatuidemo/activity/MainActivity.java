@@ -34,6 +34,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChat;
@@ -359,7 +360,7 @@ public class MainActivity extends FragmentActivity {
 
 		
 		@Override
-		public void onContactDeleted(List<String> usernameList) {
+		public void onContactDeleted(final List<String> usernameList) {
 			// 被删除
 			Map<String, User> localUsers = DemoApplication.getInstance().getContactList();
 			for (String username : usernameList) {
@@ -367,14 +368,19 @@ public class MainActivity extends FragmentActivity {
 				userDao.deleteContact(username);
 				inviteMessgeDao.deleteMessage(username);
 			}
+			runOnUiThread(new Runnable() {
+				public void run() {
+					//如果正在与此用户的聊天页面
+					if (ChatActivity.activityInstance != null && usernameList.contains(ChatActivity.activityInstance.getToChatUsername())) {
+						Toast.makeText(MainActivity.this, ChatActivity.activityInstance.getToChatUsername()+"已把你从他好友列表里移除", 1).show();
+						ChatActivity.activityInstance.finish();
+					}
+					updateUnreadLabel();
+				}
+			});
 			// 刷新ui
 			if (currentTabIndex == 1)
 				contactListFragment.refresh();
-			//如果正在与此用户的聊天页面
-			if (ChatActivity.activityInstance != null && usernameList.contains(ChatActivity.activityInstance.getToChatUsername())) {
-				ChatActivity.activityInstance.finish();
-			}
-			updateUnreadLabel();
 
 		}
 
