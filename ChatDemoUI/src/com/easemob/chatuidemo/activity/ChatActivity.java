@@ -259,6 +259,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_active);
+				hideKeyboard();
+				more.setVisibility(View.GONE);
+				iv_emoticons_normal.setVisibility(View.VISIBLE);
+				iv_emoticons_checked.setVisibility(View.INVISIBLE);
+				expressionContainer.setVisibility(View.GONE);
+				btnContainer.setVisibility(View.GONE);
 			}
 		});
 		// 监听文字框
