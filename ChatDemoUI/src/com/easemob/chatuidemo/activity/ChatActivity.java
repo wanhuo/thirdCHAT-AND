@@ -57,6 +57,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -214,7 +215,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		iv_emoticons_normal = (ImageView) findViewById(R.id.iv_emoticons_normal);
 		iv_emoticons_checked = (ImageView) findViewById(R.id.iv_emoticons_checked);
 		loadmorePB = (ProgressBar) findViewById(R.id.pb_load_more);
-		btnMore=(Button) findViewById(R.id.btn_more);
+		btnMore = (Button) findViewById(R.id.btn_more);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		more = findViewById(R.id.more);
@@ -242,20 +243,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		voiceRecorder = new VoiceRecorder(micImageHandler);
 		buttonPressToSpeak.setOnTouchListener(new PressToSpeakListen());
 		mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener() {
-			
+
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
-				if(hasFocus)
-				{
+				if (hasFocus) {
 					edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_active);
-				}else{
+				} else {
 					edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_normal);
 				}
-				
+
 			}
 		});
 		mEditTextContent.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_active);
@@ -881,14 +881,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
 		buttonSetModeKeyboard.setVisibility(View.VISIBLE);
-		 buttonSend.setVisibility(View.GONE);
+		buttonSend.setVisibility(View.GONE);
 		btnMore.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.VISIBLE);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		btnContainer.setVisibility(View.VISIBLE);
 		expressionContainer.setVisibility(View.GONE);
-		
+
 	}
 
 	/**
@@ -897,14 +897,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeKeyboard(View view) {
-//		mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener() {
-//			@Override
-//			public void onFocusChange(View v, boolean hasFocus) {
-//				if(hasFocus){
-//					getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-//				}
-//			}
-//		});
+		// mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener()
+		// {
+		// @Override
+		// public void onFocusChange(View v, boolean hasFocus) {
+		// if(hasFocus){
+		// getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		// }
+		// }
+		// });
 		edittext_layout.setVisibility(View.VISIBLE);
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
@@ -913,15 +914,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		mEditTextContent.requestFocus();
 		// buttonSend.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.GONE);
-		if(TextUtils.isEmpty(mEditTextContent.getText()))
-		{
+		if (TextUtils.isEmpty(mEditTextContent.getText())) {
 			btnMore.setVisibility(View.VISIBLE);
 			buttonSend.setVisibility(View.GONE);
-		}else{
+		} else {
 			btnMore.setVisibility(View.GONE);
 			buttonSend.setVisibility(View.VISIBLE);
 		}
-		
 
 	}
 
@@ -1380,6 +1379,5 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 
 	}
-	
 
 }

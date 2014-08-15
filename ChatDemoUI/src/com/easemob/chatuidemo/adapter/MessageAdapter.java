@@ -268,6 +268,10 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv = (TextView)convertView.findViewById(R.id.pb_sending);
 				} catch (Exception e) {
 				}
+				try {
+					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
+				} catch (Exception e) {
+				}
 
 			}
 
