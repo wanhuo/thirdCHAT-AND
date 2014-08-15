@@ -1385,4 +1385,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	}
 
+	public String getToChatUsername(){
+		return toChatUsername;
+	}
+	
 }

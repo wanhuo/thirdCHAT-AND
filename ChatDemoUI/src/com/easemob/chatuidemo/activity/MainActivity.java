@@ -332,7 +332,7 @@ public class MainActivity extends FragmentActivity {
 	private UserDao userDao;
 
 	/***
-	 * 联系人变化listener
+	 * 好友变化listener
 	 * 
 	 */
 	private class MyContactListener implements EMContactListener {
@@ -370,6 +370,10 @@ public class MainActivity extends FragmentActivity {
 			// 刷新ui
 			if (currentTabIndex == 1)
 				contactListFragment.refresh();
+			//如果正在与此用户的聊天页面
+			if (ChatActivity.activityInstance != null && usernameList.contains(ChatActivity.activityInstance.getToChatUsername())) {
+				ChatActivity.activityInstance.finish();
+			}
 			updateUnreadLabel();
 
 		}
