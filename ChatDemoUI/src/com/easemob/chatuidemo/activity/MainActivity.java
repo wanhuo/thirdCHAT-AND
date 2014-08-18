@@ -345,10 +345,17 @@ public class MainActivity extends FragmentActivity {
 				userDao.deleteContact(username);
 				inviteMessgeDao.deleteMessage(username);
 			}
-			// 刷新ui
-			if (currentTabIndex == 1)
-				contactListFragment.refresh();
-			updateUnreadLabel();
+
+			runOnUiThread(new Runnable(){
+				@Override
+				public void run() {
+					// 刷新ui
+					if (currentTabIndex == 1)
+						contactListFragment.refresh();
+					updateUnreadLabel();
+					
+				}
+			});
 
 		}
 
