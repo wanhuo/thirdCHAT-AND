@@ -1226,12 +1226,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 停止语音播放
 			VoicePlayClickListener.currentPlayListener.stopPlayVoice();
 		}
-		// 停止录音
-		if (voiceRecorder.isRecording()) {
-			voiceRecorder.discardRecording();
-			recordingContainer.setVisibility(View.INVISIBLE);
+		
+		try {
+			// 停止录音
+			if (voiceRecorder.isRecording()) {
+				voiceRecorder.discardRecording();
+				recordingContainer.setVisibility(View.INVISIBLE);
+			}
+		} catch (Exception e) {
 		}
-
 	}
 
 	/**
