@@ -245,10 +245,7 @@
                     android:layout_height="1dip"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_marginTop="10dp"
                     android:background="@color/btn_gray_normal" />
-                
-               
 
                 <LinearLayout
                     android:id="@+id/ll_black_list"
@@ -263,6 +260,29 @@
                         android:layout_gravity="center_vertical"
                         android:paddingLeft="10dip"
                         android:text="通讯录黑名单"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+                
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@color/btn_gray_normal" />
+                 <LinearLayout
+                     android:id="@+id/ll_diagnose"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dip"
+                    android:background="@drawable/btn_bottom_selector"
+                    android:padding="10dip" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:paddingLeft="10dip"
+                        android:text="诊断"
                         android:textColor="@android:color/black"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -283,22 +303,7 @@
                 android:layout_marginTop="15dip"
                 android:background="#ffffff"
                 android:orientation="vertical" >
-                
-                <Button
-                    android:id="@+id/button_uploadlog"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginLeft="10dip"
-                    android:layout_marginRight="10dip"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/top_bar_normal_bg"
-                    android:text="@string/button_uploadlog"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp" />
-                
-                
-
+                 
                 <Button
                     android:id="@+id/btn_logout"
                     android:layout_width="match_parent"
