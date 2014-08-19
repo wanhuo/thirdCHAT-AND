@@ -174,8 +174,11 @@ public class ChatHistoryFragment extends Fragment {
 	public boolean onContextItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.delete_message) {
 			EMContact tobeDeleteUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
+			boolean isGroup = false;
+			if(tobeDeleteUser instanceof EMGroup)
+				isGroup = true;
 			// 删除此会话
-			EMChatManager.getInstance().deleteConversation(tobeDeleteUser.getUsername());
+			EMChatManager.getInstance().deleteConversation(tobeDeleteUser.getUsername(),isGroup);
 			InviteMessgeDao inviteMessgeDao = new InviteMessgeDao(getActivity());
 			inviteMessgeDao.deleteMessage(tobeDeleteUser.getUsername());
 			adapter.remove(tobeDeleteUser);

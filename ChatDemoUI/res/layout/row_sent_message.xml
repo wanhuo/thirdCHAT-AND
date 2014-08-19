@@ -36,6 +36,7 @@
             android:paddingLeft="8dip"
             android:gravity="left|center"
              android:lineSpacingExtra="2dp"
+             android:autoLink="web"
             android:layout_marginRight="@dimen/margin_chat_activity"
             android:layout_toLeftOf="@id/iv_userhead"
             android:background="@drawable/chatto_bg" />

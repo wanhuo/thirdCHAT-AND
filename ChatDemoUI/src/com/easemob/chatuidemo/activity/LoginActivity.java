@@ -154,10 +154,8 @@ public class LoginActivity extends BaseActivity {
 						List<User> users = new ArrayList<User>(userlist.values());
 						dao.saveContactList(users);
 
-						// 获取群聊列表,sdk会把群组存入到EMGroupManager和db中
+						// 获取群聊列表(群聊里只有groupid和groupname的简单信息),sdk会把群组存入到内存和db中
 						EMGroupManager.getInstance().getGroupsFromServer();
-						// after login, we join groups in separate threads;
-						EMGroupManager.getInstance().joinGroupsAfterLogin();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -182,11 +180,7 @@ public class LoginActivity extends BaseActivity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
-							if (message.indexOf("not support the capital letters") != -1) {
-								Toast.makeText(getApplicationContext(), "用户名不支持大写字母", 0).show();
-							} else {
-								Toast.makeText(getApplicationContext(), "登录失败: " + message, 0).show();
-							}
+							Toast.makeText(getApplicationContext(), "登录失败: " + message, 0).show();
 
 						}
 					});

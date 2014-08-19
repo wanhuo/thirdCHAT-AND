@@ -34,6 +34,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChat;
@@ -41,6 +42,7 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactListener;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
@@ -70,7 +72,8 @@ public class MainActivity extends FragmentActivity {
 
 	private Button[] mTabs;
 	private ContactlistFragment contactListFragment;
-	private ChatHistoryFragment chatHistoryFragment;
+//	private ChatHistoryFragment chatHistoryFragment;
+	private ChatAllHistoryFragment chatHistoryFragment;
 	private SettingsFragment settingFragment;
 	private Fragment[] fragments;
 	private int index;
@@ -88,7 +91,10 @@ public class MainActivity extends FragmentActivity {
 		initView();
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
-		chatHistoryFragment = new ChatHistoryFragment();
+		//这个fragment只显示好友和群组的聊天记录
+//		chatHistoryFragment = new ChatHistoryFragment();
+		//显示所有人消息记录的fragment
+		chatHistoryFragment = new ChatAllHistoryFragment();
 		contactListFragment = new ContactlistFragment();
 		settingFragment = new SettingsFragment();
 		fragments = new Fragment[] { chatHistoryFragment, contactListFragment, settingFragment };
@@ -109,6 +115,11 @@ public class MainActivity extends FragmentActivity {
 		ackMessageIntentFilter.setPriority(3);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 
+		// 注册一个离线消息的BroadcastReceiver
+		IntentFilter offlineMessageIntentFilter = new IntentFilter(EMChatManager.getInstance()
+				.getOfflineMessageBroadcastAction());
+		registerReceiver(offlineMessageReceiver, offlineMessageIntentFilter);
+		
 		// setContactListener监听联系人的变化等
 		EMContactManager.getInstance().setContactListener(new MyContactListener());
 		// 注册一个监听连接状态的listener
@@ -175,6 +186,10 @@ public class MainActivity extends FragmentActivity {
 		}
 		try {
 			unregisterReceiver(ackMessageReceiver);
+		} catch (Exception e) {
+		}
+		try {
+			unregisterReceiver(offlineMessageReceiver);
 		} catch (Exception e) {
 		}
 
@@ -248,6 +263,8 @@ public class MainActivity extends FragmentActivity {
 	private class NewMessageBroadcastReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			//主页面收到消息后，主要为了提示未读，实际消息内容需要到chat页面查看
+			
 			// 消息id
 			String msgId = intent.getStringExtra("msgid");
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
@@ -288,11 +305,36 @@ public class MainActivity extends FragmentActivity {
 		}
 	};
 
+	/**
+	 * 离线消息BroadcastReceiver
+	 * sdk 登录后，服务器会推送离线消息到client，这个receiver，是通知UI 有哪些人发来了离线消息
+	 * UI 可以做相应的操作，比如下载用户信息
+	 */
+	private BroadcastReceiver offlineMessageReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String[] users = intent.getStringArrayExtra("fromuser");
+			String[] groups = intent.getStringArrayExtra("fromgroup");
+			if (users != null) {
+				for (String user : users) {
+					System.out.println("收到user离线消息：" + user);
+				}
+			}
+			if (groups != null) {
+				for (String group : groups) {
+					System.out.println("收到group离线消息：" + group);
+				}
+			}
+			abortBroadcast();
+		}
+	};
+	
 	private InviteMessgeDao inviteMessgeDao;
 	private UserDao userDao;
 
 	/***
-	 * 联系人变化listener
+	 * 好友变化listener
 	 * 
 	 */
 	private class MyContactListener implements EMContactListener {
@@ -303,26 +345,7 @@ public class MainActivity extends FragmentActivity {
 			Map<String, User> localUsers = DemoApplication.getInstance().getContactList();
 			Map<String, User> toAddUsers = new HashMap<String, User>();
 			for (String username : usernameList) {
-				User user = new User();
-				user.setUsername(username);
-				String headerName = null;
-				if (!TextUtils.isEmpty(user.getNick())) {
-					headerName = user.getNick();
-				} else {
-					headerName = user.getUsername();
-				}
-				if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
-					user.setHeader("");
-				} else if (Character.isDigit(headerName.charAt(0))) {
-					user.setHeader("#");
-				} else {
-					user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(
-							0, 1).toUpperCase());
-					char header = user.getHeader().toLowerCase().charAt(0);
-					if (header < 'a' || header > 'z') {
-						user.setHeader("#");
-					}
-				}
+				User user = setUserHead(username);
 				// 暂时有个bug，添加好友时可能会回调added方法两次
 				if (!localUsers.containsKey(username)) {
 					userDao.saveContact(user);
@@ -336,8 +359,9 @@ public class MainActivity extends FragmentActivity {
 
 		}
 
+		
 		@Override
-		public void onContactDeleted(List<String> usernameList) {
+		public void onContactDeleted(final List<String> usernameList) {
 			// 被删除
 			Map<String, User> localUsers = DemoApplication.getInstance().getContactList();
 			for (String username : usernameList) {
@@ -345,17 +369,19 @@ public class MainActivity extends FragmentActivity {
 				userDao.deleteContact(username);
 				inviteMessgeDao.deleteMessage(username);
 			}
-
-			runOnUiThread(new Runnable(){
-				@Override
+			runOnUiThread(new Runnable() {
 				public void run() {
-					// 刷新ui
-					if (currentTabIndex == 1)
-						contactListFragment.refresh();
+					//如果正在与此用户的聊天页面
+					if (ChatActivity.activityInstance != null && usernameList.contains(ChatActivity.activityInstance.getToChatUsername())) {
+						Toast.makeText(MainActivity.this, ChatActivity.activityInstance.getToChatUsername()+"已把你从他好友列表里移除", 1).show();
+						ChatActivity.activityInstance.finish();
+					}
 					updateUnreadLabel();
-					
 				}
 			});
+			// 刷新ui
+			if (currentTabIndex == 1)
+				contactListFragment.refresh();
 
 		}
 
@@ -433,6 +459,37 @@ public class MainActivity extends FragmentActivity {
 		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 		user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
 	}
+	
+	
+	/**
+	 * set head
+	 * @param username
+	 * @return
+	 */
+	User setUserHead(String username) {
+		User user = new User();
+		user.setUsername(username);
+		String headerName = null;
+		if (!TextUtils.isEmpty(user.getNick())) {
+			headerName = user.getNick();
+		} else {
+			headerName = user.getUsername();
+		}
+		if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
+			user.setHeader("");
+		} else if (Character.isDigit(headerName.charAt(0))) {
+			user.setHeader("#");
+		} else {
+			user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(
+					0, 1).toUpperCase());
+			char header = user.getHeader().toLowerCase().charAt(0);
+			if (header < 'a' || header > 'z') {
+				user.setHeader("#");
+			}
+		}
+		return user;
+	}
+
 
 	/**
 	 * 连接监听listener
@@ -482,6 +539,16 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
+			boolean hasGroup = false;
+			for(EMGroup group : EMGroupManager.getInstance().getAllGroups()){
+				if(group.getGroupId().equals(groupId)){
+					hasGroup = true;
+					break;
+				}
+			}
+			if(!hasGroup)
+				return;
+			
 			// 被邀请
 			EMMessage msg = EMMessage.createReceiveMessage(Type.TXT);
 			msg.setChatType(ChatType.GroupChat);

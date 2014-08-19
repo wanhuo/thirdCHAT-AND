@@ -32,7 +32,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,6 +46,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -54,8 +54,10 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -173,6 +175,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private boolean isloading;
 	private final int pagesize = 20;
 	private boolean haveMoreData = true;
+	private Button btnMore;
 
 	private Handler micImageHandler = new Handler() {
 		@Override
@@ -212,9 +215,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		iv_emoticons_normal = (ImageView) findViewById(R.id.iv_emoticons_normal);
 		iv_emoticons_checked = (ImageView) findViewById(R.id.iv_emoticons_checked);
 		loadmorePB = (ProgressBar) findViewById(R.id.pb_load_more);
+		btnMore = (Button) findViewById(R.id.btn_more);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		more = findViewById(R.id.more);
+		edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_normal);
 
 		// 动画资源文件,用于录制语音时
 		micImages = new Drawable[] { getResources().getDrawable(R.drawable.record_animate_01),
@@ -234,24 +239,44 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		views.add(gv1);
 		views.add(gv2);
 		expressionViewpager.setAdapter(new ExpressionPagerAdapter(views));
-
+		edittext_layout.requestFocus();
 		voiceRecorder = new VoiceRecorder(micImageHandler);
 		buttonPressToSpeak.setOnTouchListener(new PressToSpeakListen());
+		mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener() {
 
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (hasFocus) {
+					edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_active);
+				} else {
+					edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_normal);
+				}
+
+			}
+		});
+		mEditTextContent.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_active);
+				more.setVisibility(View.GONE);
+				iv_emoticons_normal.setVisibility(View.VISIBLE);
+				iv_emoticons_checked.setVisibility(View.INVISIBLE);
+				expressionContainer.setVisibility(View.GONE);
+				btnContainer.setVisibility(View.GONE);
+			}
+		});
 		// 监听文字框
 		mEditTextContent.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				if (!TextUtils.isEmpty(s)) {
-					buttonSetModeVoice.setVisibility(View.GONE);
+					btnMore.setVisibility(View.GONE);
 					buttonSend.setVisibility(View.VISIBLE);
 				} else {
-					if (buttonSetModeKeyboard.getVisibility() != View.VISIBLE) {
-						buttonSetModeVoice.setVisibility(View.VISIBLE);
-						buttonSend.setVisibility(View.GONE);
-					}
-
+					btnMore.setVisibility(View.VISIBLE);
+					buttonSend.setVisibility(View.GONE);
 				}
 			}
 
@@ -282,6 +307,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
 			((TextView) findViewById(R.id.name)).setText(toChatUsername);
+			// conversation =
+			// EMChatManager.getInstance().getConversation(toChatUsername,false);
 		} else {
 			// 群聊
 			findViewById(R.id.container_to_group).setVisibility(View.VISIBLE);
@@ -289,6 +316,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			toChatUsername = getIntent().getStringExtra("groupId");
 			group = EMGroupManager.getInstance().getGroup(toChatUsername);
 			((TextView) findViewById(R.id.name)).setText(group.getGroupName());
+			// conversation =
+			// EMChatManager.getInstance().getConversation(toChatUsername,true);
 		}
 		conversation = EMChatManager.getInstance().getConversation(toChatUsername);
 		// 把此会话的未读数置为0
@@ -514,7 +543,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				adapter.refresh();
 				setResult(RESULT_OK);
 			} else if (requestCode == REQUEST_CODE_GROUP_DETAIL) {
-				EMChatManager.getInstance().getConversation(toChatUsername);
 				adapter.refresh();
 			}
 		}
@@ -581,9 +609,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * 选择文件
 	 */
 	private void selectFileFromLocal() {
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		intent.setType("*/*");
-		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		Intent intent = null;
+		if (Build.VERSION.SDK_INT < 19) {
+			intent = new Intent(Intent.ACTION_GET_CONTENT);
+			intent.setType("*/*");
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+		} else {
+			intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		}
 		startActivityForResult(intent, REQUEST_CODE_SELECT_FILE);
 	}
 
@@ -610,40 +644,26 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param isResend
 	 *            boolean resend
 	 */
-	private void sendText(final String content) {
+	private void sendText(String content) {
 
 		if (content.length() > 0) {
+			EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
+			// 如果是群聊，设置chattype,默认是单聊
+			if (chatType == CHATTYPE_GROUP)
+				message.setChatType(ChatType.GroupChat);
+			TextMessageBody txtBody = new TextMessageBody(content);
+			// 设置消息body
+			message.addBody(txtBody);
+			// 设置要发给谁,用户username或者群聊groupid
+			message.setReceipt(toChatUsername);
+			// 把messgage加到conversation中
+			conversation.addMessage(message);
+			// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
+			adapter.refresh();
+			listView.setSelection(listView.getCount() - 1);
+			mEditTextContent.setText("");
 
-			new AsyncTask<Void, Void, Void>() {
-
-				@Override
-				protected Void doInBackground(Void... params) {
-					EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
-					// 如果是群聊，设置chattype,默认是单聊
-					if (chatType == CHATTYPE_GROUP)
-						message.setChatType(ChatType.GroupChat);
-					TextMessageBody txtBody = new TextMessageBody(content);
-					// 设置消息body
-					message.addBody(txtBody);
-					// 设置要发给谁,用户username或者群聊groupid
-					message.setReceipt(toChatUsername);
-					// 把messgage加到conversation中
-					conversation.addMessage(message);
-					return null;
-				}
-
-				@Override
-				protected void onPostExecute(Void result) {
-					super.onPostExecute(result);
-					// 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
-					adapter.refresh();
-					listView.setSelection(listView.getCount() - 1);
-					mEditTextContent.setText("");
-
-					setResult(RESULT_OK);
-				}
-
-			}.execute();
+			setResult(RESULT_OK);
 
 		}
 	}
@@ -867,14 +887,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeVoice(View view) {
-		edittext_layout.setVisibility(View.GONE);
 		hideKeyboard();
+		edittext_layout.setVisibility(View.GONE);
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
 		buttonSetModeKeyboard.setVisibility(View.VISIBLE);
-		// mEditTextContent.setVisibility(View.GONE);
-		// buttonSend.setVisibility(View.GONE);
-		// buttonSetModeVoice.setVisibility(View.GONE);
+		buttonSend.setVisibility(View.GONE);
+		btnMore.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.VISIBLE);
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
@@ -889,6 +908,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeKeyboard(View view) {
+		// mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener()
+		// {
+		// @Override
+		// public void onFocusChange(View v, boolean hasFocus) {
+		// if(hasFocus){
+		// getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		// }
+		// }
+		// });
 		edittext_layout.setVisibility(View.VISIBLE);
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
@@ -897,6 +925,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		mEditTextContent.requestFocus();
 		// buttonSend.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.GONE);
+		if (TextUtils.isEmpty(mEditTextContent.getText())) {
+			btnMore.setVisibility(View.VISIBLE);
+			buttonSend.setVisibility(View.GONE);
+		} else {
+			btnMore.setVisibility(View.GONE);
+			buttonSend.setVisibility(View.VISIBLE);
+		}
 
 	}
 
@@ -1197,12 +1232,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 停止语音播放
 			VoicePlayClickListener.currentPlayListener.stopPlayVoice();
 		}
-		// 停止录音
-		if (voiceRecorder.isRecording()) {
-			voiceRecorder.discardRecording();
-			recordingContainer.setVisibility(View.INVISIBLE);
+		
+		try {
+			// 停止录音
+			if (voiceRecorder.isRecording()) {
+				voiceRecorder.discardRecording();
+				recordingContainer.setVisibility(View.INVISIBLE);
+			}
+		} catch (Exception e) {
 		}
-
 	}
 
 	/**
@@ -1329,10 +1367,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		public void onUserRemoved(final String groupId, String groupName) {
 			runOnUiThread(new Runnable() {
 				public void run() {
-					Toast.makeText(ChatActivity.this, "你被群创建者从此群中移除", 1).show();
-					if (GroupDetailsActivity.instance != null)
-						GroupDetailsActivity.instance.finish();
 					if (toChatUsername.equals(groupId)) {
+						Toast.makeText(ChatActivity.this, "你被群创建者从此群中移除", 1).show();
+						if (GroupDetailsActivity.instance != null)
+							GroupDetailsActivity.instance.finish();
 						finish();
 					}
 				}
@@ -1344,10 +1382,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 群组解散正好在此页面，提示群组被解散，并finish此页面
 			runOnUiThread(new Runnable() {
 				public void run() {
-					Toast.makeText(ChatActivity.this, "当前群聊已被群创建者解散", 1).show();
-					if (GroupDetailsActivity.instance != null)
-						GroupDetailsActivity.instance.finish();
 					if (toChatUsername.equals(groupId)) {
+						Toast.makeText(ChatActivity.this, "当前群聊已被群创建者解散", 1).show();
+						if (GroupDetailsActivity.instance != null)
+							GroupDetailsActivity.instance.finish();
 						finish();
 					}
 				}
@@ -1356,4 +1394,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	}
 
+	public String getToChatUsername(){
+		return toChatUsername;
+	}
+	
 }

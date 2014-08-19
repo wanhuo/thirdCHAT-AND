@@ -104,7 +104,11 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 	private Button logoutBtn;
 
 	private EMChatOptions chatOptions;
-
+ 
+	/**
+	 * 诊断
+	 */
+	private LinearLayout llDiagnose;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_conversation_settings, container, false);
@@ -135,14 +139,14 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 		textview2 = (TextView) getView().findViewById(R.id.textview2);
 		
 		blacklistContainer = (LinearLayout) getView().findViewById(R.id.ll_black_list);
-		
+		llDiagnose=(LinearLayout) getView().findViewById(R.id.ll_diagnose);
 		blacklistContainer.setOnClickListener(this);
 		rl_switch_notification.setOnClickListener(this);
 		rl_switch_sound.setOnClickListener(this);
 		rl_switch_vibrate.setOnClickListener(this);
 		rl_switch_speaker.setOnClickListener(this);
 		logoutBtn.setOnClickListener(this);
-
+		llDiagnose.setOnClickListener(this);
 		chatOptions = EMChatManager.getInstance().getChatOptions();
 		if (chatOptions.getNotificationEnable()) {
 			iv_switch_open_notification.setVisibility(View.VISIBLE);
@@ -176,6 +180,17 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -256,7 +271,9 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 			break;
 		case R.id.ll_black_list:
 			startActivity(new Intent(getActivity(), BlacklistActivity.class));
-			
+			break;
+		case R.id.ll_diagnose:
+			startActivity(new Intent(getActivity(), DiagnoseActivity.class));
 			break;
 		default:
 			break;

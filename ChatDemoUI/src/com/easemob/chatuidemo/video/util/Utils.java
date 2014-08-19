@@ -1,6 +1,12 @@
 package com.easemob.chatuidemo.video.util;
 
+import java.util.Comparator;
+import java.util.List;
+
 import android.annotation.SuppressLint;
+import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.StrictMode;
@@ -65,4 +71,26 @@ public class Utils {
 		return Build.VERSION.SDK_INT >= 19;
 	}
 
+	public static List<Camera.Size> getResolutionList(Camera camera)
+	{ 
+		Parameters parameters = camera.getParameters();
+		List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
+		return previewSizes;
+	}
+	
+	public static class ResolutionComparator implements Comparator<Camera.Size>{
+
+		@Override
+		public int compare(Size lhs, Size rhs) {
+			if(lhs.height!=rhs.height)
+			return lhs.height-rhs.height;
+			else
+			return lhs.width-rhs.width;
+		}
+		 
+	}
+	
+	
+	
+	
 }

@@ -95,7 +95,7 @@ public class GroupDetailsActivity extends BaseActivity {
 			exitBtn.setVisibility(View.GONE);
 			deleteBtn.setVisibility(View.VISIBLE);
 		}
-		((TextView) findViewById(R.id.group_name)).setText(group.getGroupName());
+		((TextView) findViewById(R.id.group_name)).setText(group.getGroupName()+"("+group.getAffiliationsCount()+"人)");
 		adapter = new GridAdapter(this, R.layout.grid, group.getMembers());
 		userGridview.setAdapter(adapter);
 
@@ -208,7 +208,7 @@ public class GroupDetailsActivity extends BaseActivity {
 	public void deleteGroupHistory(){
 		
 		
-		EMChatManager.getInstance().clearConversation(group.getGroupId());
+		EMChatManager.getInstance().deleteConversation(group.getGroupId());
 		progressDialog.dismiss();
 //		adapter.refresh(EMChatManager.getInstance().getConversation(toChatUsername));
 		
@@ -297,6 +297,7 @@ public class GroupDetailsActivity extends BaseActivity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							adapter.notifyDataSetChanged();
+							((TextView) findViewById(R.id.group_name)).setText(group.getGroupName()+"("+group.getAffiliationsCount()+"人)");
 							progressDialog.dismiss();
 						}
 					});
@@ -428,7 +429,11 @@ public class GroupDetailsActivity extends BaseActivity {
 							// user.getUsername()));
 						}
 					}
-
+					
+					/**
+					 * 删除群成员
+					 * @param username
+					 */
 					protected void deleteMembersFromGroup(final String username) {
 						final ProgressDialog deleteDialog = new ProgressDialog(GroupDetailsActivity.this);
 						deleteDialog.setMessage("正在移除...");
@@ -448,6 +453,7 @@ public class GroupDetailsActivity extends BaseActivity {
 										public void run() {
 											deleteDialog.dismiss();
 											notifyDataSetChanged();
+											((TextView) findViewById(R.id.group_name)).setText(group.getGroupName()+"("+group.getAffiliationsCount()+"人)");
 										}
 									});
 								} catch (final Exception e) {
@@ -483,6 +489,7 @@ public class GroupDetailsActivity extends BaseActivity {
 					
 					runOnUiThread(new Runnable() {
 						public void run() {
+							((TextView) findViewById(R.id.group_name)).setText(group.getGroupName()+"("+group.getAffiliationsCount()+"人)");
 							loadingPB.setVisibility(View.INVISIBLE);
 							adapter.notifyDataSetChanged();
 							if (EMChatManager.getInstance().getCurrentUser().equals(group.getOwner())) {
