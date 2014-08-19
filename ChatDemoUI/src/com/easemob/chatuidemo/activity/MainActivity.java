@@ -538,6 +538,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
+			
 			// 被邀请
 			EMMessage msg = EMMessage.createReceiveMessage(Type.TXT);
 			msg.setChatType(ChatType.GroupChat);
