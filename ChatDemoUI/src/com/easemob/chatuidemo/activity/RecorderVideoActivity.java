@@ -1,23 +1,29 @@
 package com.easemob.chatuidemo.activity;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
 import android.media.MediaRecorder.OnInfoListener;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -30,12 +36,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.video.util.Utils;
 import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
 
 public class RecorderVideoActivity extends BaseActivity implements
 		OnClickListener, Callback, OnErrorListener, OnInfoListener {
 
+	private final static String CLASS_LABEL="RecordActivity";
+	private PowerManager.WakeLock mWakeLock;
 	private ImageView btnStart;// 开始录制按钮
 	private ImageView btnStop;// 停止录制按钮
 	private MediaRecorder mediarecorder;// 录制视频的类
@@ -44,7 +53,18 @@ public class RecorderVideoActivity extends BaseActivity implements
 	private SurfaceHolder surfaceHolder;
 	String localPath = "";// 录制的视频路径
 	private Camera mCamera;
+	//预览的宽高
+	private int previewWidth=480;
+	private int previewHeight=480;
+	
+	Parameters cameraParameters=null;
+	
 
+	//分别为 默认摄像头（后置）、默认调用摄像头的分辨率、被选择的摄像头（前置或者后置）
+	int defaultCameraId = -1, defaultScreenResolution = -1 , cameraSelection = 0;
+	int defaultVideoFrameRate=-1;
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,6 +74,12 @@ public class RecorderVideoActivity extends BaseActivity implements
 		// 选择支持半透明模式，在有surfaceview的activity中使用
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(R.layout.recorder_activity);
+		PowerManager pm=(PowerManager) getSystemService(Context.POWER_SERVICE);
+		mWakeLock=pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, CLASS_LABEL);
+		mWakeLock.acquire();
+		
+		
+		
 		btnStart = (ImageView) findViewById(R.id.recorder_start);
 		btnStop = (ImageView) findViewById(R.id.recorder_stop);
 		btnStart.setOnClickListener(this);
@@ -63,7 +89,6 @@ public class RecorderVideoActivity extends BaseActivity implements
 		holder.addCallback(this); // holder加入回调接口
 		// setType必须设置，要不出错.
 		holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
 	}
 
 	public void back(View view) {
@@ -84,6 +109,110 @@ public class RecorderVideoActivity extends BaseActivity implements
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		if (mWakeLock == null) {
+			// 获取唤醒锁,保持屏幕常亮
+			PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+			mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK,
+					CLASS_LABEL);
+			mWakeLock.acquire();
+		}
+	}
+	
+	
+	private void handleSurfaceChanged(){
+		if(mCamera==null)
+		{
+			finish();
+			return;
+		}
+		
+		boolean hasSupportRate=false;
+		List<Integer> supportedPreviewFrameRates = mCamera.getParameters().getSupportedPreviewFrameRates();
+		if(supportedPreviewFrameRates!=null&&supportedPreviewFrameRates.size()>0)
+		{
+			Collections.sort(supportedPreviewFrameRates);
+			for(int i=0;i<supportedPreviewFrameRates.size();i++)
+			{
+				int supportRate=supportedPreviewFrameRates.get(i);
+				
+				if(supportRate==10)
+				{
+					hasSupportRate=true;
+				}
+				
+			}
+			if(hasSupportRate)
+			{
+				defaultVideoFrameRate=10;
+			}else{
+				defaultVideoFrameRate=supportedPreviewFrameRates.get(0);
+			}
+			
+			
+			
+		}
+		
+		System.out.println("supportedPreviewFrameRates"+supportedPreviewFrameRates);
+		
+		
+		//获取摄像头的所有支持的分辨率
+		List<Camera.Size> resolutionList=Utils.getResolutionList(mCamera);
+		if(resolutionList!=null&&resolutionList.size()>0)
+		{
+			Collections.sort(resolutionList,new Utils.ResolutionComparator());
+			Camera.Size previewSize=null;
+			if(defaultScreenResolution==-1)
+			{
+				boolean hasSize=false;
+				//如果摄像头支持640*480，那么强制设为640*480
+				for(int i=0;i<resolutionList.size();i++)
+				{
+					Size size=resolutionList.get(i);
+					if(size!=null&&size.width==640&&size.height==480)
+					{
+						previewSize=size;
+						previewWidth=previewSize.width;
+						previewHeight=previewSize.height;
+						hasSize=true;
+						break;
+					}
+				}
+				//如果不支持设为中间的那个
+				if(!hasSize)
+				{
+					int mediumResolution=resolutionList.size()/2;
+					if(mediumResolution>=resolutionList.size())
+						mediumResolution=resolutionList.size()-1;
+					previewSize=resolutionList.get(mediumResolution);
+					previewWidth=previewSize.width;
+					previewHeight=previewSize.height;
+						
+				}
+				 
+			} 
+			 
+		}
+		
+		
+		
+		
+		
+	}
+	
+	 
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (mWakeLock != null) {
+			mWakeLock.release();
+			mWakeLock = null;
+		}
+	}
+	 
+	
+	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.recorder_start:
@@ -100,9 +229,11 @@ public class RecorderVideoActivity extends BaseActivity implements
 			// 设置录制的视频编码h263 h264
 			mediarecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
 			// 设置视频录制的分辨率。必须放在设置编码和格式的后面，否则报错
-			mediarecorder.setVideoSize(640, 480);
-			// 设置录制的视频帧率。必须放在设置编码和格式的后面，否则报错
-			mediarecorder.setVideoFrameRate(10);
+			mediarecorder.setVideoSize(previewWidth, previewHeight);
+//			// 设置录制的视频帧率。必须放在设置编码和格式的后面，否则报错
+			if (defaultVideoFrameRate != -1) {
+				mediarecorder.setVideoFrameRate(defaultVideoFrameRate);
+			}
 			mediarecorder.setPreviewDisplay(surfaceHolder.getSurface());
 			// 设置视频文件输出的路径
 			localPath = PathUtil.getInstance().getVideoPath() + "/"
@@ -176,6 +307,7 @@ public class RecorderVideoActivity extends BaseActivity implements
 		// 将holder，这个holder为开始在oncreat里面取得的holder，将它赋给surfaceHolder
 		surfaceHolder = holder;
 		initpreview();
+		handleSurfaceChanged();
 
 	}
 
@@ -199,6 +331,25 @@ public class RecorderVideoActivity extends BaseActivity implements
 	@SuppressLint("NewApi")
 	protected void initpreview() {
 		try {
+			
+			if(Build.VERSION.SDK_INT>Build.VERSION_CODES.FROYO)
+			{
+				int numberOfCameras=Camera.getNumberOfCameras();
+				CameraInfo cameraInfo=new CameraInfo();
+				for (int i = 0; i < numberOfCameras; i++) {
+					Camera.getCameraInfo(i, cameraInfo);
+					if(cameraInfo.facing==cameraSelection)
+					{
+						defaultCameraId=i;
+					}
+				}
+				
+				
+			}
+			if(mCamera!=null)
+			{
+				mCamera.stopPreview();
+			}
 
 			mCamera = Camera.open(CameraInfo.CAMERA_FACING_BACK);
 			mCamera.setPreviewDisplay(surfaceHolder);
@@ -290,6 +441,13 @@ public class RecorderVideoActivity extends BaseActivity implements
 	protected void onDestroy() {
 		super.onDestroy();
 		releaseCamera();
+		
+		if(mWakeLock!=null)
+		{
+			mWakeLock.release();
+			mWakeLock=null;
+		}
+		
 	}
 
 	@Override
