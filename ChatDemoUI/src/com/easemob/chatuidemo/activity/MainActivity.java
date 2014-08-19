@@ -391,7 +391,7 @@ public class MainActivity extends FragmentActivity {
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
 			for (InviteMessage inviteMessage : msgs) {
 				if (inviteMessage.getGroupId() == null && inviteMessage.getFrom().equals(username)) {
-					return;
+				    inviteMessgeDao.deleteMessage(username);
 				}
 			}
 			// 自己封装的javabean
