@@ -609,9 +609,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * 选择文件
 	 */
 	private void selectFileFromLocal() {
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		intent.setType("*/*");
-		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		Intent intent = null;
+		if (Build.VERSION.SDK_INT < 19) {
+			intent = new Intent(Intent.ACTION_GET_CONTENT);
+			intent.setType("*/*");
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+		} else {
+			intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		}
 		startActivityForResult(intent, REQUEST_CODE_SELECT_FILE);
 	}
 

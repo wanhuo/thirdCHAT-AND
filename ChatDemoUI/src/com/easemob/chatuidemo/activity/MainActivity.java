@@ -42,6 +42,7 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactListener;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
@@ -538,6 +539,16 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
+			boolean hasGroup = false;
+			for(EMGroup group : EMGroupManager.getInstance().getAllGroups()){
+				if(group.getGroupId().equals(groupId)){
+					hasGroup = true;
+					break;
+				}
+			}
+			if(!hasGroup)
+				return;
+			
 			// 被邀请
 			EMMessage msg = EMMessage.createReceiveMessage(Type.TXT);
 			msg.setChatType(ChatType.GroupChat);
