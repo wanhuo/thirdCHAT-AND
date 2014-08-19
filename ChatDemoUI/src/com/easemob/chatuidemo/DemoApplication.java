@@ -56,12 +56,12 @@ public class DemoApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
+
 		int pid = android.os.Process.myPid();
 		String processAppName = getAppName(pid);
-		//如果使用到百度地图或者类似启动remote service的第三方库，这个if判断不能少
+		// 如果使用到百度地图或者类似启动remote service的第三方库，这个if判断不能少
 		if (processAppName == null || processAppName.equals("")) {
-			// workaround for baidu location sdk 
+			// workaround for baidu location sdk
 			// 百度定位sdk，定位服务运行在一个单独的进程，每次定位服务启动的时候，都会调用application::onCreate
 			// 创建新的进程。
 			// 但环信的sdk只需要在主进程中初始化一次。 这个特殊处理是，如果从pid 找不到对应的processInfo
@@ -71,11 +71,11 @@ public class DemoApplication extends Application {
 		}
 		applicationContext = this;
 		instance = this;
-		EMChat.getInstance().setDebugMode(true);
 		// 初始化环信SDK,一定要先调用init()
 		Log.d("EMChat Demo", "initialize EMChat SDK");
 		EMChat.getInstance().init(applicationContext);
 		// debugmode设为true后，就能看到sdk打印的log了
+		EMChat.getInstance().setDebugMode(true);
 
 		// 获取到EMChatOptions对象
 		EMChatOptions options = EMChatManager.getInstance().getChatOptions();
@@ -89,60 +89,59 @@ public class DemoApplication extends Application {
 		options.setNoticedByVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgVibrate());
 		// 设置语音消息播放是否设置为扬声器播放 默认为true
 		options.setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker());
-		//设置notification消息点击时，跳转的intent为自定义的intent
+		// 设置notification消息点击时，跳转的intent为自定义的intent
 		options.setOnNotificationClickListener(new OnNotificationClickListener() {
-			
+
 			@Override
 			public Intent onNotificationClick(EMMessage message) {
 				Intent intent = new Intent(applicationContext, ChatActivity.class);
 				ChatType chatType = message.getChatType();
-				if(chatType == ChatType.Chat){ //单聊信息
+				if (chatType == ChatType.Chat) { // 单聊信息
 					intent.putExtra("userId", message.getFrom());
 					intent.putExtra("chatType", ChatActivity.CHATTYPE_SINGLE);
-				}else{ //群聊信息
-					//message.getTo()为群聊id
+				} else { // 群聊信息
+							// message.getTo()为群聊id
 					intent.putExtra("groupId", message.getTo());
 					intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
 				}
 				return intent;
 			}
 		});
-		//设置一个connectionlistener监听账户重复登陆
+		// 设置一个connectionlistener监听账户重复登陆
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
-		//取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
-//		options.setNotifyText(new OnMessageNotifyListener() {
-//			
-//			@Override
-//			public String onNewMessageNotify(EMMessage message) {
-//				//可以根据message的类型提示不同文字，demo简单的覆盖了原来的提示
-//				return "你的好基友" + message.getFrom() + "发来了一条消息哦";
-//			}
-//			
-//			@Override
-//			public String onLatestMessageNotify(EMMessage message, int fromUsersNum, int messageNum) {
-//				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
-//			}
-//		});
-		
-		
+		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
+		// options.setNotifyText(new OnMessageNotifyListener() {
+		//
+		// @Override
+		// public String onNewMessageNotify(EMMessage message) {
+		// //可以根据message的类型提示不同文字，demo简单的覆盖了原来的提示
+		// return "你的好基友" + message.getFrom() + "发来了一条消息哦";
+		// }
+		//
+		// @Override
+		// public String onLatestMessageNotify(EMMessage message, int
+		// fromUsersNum, int messageNum) {
+		// return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
+		// }
+		// });
+
 		MobclickAgent.onError(applicationContext);
 	}
 
 	public static DemoApplication getInstance() {
 		return instance;
 	}
-	
-//	List<String> list = new ArrayList<String>();
-//	list.add("1406713081205");
-//	options.setReceiveNotNoifyGroup(list);
+
+	// List<String> list = new ArrayList<String>();
+	// list.add("1406713081205");
+	// options.setReceiveNotNoifyGroup(list);
 	/**
 	 * 获取内存中好友user list
 	 * 
 	 * @return
 	 */
 	public Map<String, User> getContactList() {
-		if(getUserName() != null &&contactList == null)
-		{
+		if (getUserName() != null && contactList == null) {
 			UserDao dao = new UserDao(applicationContext);
 			// 获取本地好友user list到内存,方便以后获取好友list
 			contactList = dao.getContactList();
@@ -158,11 +157,10 @@ public class DemoApplication extends Application {
 	public void setContactList(Map<String, User> contactList) {
 		this.contactList = contactList;
 	}
-	
-	public void setStrangerList(Map<String, User> List){
-		
+
+	public void setStrangerList(Map<String, User> List) {
+
 	}
-	
 
 	/**
 	 * 获取当前登陆用户名
@@ -206,9 +204,9 @@ public class DemoApplication extends Application {
 	}
 
 	/**
-	 * 设置密码
-	 * 下面的实例代码 只是demo，实际的应用中需要加password 加密后存入 preference
-	 * 环信sdk 内部的自动登录需要的密码，已经加密存储了
+	 * 设置密码 下面的实例代码 只是demo，实际的应用中需要加password 加密后存入 preference 环信sdk
+	 * 内部的自动登录需要的密码，已经加密存储了
+	 * 
 	 * @param pwd
 	 */
 	public void setPassword(String pwd) {
@@ -255,32 +253,32 @@ public class DemoApplication extends Application {
 		}
 		return processName;
 	}
-	
-	class MyConnectionListener implements ConnectionListener{
+
+	class MyConnectionListener implements ConnectionListener {
 		@Override
 		public void onReConnecting() {
 		}
-		
+
 		@Override
 		public void onReConnected() {
 		}
-		
+
 		@Override
 		public void onDisConnected(String errorString) {
 			if (errorString != null && errorString.contains("conflict")) {
-				Intent intent =new Intent(applicationContext, MainActivity.class);
+				Intent intent = new Intent(applicationContext, MainActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				intent.putExtra("conflict", true);
 				startActivity(intent);
 			}
-			
+
 		}
-		
+
 		@Override
 		public void onConnecting(String progress) {
-			
+
 		}
-		
+
 		@Override
 		public void onConnected() {
 		}
