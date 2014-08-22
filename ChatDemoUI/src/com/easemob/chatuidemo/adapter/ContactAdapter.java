@@ -121,7 +121,6 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 			TextView nameTextview = (TextView) convertView.findViewById(R.id.name);
 			TextView tvHeader = (TextView) convertView.findViewById(R.id.header);
 			User user = getItem(position);
-			Log.d("contactAdapter", position+"");
 			//设置nick，demo里不涉及到完整user，用username代替nick显示
 			String username = user.getUsername();
 			String header = user.getHeader();

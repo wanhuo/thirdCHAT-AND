@@ -80,7 +80,7 @@ public class ShowVideoActivity extends BaseActivity implements OnTouchListener {
 		if (TextUtils.isEmpty(localFilePath)) {
 			localFilePath = PathUtil.getInstance().getVideoPath()
 					.getAbsolutePath()
-					+ "/" + remoteUrl.substring(remoteUrl.lastIndexOf("/") + 1);
+					+ "/" + remoteUrl.substring(remoteUrl.lastIndexOf("/") + 1)+".mp4";
 		}
 
 		if (new File(localFilePath).exists()) {
