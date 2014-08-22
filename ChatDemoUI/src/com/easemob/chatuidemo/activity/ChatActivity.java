@@ -685,8 +685,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 如果是群聊，设置chattype,默认是单聊
 			if (chatType == CHATTYPE_GROUP)
 				message.setChatType(ChatType.GroupChat);
-			String to = toChatUsername;
-			message.setReceipt(to);
+			message.setReceipt(toChatUsername);
 			int len = Integer.parseInt(length);
 			VoiceMessageBody body = new VoiceMessageBody(new File(filePath), len);
 			message.addBody(body);
