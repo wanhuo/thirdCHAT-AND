@@ -77,8 +77,8 @@ public class DemoApplication extends Application {
 		instance = this;
 		EMChat.getInstance().setDebugMode(true);
 		// 初始化环信SDK,一定要先调用init()
-		Log.d("EMChat Demo", "initialize EMChat SDK");
 		EMChat.getInstance().init(applicationContext);
+		Log.d("EMChat Demo", "initialize EMChat SDK");
 		// debugmode设为true后，就能看到sdk打印的log了
 
 		// 获取到EMChatOptions对象
