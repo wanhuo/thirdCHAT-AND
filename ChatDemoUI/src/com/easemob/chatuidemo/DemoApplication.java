@@ -52,6 +52,10 @@ public class DemoApplication extends Application {
 	private static final String PREF_PWD = "pwd";
 	private String password = null;
 	private Map<String, User> contactList;
+	/**
+	 * 当前用户nickname,为了苹果推送不是userid而是昵称
+	 */
+	public static String currentUserNick="";
 
 	@Override
 	public void onCreate() {
