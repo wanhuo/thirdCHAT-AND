@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.easemob.chat.EMChatConfig;
+import com.easemob.chat.EMChatManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.cloud.CloudOperationCallback;
 import com.easemob.cloud.HttpFileManager;
@@ -59,7 +60,7 @@ public class ShowVideoActivity extends BaseActivity implements OnTouchListener {
 			System.err.println("download remote video file");
 			Map<String, String> maps = new HashMap<String, String>();
 			maps.put("Authorization", "Bearer "
-					+ EMChatConfig.getInstance().AccessToken);
+					+ EMChatManager.getInstance().getAccessToken());
 			if (!TextUtils.isEmpty(secret)) {
 				maps.put("share-secret", secret);
 			}

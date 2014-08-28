@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -32,6 +31,7 @@ import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 
 import com.easemob.chat.EMChatConfig;
+import com.easemob.chat.EMChatManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.task.LoadLocalBigImgTask;
 import com.easemob.chatuidemo.utils.ImageCache;
@@ -99,7 +99,8 @@ public class ShowBigImage extends BaseActivity {
 		} else if (remotepath != null) {
 			System.err.println("download remote image");
 			Map<String,String> maps=new HashMap<String,String>();
-			maps.put("Authorization", "Bearer "+EMChatConfig.getInstance().AccessToken);
+			String accessToken=EMChatManager.getInstance().getAccessToken();
+			maps.put("Authorization", "Bearer "+accessToken);
 			if(!TextUtils.isEmpty(secret))
 			{
 				maps.put("share-secret", secret);
