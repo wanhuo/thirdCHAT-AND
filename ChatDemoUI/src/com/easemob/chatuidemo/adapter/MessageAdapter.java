@@ -594,14 +594,14 @@ public class MessageAdapter extends BaseAdapter {
 
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 
-			System.err.println("it is receive msg");
+			//System.err.println("it is receive msg");
 			if (message.status == EMMessage.Status.INPROGRESS) {
-				System.err.println("!!!! back receive");
+				//System.err.println("!!!! back receive");
 				holder.iv.setImageResource(R.drawable.default_image);
 				showDownloadImageProgress(message, holder);
 
 			} else {
-				System.err.println("!!!! not back receive, show image directly");
+				//System.err.println("!!!! not back receive, show image directly");
 				holder.iv.setImageResource(R.drawable.default_image);
 				if (localThumb != null) {
 					showVideoThumbView(localThumb, holder.iv, videoBody.getThumbnailUrl(), message);
