@@ -102,9 +102,9 @@ public class RegisterActivity extends BaseActivity {
 										Toast.makeText(getApplicationContext(), "网络异常，请检查网络！", 0).show();
 									} else if (errorMsg.indexOf("conflict") != -1) {
 										Toast.makeText(getApplicationContext(), "用户已存在！", 0).show();
-									} else if (errorMsg.indexOf("not support the capital letters") != -1) {
+									}/* else if (errorMsg.indexOf("not support the capital letters") != -1) {
 										Toast.makeText(getApplicationContext(), "用户名不支持大写字母！", 0).show();
-									} else {
+									} */else {
 										Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), 1).show();
 									}
 
