@@ -717,7 +717,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		message.setReceipt(to);
 		ImageMessageBody body = new ImageMessageBody(new File(filePath));
 		// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
-		// body.setSendOriginalImage(true);
+		// body.setSendOriginalImage(true)
 		message.addBody(body);
 		conversation.addMessage(message);
 

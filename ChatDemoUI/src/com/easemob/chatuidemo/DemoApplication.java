@@ -32,6 +32,7 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.OnMessageNotifyListener;
 import com.easemob.chat.OnNotificationClickListener;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.MainActivity;
@@ -55,7 +56,7 @@ public class DemoApplication extends Application {
 	/**
 	 * 当前用户nickname,为了苹果推送不是userid而是昵称
 	 */
-	public static String currentUserNick="";
+	public static String currentUserNick = "";
 
 	@Override
 	public void onCreate() {
@@ -113,21 +114,28 @@ public class DemoApplication extends Application {
 		});
 		// 设置一个connectionlistener监听账户重复登陆
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
-		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
-		// options.setNotifyText(new OnMessageNotifyListener() {
-		//
-		// @Override
-		// public String onNewMessageNotify(EMMessage message) {
-		// //可以根据message的类型提示不同文字，demo简单的覆盖了原来的提示
-		// return "你的好基友" + message.getFrom() + "发来了一条消息哦";
-		// }
-		//
-		// @Override
-		// public String onLatestMessageNotify(EMMessage message, int
-		// fromUsersNum, int messageNum) {
-		// return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
-		// }
-		// });
+//		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
+//		options.setNotifyText(new OnMessageNotifyListener() {
+//
+//			@Override
+//			public String onNewMessageNotify(EMMessage message) {
+//				// 可以根据message的类型提示不同文字(可参考微信或qq)，demo简单的覆盖了原来的提示
+//				return "你的好基友" + message.getFrom() + "发来了一条消息哦";
+//			}
+//
+//			@Override
+//			public String onLatestMessageNotify(EMMessage message, int fromUsersNum, int messageNum) {
+//				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
+//			}
+//
+//			@Override
+//			public String onSetNotificationTitle(EMMessage message) {
+//				//修改标题
+//				return "环信notification";
+//			}
+//
+//
+//		});
 
 		MobclickAgent.onError(applicationContext);
 	}
