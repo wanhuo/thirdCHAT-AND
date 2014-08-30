@@ -487,7 +487,7 @@ public class MessageAdapter extends BaseAdapter {
 		ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
 		String filePath = imgBody.getLocalUrl();
 		if (filePath!=null&&new File(filePath).exists())
-			showImageView(filePath, holder.iv, filePath, null, message);
+			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, null, message);
 //		else 
 //		{
 //			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
