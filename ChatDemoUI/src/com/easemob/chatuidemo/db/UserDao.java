@@ -53,7 +53,7 @@ public class UserDao {
 				values.put(COLUMN_NAME_ID, user.getUsername());
 				if(user.getNick() != null)
 					values.put(COLUMN_NAME_NICK, user.getNick());
-				db.insert(TABLE_NAME, null, values);
+				db.replace(TABLE_NAME, null, values);
 			}
 		}
 	}
@@ -123,7 +123,7 @@ public class UserDao {
 		if(user.getNick() != null)
 			values.put(COLUMN_NAME_NICK, user.getNick());
 		if(db.isOpen()){
-			db.insert(TABLE_NAME, null, values);
+			db.replace(TABLE_NAME, null, values);
 		}
 	}
 	
