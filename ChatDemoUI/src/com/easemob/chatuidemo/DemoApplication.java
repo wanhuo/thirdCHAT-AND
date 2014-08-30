@@ -40,7 +40,6 @@ import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.PreferenceUtils;
-import com.umeng.analytics.MobclickAgent;
 
 public class DemoApplication extends Application {
 
@@ -137,7 +136,6 @@ public class DemoApplication extends Application {
 //
 //		});
 
-		MobclickAgent.onError(applicationContext);
 	}
 
 	public static DemoApplication getInstance() {

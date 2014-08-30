@@ -197,12 +197,6 @@
             android:enabled="true"
             android:process=":remote" />
         
-        <!--  ChatDemoUI  使用友盟统计来收集crash report。这个不是环信sdk 的一部分 -->
-        <meta-data
-            android:name="UMENG_APPKEY"
-            android:value="53912a3156240b01a7075ed1" >
-        </meta-data>
-        <!--  end of 友盟声明 -->
         
     </application>
 
