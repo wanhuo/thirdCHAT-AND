@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.easemob.chatuidemo"
-    android:versionCode="7"
-    android:versionName="2.0.7" >
+    android:versionCode="8"
+    android:versionName="2.0.8" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -197,12 +197,6 @@
             android:enabled="true"
             android:process=":remote" />
         
-        <!--  ChatDemoUI  使用友盟统计来收集crash report。这个不是环信sdk 的一部分 -->
-        <meta-data
-            android:name="UMENG_APPKEY"
-            android:value="53912a3156240b01a7075ed1" >
-        </meta-data>
-        <!--  end of 友盟声明 -->
         
     </application>
 

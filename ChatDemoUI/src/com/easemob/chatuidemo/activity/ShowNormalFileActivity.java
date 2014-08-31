@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.easemob.chat.EMChatConfig;
+import com.easemob.chat.EMChatManager;
 import com.easemob.chat.FileMessageBody;
 import com.easemob.chatuidemo.R;
 import com.easemob.cloud.CloudOperationCallback;
@@ -30,7 +31,8 @@ public class ShowNormalFileActivity extends BaseActivity {
 		file = new File(messageBody.getLocalUrl());
 		//set head map
 		final Map<String, String> maps = new HashMap<String, String>();
-		maps.put("Authorization", "Bearer " + EMChatConfig.getInstance().AccessToken);
+		String accessToken=EMChatManager.getInstance().getAccessToken();
+		maps.put("Authorization", "Bearer " + accessToken);
 		if (!TextUtils.isEmpty(messageBody.getSecret())) {
 			maps.put("share-secret", messageBody.getSecret());
 		}

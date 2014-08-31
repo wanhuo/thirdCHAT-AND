@@ -32,6 +32,7 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.OnMessageNotifyListener;
 import com.easemob.chat.OnNotificationClickListener;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.MainActivity;
@@ -39,7 +40,6 @@ import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.PreferenceUtils;
-import com.umeng.analytics.MobclickAgent;
 
 public class DemoApplication extends Application {
 
@@ -52,6 +52,10 @@ public class DemoApplication extends Application {
 	private static final String PREF_PWD = "pwd";
 	private String password = null;
 	private Map<String, User> contactList;
+	/**
+	 * 当前用户nickname,为了苹果推送不是userid而是昵称
+	 */
+	public static String currentUserNick = "";
 
 	@Override
 	public void onCreate() {
@@ -71,11 +75,11 @@ public class DemoApplication extends Application {
 		}
 		applicationContext = this;
 		instance = this;
-		// 初始化环信SDK,一定要先调用init()
-		Log.d("EMChat Demo", "initialize EMChat SDK");
-		EMChat.getInstance().init(applicationContext);
-		// debugmode设为true后，就能看到sdk打印的log了
 		EMChat.getInstance().setDebugMode(true);
+		// 初始化环信SDK,一定要先调用init()
+		EMChat.getInstance().init(applicationContext);
+		Log.d("EMChat Demo", "initialize EMChat SDK");
+		// debugmode设为true后，就能看到sdk打印的log了
 
 		// 获取到EMChatOptions对象
 		EMChatOptions options = EMChatManager.getInstance().getChatOptions();
@@ -109,23 +113,29 @@ public class DemoApplication extends Application {
 		});
 		// 设置一个connectionlistener监听账户重复登陆
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
-		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
-		// options.setNotifyText(new OnMessageNotifyListener() {
-		//
-		// @Override
-		// public String onNewMessageNotify(EMMessage message) {
-		// //可以根据message的类型提示不同文字，demo简单的覆盖了原来的提示
-		// return "你的好基友" + message.getFrom() + "发来了一条消息哦";
-		// }
-		//
-		// @Override
-		// public String onLatestMessageNotify(EMMessage message, int
-		// fromUsersNum, int messageNum) {
-		// return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
-		// }
-		// });
+//		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
+//		options.setNotifyText(new OnMessageNotifyListener() {
+//
+//			@Override
+//			public String onNewMessageNotify(EMMessage message) {
+//				// 可以根据message的类型提示不同文字(可参考微信或qq)，demo简单的覆盖了原来的提示
+//				return "你的好基友" + message.getFrom() + "发来了一条消息哦";
+//			}
+//
+//			@Override
+//			public String onLatestMessageNotify(EMMessage message, int fromUsersNum, int messageNum) {
+//				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
+//			}
+//
+//			@Override
+//			public String onSetNotificationTitle(EMMessage message) {
+//				//修改标题
+//				return "环信notification";
+//			}
+//
+//
+//		});
 
-		MobclickAgent.onError(applicationContext);
 	}
 
 	public static DemoApplication getInstance() {

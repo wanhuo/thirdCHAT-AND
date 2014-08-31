@@ -685,8 +685,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 如果是群聊，设置chattype,默认是单聊
 			if (chatType == CHATTYPE_GROUP)
 				message.setChatType(ChatType.GroupChat);
-			String to = toChatUsername;
-			message.setReceipt(to);
+			message.setReceipt(toChatUsername);
 			int len = Integer.parseInt(length);
 			VoiceMessageBody body = new VoiceMessageBody(new File(filePath), len);
 			message.addBody(body);
@@ -718,7 +717,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		message.setReceipt(to);
 		ImageMessageBody body = new ImageMessageBody(new File(filePath));
 		// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
-		// body.setSendOriginalImage(true);
+		// body.setSendOriginalImage(true)
 		message.addBody(body);
 		conversation.addMessage(message);
 
