@@ -32,7 +32,6 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
-import com.easemob.chat.OnMessageNotifyListener;
 import com.easemob.chat.OnNotificationClickListener;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.MainActivity;
@@ -74,7 +73,7 @@ public class DemoApplication extends Application {
 		// 默认添加好友时，是不需要验证的，改成需要验证
 		options.setAcceptInvitationAlways(false);
 		// 设置收到消息是否有新消息通知，默认为true
-		options.setNotificationEnable(PreferenceUtils.getInstance(applicationContext).getSettingMsgNotification());
+		options.setNotifyBySoundAndVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgNotification());
 		// 设置收到消息是否有声音提示，默认为true
 		options.setNoticeBySound(PreferenceUtils.getInstance(applicationContext).getSettingMsgSound());
 		// 设置收到消息是否震动 默认为true

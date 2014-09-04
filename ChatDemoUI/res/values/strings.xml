@@ -12,6 +12,7 @@
     <string name="attach_take_pic">拍照</string>
     <string name="attach_location">位置</string>
     <string name="attach_file">文件</string>
+    <string name="attach_voice_call">语音电话</string>
     <string name="user_card">名片</string>
     <string name="move_up_to_cancel">手指上滑，取消发送</string>
     <string name="release_to_cancel">松开手指，取消发送</string>
@@ -48,6 +49,8 @@
     <string name="button_search">查找</string>
     <string name="button_add">添加</string>
     <string name="search_header">S</string>
+    
+    <string name="voip_unknown_user">未知联系人</string>
     
     <string name="network_isnot_available">网络不可用</string>
     <string name="recoding_fail">录音失败，请重试！</string>
