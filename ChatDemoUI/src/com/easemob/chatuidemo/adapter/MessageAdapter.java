@@ -299,9 +299,9 @@ public class MessageAdapter extends BaseAdapter {
 			// 如果是文本或者地图消息并且不是group messgae，显示的时候给对方发送已读回执
 			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked && chatType != ChatType.GroupChat) {
 				try {
+					EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
 					// 发送已读回执
 					message.isAcked = true;
-					EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -486,12 +486,11 @@ public class MessageAdapter extends BaseAdapter {
 		// send pic, show the pic directly
 		ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
 		String filePath = imgBody.getLocalUrl();
-		if (filePath!=null&&new File(filePath).exists())
+		if (filePath!=null&&new File(filePath).exists()){
 			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, null, message);
-//		else 
-//		{
-//			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
-//		}
+		}else {
+			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
+		}
 
 		switch (message.status) {
 		case SUCCESS:
@@ -691,6 +690,7 @@ public class MessageAdapter extends BaseAdapter {
 				return true;
 			}
 		});
+		
 
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 			if (message.isAcked) {

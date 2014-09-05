@@ -586,6 +586,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
 		} else if (id == R.id.btn_file) { // 点击文件图标
 			selectFileFromLocal();
+		} else if (id == R.id.btn_voice_call) { //点击语音电话图标
+			startActivity(new Intent(ChatActivity.this, VoiceCallActivity.class));
 		}
 	}
 
@@ -717,7 +719,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		message.setReceipt(to);
 		ImageMessageBody body = new ImageMessageBody(new File(filePath));
 		// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
-		// body.setSendOriginalImage(true)
+//		 body.setSendOriginalImage(true);
 		message.addBody(body);
 		conversation.addMessage(message);
 

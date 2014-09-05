@@ -81,12 +81,6 @@ public class VoicePlayClickListener implements View.OnClickListener {
 	}
 
 	public void stopPlayVoice() {
-		voiceAnimation.stop();
-		if (message.direct == EMMessage.Direct.RECEIVE) {
-			voiceIconView.setImageResource(R.drawable.chatfrom_voice_playing);
-		} else {
-			voiceIconView.setImageResource(R.drawable.chatto_voice_playing);
-		}
 		// stop play voice
 		if (mediaPlayer != null) {
 			mediaPlayer.stop();
@@ -153,7 +147,7 @@ public class VoicePlayClickListener implements View.OnClickListener {
 	}
 
 	// show the voice playing animation
-	private void showAnimation() {
+	public void showAnimation() {
 		// play voice, and start animation
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 				voiceIconView.setImageResource(R.anim.voice_from_icon);
@@ -162,6 +156,18 @@ public class VoicePlayClickListener implements View.OnClickListener {
 		}
 		voiceAnimation = (AnimationDrawable) voiceIconView.getDrawable();
 		voiceAnimation.start();
+	}
+	
+	public void stopAnimation(){
+		try {
+			if (message.direct == EMMessage.Direct.RECEIVE) {
+				voiceIconView.setImageResource(R.drawable.chatfrom_voice_playing);
+			} else {
+				voiceIconView.setImageResource(R.drawable.chatto_voice_playing);
+			}
+			voiceAnimation.stop();
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
