@@ -50,8 +50,6 @@
     <string name="button_add">添加</string>
     <string name="search_header">S</string>
     
-    <string name="voip_unknown_user">未知联系人</string>
-    
     <string name="network_isnot_available">网络不可用</string>
     <string name="recoding_fail">录音失败，请重试！</string>
     <string name="select_contacts">选择联系人</string>

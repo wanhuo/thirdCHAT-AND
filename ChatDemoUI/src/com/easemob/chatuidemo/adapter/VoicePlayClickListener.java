@@ -16,10 +16,7 @@ package com.easemob.chatuidemo.adapter;
 import java.io.File;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -29,15 +26,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatDB;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
-import com.easemob.chat.FileMessageBody;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.activity.ChatActivity;
 
 public class VoicePlayClickListener implements View.OnClickListener {
 
@@ -81,6 +75,12 @@ public class VoicePlayClickListener implements View.OnClickListener {
 	}
 
 	public void stopPlayVoice() {
+		voiceAnimation.stop();
+		if (message.direct == EMMessage.Direct.RECEIVE) {
+			voiceIconView.setImageResource(R.drawable.chatfrom_voice_playing);
+		} else {
+			voiceIconView.setImageResource(R.drawable.chatto_voice_playing);
+		}
 		// stop play voice
 		if (mediaPlayer != null) {
 			mediaPlayer.stop();
@@ -147,7 +147,7 @@ public class VoicePlayClickListener implements View.OnClickListener {
 	}
 
 	// show the voice playing animation
-	public void showAnimation() {
+	private void showAnimation() {
 		// play voice, and start animation
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 				voiceIconView.setImageResource(R.anim.voice_from_icon);
@@ -156,18 +156,6 @@ public class VoicePlayClickListener implements View.OnClickListener {
 		}
 		voiceAnimation = (AnimationDrawable) voiceIconView.getDrawable();
 		voiceAnimation.start();
-	}
-	
-	public void stopAnimation(){
-		try {
-			if (message.direct == EMMessage.Direct.RECEIVE) {
-				voiceIconView.setImageResource(R.drawable.chatfrom_voice_playing);
-			} else {
-				voiceIconView.setImageResource(R.drawable.chatto_voice_playing);
-			}
-			voiceAnimation.stop();
-		} catch (Exception e) {
-		}
 	}
 
 	@Override
