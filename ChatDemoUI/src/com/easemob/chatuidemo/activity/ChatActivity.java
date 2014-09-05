@@ -587,7 +587,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		} else if (id == R.id.btn_file) { // 点击文件图标
 			selectFileFromLocal();
 		} else if (id == R.id.btn_voice_call) { //点击语音电话图标
-			startActivity(new Intent(ChatActivity.this, VoiceCallActivity.class));
+			startActivity(new Intent(ChatActivity.this, VoiceCallActivity.class).
+					putExtra("username", toChatUsername).
+					putExtra("isComingCall", false));
 		}
 	}
 

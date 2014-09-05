@@ -21,6 +21,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -38,6 +39,7 @@ import com.easemob.chatuidemo.activity.MainActivity;
 import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
+import com.easemob.chatuidemo.receiver.VoiceCallReceiver;
 import com.easemob.chatuidemo.utils.PreferenceUtils;
 
 public class DemoApplication extends Application {
@@ -122,7 +124,12 @@ public class DemoApplication extends Application {
 //
 //
 //		});
-
+		
+		//注册一个语言电话的广播接收者
+		IntentFilter callFilter = new IntentFilter(EMChatManager.getInstance().getIncomingVoiceCallBroadcastAction());
+		registerReceiver(new VoiceCallReceiver(), callFilter);
+		
+		
 	}
 
 	public static DemoApplication getInstance() {
