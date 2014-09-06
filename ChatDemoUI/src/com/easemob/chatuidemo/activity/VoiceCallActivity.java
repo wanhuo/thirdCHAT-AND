@@ -51,6 +51,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private TextView callStateTextView;
 	private SoundPool soundPool;
 	private int streamID;
+	private boolean endCallTriggerByMe = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,12 +81,75 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 //				Message msg = handler.obtainMessage();
 				switch (callState) {
 
-				case CONNECTED: // 电话接通成功
-					handler.sendEmptyMessage(0);
-					break;
+				case CONNECTING: // 正在连接对方
+				    VoiceCallActivity.this.runOnUiThread(new Runnable(){
 
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                            callStateTextView.setText("正在连接对方...");
+                        }
+                        
+                    });
+				    break;
+				case CONNECTED: // 双方已经建立连接
+				    VoiceCallActivity.this.runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                            callStateTextView.setText("已经和对方建立连接，等待对方接受...");
+                        }
+				        
+				    });
+					break;
+				
+				case ACCEPTED: // 电话接通成功
+				    VoiceCallActivity.this.runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run() {
+                            callStateTextView.setText("通话中...");
+                        }
+				        
+				    });
+				    break;
 				case DISCONNNECTED: // 电话断了
-					handler.sendEmptyMessage(1);
+				    final CallError fError = error;
+				    VoiceCallActivity.this.runOnUiThread(new Runnable(){
+                        private void postDelayedCloseMsg(){
+                            handler.postDelayed(new Runnable(){
+
+                                @Override
+                                public void run() {
+                                    finish();                                       
+                                }
+                                
+                            }, 3000);
+                        }
+                        
+                        @Override
+                        public void run() {
+                            if(fError == CallError.REJECTED){
+                                callStateTextView.setText("对方拒绝接受！...");
+                                postDelayedCloseMsg();
+                            }else if(fError == CallError.ERROR_TRANSPORT){
+                                callStateTextView.setText("连接建立失败！...");
+                                postDelayedCloseMsg();
+                            }else if(fError == CallError.ERROR_INAVAILABLE){
+                                callStateTextView.setText("对方不在线，请稍后再拨...");
+                                postDelayedCloseMsg();
+                            }else{
+                                if(endCallTriggerByMe){
+                                    callStateTextView.setText("挂断...");
+                                }else{
+                                    callStateTextView.setText("对方已经挂断...");
+                                }
+                                postDelayedCloseMsg();
+                            }
+                        }
+                        
+                    });
 					
 					break;
 					
@@ -106,17 +170,17 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		
 		if (!isComingCall) {//拨打电话
 			//soundpool
-			soundPool = new SoundPool(1,AudioManager.STREAM_RING,0);
-			outgoing = soundPool.load(this, R.raw.outgoing, 1);
+			//soundPool = new SoundPool(1,AudioManager.STREAM_RING,0);
+			//outgoing = soundPool.load(this, R.raw.outgoing, 1);
 			try {
 				comingBtnContainer.setVisibility(View.INVISIBLE);
 				hangupBtn.setVisibility(View.VISIBLE);
 				callStateTextView.setText("正在呼叫...");
-				handler.postDelayed(new Runnable() {
+				/*handler.postDelayed(new Runnable() {
 					public void run() {
 						streamID = playSounds();
 					}
-				}, 200);
+				}, 200);*/
 				// 拨打语言电话
 				EMChatManager.getInstance().makeVoiceCall(username);
 			} catch (EMServiceNotReadyException e) {
@@ -134,21 +198,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
-	private Handler handler = new Handler(){
-		public void handleMessage(android.os.Message msg) {
-			switch (msg.what) {
-			case 0:
-				callStateTextView.setText("通话中...");
-				break;
-			case 1:
-				if (!isFinishing())
-					finish();
-				break;
-			default:
-				break;
-			}
-		};
-	};
+	private Handler handler = new Handler();
 	private Ringtone ringtone;
 	private int outgoing;
 	private TextView nickTextView;
@@ -160,6 +210,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		case R.id.btn_refuse_call: // 拒绝接听
 			if(ringtone != null)
 				ringtone.stop();
+		    EMChatManager.getInstance().rejectCall();
 			finish();
 			break;
 
@@ -174,8 +225,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			break;
 
 		case R.id.btn_hangup_call: // 挂断电话
-			soundPool.stop(streamID);
-			
+			//soundPool.stop(streamID);
+		    endCallTriggerByMe = true;
 			try {
 				EMChatManager.getInstance().endCall();
 			} catch (Exception e) {
