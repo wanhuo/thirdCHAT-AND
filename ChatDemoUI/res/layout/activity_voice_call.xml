@@ -12,9 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_weight="1"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:orientation="vertical" >
 
         <TextView
@@ -23,15 +23,17 @@
             android:layout_height="wrap_content"
             android:textColor="@color/voip_interface_text_color"
             android:textSize="22sp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:visibility="visible" />
 
 
         <TextView
-            android:id="@+id/layout_callin_duration"
+            android:id="@+id/tv_calling_duration"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
             android:textColor="@color/voip_interface_text_color"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:visibility="visible" />
     </LinearLayout>
 

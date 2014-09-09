@@ -14,10 +14,9 @@
 
 package com.easemob.chatuidemo.activity;
 
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
 
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.media.SoundPool;
@@ -52,6 +51,12 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private SoundPool soundPool;
 	private int streamID;
 	private boolean endCallTriggerByMe = false;
+	private Handler handler = new Handler();
+	private Ringtone ringtone;
+	private int outgoing;
+	private TextView nickTextView;
+	private TextView durationTextView;
+	private SimpleDateFormat dateFormat;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		handsFreeImage = (ImageView) findViewById(R.id.iv_handsfree);
 		callStateTextView = (TextView) findViewById(R.id.tv_call_state);
 		nickTextView = (TextView) findViewById(R.id.tv_nick);
+		durationTextView = (TextView) findViewById(R.id.tv_calling_duration);
 
 		refuseBtn.setOnClickListener(this);
 		answerBtn.setOnClickListener(this);
@@ -74,6 +80,49 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		handsFreeImage.setOnClickListener(this);
 
 		// 注册语音电话的状态的监听
+		addCallStateListener();
+
+		// 对方username
+		String username = getIntent().getStringExtra("username");
+		nickTextView.setText(username);
+		
+		// 语音电话是否为接收的
+		isComingCall = getIntent().getBooleanExtra("isComingCall", false);
+		
+		if (!isComingCall) {//拨打电话
+			soundPool = new SoundPool(1,AudioManager.STREAM_RING,0);
+			outgoing = soundPool.load(this, R.raw.outgoing, 1);
+			try {
+				comingBtnContainer.setVisibility(View.INVISIBLE);
+				hangupBtn.setVisibility(View.VISIBLE);
+				callStateTextView.setText("正在呼叫...");
+				handler.postDelayed(new Runnable() {
+					public void run() {
+						streamID = playMakeCallSounds();
+					}
+				}, 300);
+				// 拨打语言电话
+				EMChatManager.getInstance().makeVoiceCall(username);
+			} catch (EMServiceNotReadyException e) {
+				e.printStackTrace();
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(VoiceCallActivity.this, "尚未连接至服务器", 0);
+					}
+				});
+			}
+		}else{ //有电话进来
+			Uri ringUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+			ringtone = RingtoneManager.getRingtone(this, ringUri);
+			ringtone.play();
+		}
+	}
+
+	
+	/**
+	 * 设置电话监听
+	 */
+	void addCallStateListener() {
 		EMChatManager.getInstance().addVoiceCallStateChangeListener(new EMCallStateChangeListener() {
 
 			@Override
@@ -109,6 +158,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
                         @Override
                         public void run() {
+                        	
                             callStateTextView.setText("通话中...");
                         }
 				        
@@ -125,7 +175,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
                                     finish();                                       
                                 }
                                 
-                            }, 3000);
+                            }, 1000);
                         }
                         
                         @Override
@@ -159,50 +209,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
 			}
 		});
-
-		// 对方username
-		String username = getIntent().getStringExtra("username");
-		nickTextView.setText(username);
-		
-		// 语音电话是否为接收的
-		isComingCall = getIntent().getBooleanExtra("isComingCall", false);
-		
-		
-		if (!isComingCall) {//拨打电话
-			//soundpool
-			//soundPool = new SoundPool(1,AudioManager.STREAM_RING,0);
-			//outgoing = soundPool.load(this, R.raw.outgoing, 1);
-			try {
-				comingBtnContainer.setVisibility(View.INVISIBLE);
-				hangupBtn.setVisibility(View.VISIBLE);
-				callStateTextView.setText("正在呼叫...");
-				/*handler.postDelayed(new Runnable() {
-					public void run() {
-						streamID = playSounds();
-					}
-				}, 200);*/
-				// 拨打语言电话
-				EMChatManager.getInstance().makeVoiceCall(username);
-			} catch (EMServiceNotReadyException e) {
-				e.printStackTrace();
-				runOnUiThread(new Runnable() {
-					public void run() {
-						Toast.makeText(VoiceCallActivity.this, "尚未连接至服务器", 0);
-					}
-				});
-			}
-		}else{ //有电话进来
-			Uri ringUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-			ringtone = RingtoneManager.getRingtone(this, ringUri);
-			ringtone.play();
-		}
 	}
 
-	private Handler handler = new Handler();
-	private Ringtone ringtone;
-	private int outgoing;
-	private TextView nickTextView;
-	
 	
 	@Override
 	public void onClick(View v) {
@@ -225,7 +233,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			break;
 
 		case R.id.btn_hangup_call: // 挂断电话
-			//soundPool.stop(streamID);
+			if(soundPool != null)
+				soundPool.stop(streamID);
 		    endCallTriggerByMe = true;
 			try {
 				EMChatManager.getInstance().endCall();
@@ -260,13 +269,13 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 	
-
+	
 	/**
-	 * 播放响铃
+	 * 播放拨号响铃
 	 * @param sound
 	 * @param number
 	 */
-	private int playSounds(){
+	private int playMakeCallSounds(){
 	    try {
 			AudioManager am = (AudioManager)this.getSystemService(this.AUDIO_SERVICE);
 			//最大音量
@@ -284,9 +293,15 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			    1);            //回放速度，0.5-2.0之间。1为正常速度
 			return id;
 		} catch (Exception e) {
-			System.out.println(e);
 			return -1;
 		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(soundPool != null)
+			soundPool.release();
 	}
 
 }
