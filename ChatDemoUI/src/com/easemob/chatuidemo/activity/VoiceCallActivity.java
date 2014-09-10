@@ -16,6 +16,7 @@ package com.easemob.chatuidemo.activity;
 
 import java.text.SimpleDateFormat;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -25,6 +26,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -57,6 +60,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private TextView nickTextView;
 	private TextView durationTextView;
 	private SimpleDateFormat dateFormat;
+	private WindowManager windowManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +83,11 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		muteImage.setOnClickListener(this);
 		handsFreeImage.setOnClickListener(this);
 
+		windowManager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+		LayoutParams wmParams = new WindowManager.LayoutParams();
+		wmParams.type = WindowManager.LayoutParams.TYPE_PRIORITY_PHONE;
+		wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 		// 注册语音电话的状态的监听
 		addCallStateListener();
 
@@ -158,7 +167,11 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
                         @Override
                         public void run() {
-                        	
+                        	try {
+								if(soundPool != null)
+									soundPool.stop(streamID);
+							} catch (Exception e) {
+							}
                             callStateTextView.setText("通话中...");
                         }
 				        
@@ -302,6 +315,13 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		super.onDestroy();
 		if(soundPool != null)
 			soundPool.release();
+		if(ringtone != null && ringtone.isPlaying())
+			ringtone.stop();
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+	}
 }
