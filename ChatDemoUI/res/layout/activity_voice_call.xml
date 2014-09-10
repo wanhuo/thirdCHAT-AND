@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#131518"
+    android:background="#252C39"
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp" >
@@ -27,6 +27,13 @@
             android:paddingRight="12dp"
             android:visibility="visible" />
 
+        <Chronometer
+            android:visibility="invisible"
+            android:id="@+id/chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:text="Chronometer" />
 
         <TextView
             android:id="@+id/tv_calling_duration"
@@ -93,6 +100,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
                     android:gravity="center"
+                    android:textColor="#666167"
                     android:text="静音" />
             </LinearLayout>
 
@@ -115,6 +123,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
                     android:gravity="center"
+                    android:textColor="#666167"
                     android:text="免提" />
             </LinearLayout>
         </LinearLayout>

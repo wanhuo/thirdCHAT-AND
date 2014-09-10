@@ -427,6 +427,7 @@ public class GroupDetailsActivity extends BaseActivity {
 							// Intent(GroupDetailsActivity.this,
 							// ChatActivity.class).putExtra("userId",
 							// user.getUsername()));
+							
 						}
 					}
 					

@@ -24,11 +24,13 @@ import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -61,6 +63,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private TextView durationTextView;
 	private SimpleDateFormat dateFormat;
 	private WindowManager windowManager;
+	private AudioManager audioManager;
+	private Chronometer chronometer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		callStateTextView = (TextView) findViewById(R.id.tv_call_state);
 		nickTextView = (TextView) findViewById(R.id.tv_nick);
 		durationTextView = (TextView) findViewById(R.id.tv_calling_duration);
+		chronometer = (Chronometer) findViewById(R.id.chronometer);
 
 		refuseBtn.setOnClickListener(this);
 		answerBtn.setOnClickListener(this);
@@ -83,11 +88,16 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		muteImage.setOnClickListener(this);
 		handsFreeImage.setOnClickListener(this);
 
-		windowManager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
-		LayoutParams wmParams = new WindowManager.LayoutParams();
-		wmParams.type = WindowManager.LayoutParams.TYPE_PRIORITY_PHONE;
-		wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES);
+//		windowManager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+//		LayoutParams wmParams = new WindowManager.LayoutParams();
+//		wmParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
+//		wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+//                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		audioManager = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
+		audioManager.setMicrophoneMute(false);
+		
 		// 注册语音电话的状态的监听
 		addCallStateListener();
 
@@ -172,6 +182,11 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 									soundPool.stop(streamID);
 							} catch (Exception e) {
 							}
+                        	closeSpeakerOn();
+                        	chronometer.setVisibility(View.VISIBLE);
+                        	chronometer.setBase(SystemClock.elapsedRealtime());    
+                            // 开始记时  
+                            chronometer.start();    
                             callStateTextView.setText("通话中...");
                         }
 				        
@@ -193,6 +208,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
                         
                         @Override
                         public void run() {
+                        	chronometer.stop();
                             if(fError == CallError.REJECTED){
                                 callStateTextView.setText("对方拒绝接受！...");
                                 postDelayedCloseMsg();
@@ -240,6 +256,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			hangupBtn.setVisibility(View.VISIBLE);
 			if(ringtone != null)
 				ringtone.stop();
+			closeSpeakerOn();
 			if (isComingCall) {
 				EMChatManager.getInstance().answerCall();
 			}
@@ -259,21 +276,26 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
 		case R.id.iv_mute: // 静音开关
 			if (isMuteState) {
-				// 关闭静音开关
+				// 关闭静音
 				muteImage.setImageResource(R.drawable.icon_mute_normal);
+				  audioManager.setMicrophoneMute(false);
 				isMuteState = false;
 			} else {
+				//打开静音
 				muteImage.setImageResource(R.drawable.icon_mute_on);
+				audioManager.setMicrophoneMute(true);
 				isMuteState = true;
 			}
 			break;
 		case R.id.iv_handsfree: // 免提开关
 			if (isHandsfreeState) {
-				// 关闭静音开关
+				// 关闭免提
 				handsFreeImage.setImageResource(R.drawable.icon_speaker_normal);
+				closeSpeakerOn();
 				isHandsfreeState = false;
 			} else {
 				handsFreeImage.setImageResource(R.drawable.icon_speaker_on);
+				openSpeakerOn();
 				isHandsfreeState = true;
 			}
 			break;
@@ -290,11 +312,10 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	 */
 	private int playMakeCallSounds(){
 	    try {
-			AudioManager am = (AudioManager)this.getSystemService(this.AUDIO_SERVICE);
 			//最大音量
-			float audioMaxVolumn = am.getStreamMaxVolume(AudioManager.STREAM_RING);
+			float audioMaxVolumn = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
 			//当前音量
-			float audioCurrentVolumn = am.getStreamVolume(AudioManager.STREAM_RING);
+			float audioCurrentVolumn = audioManager.getStreamVolume(AudioManager.STREAM_RING);
 			float volumnRatio = audioCurrentVolumn/audioMaxVolumn;
 			
 			//播放
@@ -324,4 +345,45 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		super.onResume();
 		
 	}
+	
+	//打开扬声器
+	public void openSpeakerOn() {
+        try{
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+//        audioManager.setMode(AudioManager.ROUTE_SPEAKER);
+
+//        if(!audioManager.isSpeakerphoneOn()) {
+          audioManager.setSpeakerphoneOn(true);
+          audioManager.setMode(AudioManager.MODE_IN_CALL);
+//          audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
+//                 audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL ),
+//                 AudioManager.STREAM_VOICE_CALL);
+//        }
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+    }
+    
+	
+	 //关闭扬声器
+    public void closeSpeakerOn() {
+    
+        try {
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if(audioManager != null) {
+//                if(audioManager.isSpeakerphoneOn()) {
+                  audioManager.setSpeakerphoneOn(false);
+                  audioManager.setMode(AudioManager.MODE_IN_CALL);
+//                  int currVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
+//                  audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,currVolume,
+//                             AudioManager.STREAM_VOICE_CALL);
+//                }
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+          //Toast.makeText(context,"扬声器已经关闭",Toast.LENGTH_SHORT).show();
+    }
+    
 }
