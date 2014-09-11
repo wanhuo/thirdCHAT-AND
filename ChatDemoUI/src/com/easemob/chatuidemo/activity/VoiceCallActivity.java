@@ -247,7 +247,12 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		case R.id.btn_refuse_call: // 拒绝接听
 			if(ringtone != null)
 				ringtone.stop();
-		    EMChatManager.getInstance().rejectCall();
+		    try {
+                EMChatManager.getInstance().rejectCall();
+            } catch (Exception e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
 			finish();
 			break;
 
@@ -258,7 +263,13 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 				ringtone.stop();
 			closeSpeakerOn();
 			if (isComingCall) {
-				EMChatManager.getInstance().answerCall();
+				try {
+                    EMChatManager.getInstance().answerCall();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    finish();
+                }
 			}
 			break;
 
