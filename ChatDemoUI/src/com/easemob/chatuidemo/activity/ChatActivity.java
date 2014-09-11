@@ -356,6 +356,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		ackMessageIntentFilter.setPriority(5);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 
+		// 注册一个消息送达的BroadcastReceiver
+		IntentFilter deliveryAckMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getDeliveryAckMessageBroadcastAction());
+		deliveryAckMessageIntentFilter.setPriority(5);
+		registerReceiver(deliveryAckMessageReceiver, deliveryAckMessageIntentFilter);
+		
 		// 监听当前会话的群聊解散被T事件
 		groupListener = new GroupListener();
 		EMGroupManager.getInstance().addGroupChangeListener(groupListener);
@@ -1047,6 +1052,27 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			adapter.notifyDataSetChanged();
 		}
 	};
+	
+	/**
+	 * 消息送达BroadcastReceiver
+	 */
+	private BroadcastReceiver deliveryAckMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String msgid = intent.getStringExtra("msgid");
+			String from = intent.getStringExtra("from");
+			EMConversation conversation = EMChatManager.getInstance().getConversation(from);
+			if (conversation != null) {
+				// 把message设为已读
+				EMMessage msg = conversation.getMessage(msgid);
+				if (msg != null) {
+					msg.isDelivered = true;
+				}
+			}
+			abortBroadcast();
+			adapter.notifyDataSetChanged();
+		}
+	};
 	private PowerManager.WakeLock wakeLock;
 
 	/**
@@ -1214,6 +1240,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		try {
 			unregisterReceiver(ackMessageReceiver);
 			ackMessageReceiver = null;
+			unregisterReceiver(deliveryAckMessageReceiver);
+			deliveryAckMessageReceiver = null;
 		} catch (Exception e) {
 		}
 	}
