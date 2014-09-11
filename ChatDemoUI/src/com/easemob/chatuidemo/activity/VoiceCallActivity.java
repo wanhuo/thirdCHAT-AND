@@ -89,12 +89,10 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		handsFreeImage.setOnClickListener(this);
 
 		
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES);
-//		windowManager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
-//		LayoutParams wmParams = new WindowManager.LayoutParams();
-//		wmParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
-//		wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-//                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+	            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+	            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
+	            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 		audioManager = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
 		audioManager.setMicrophoneMute(false);
 		
