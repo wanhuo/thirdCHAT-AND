@@ -132,6 +132,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			}
 		}else{ //有电话进来
 			Uri ringUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+			audioManager.setMode(AudioManager.MODE_RINGTONE);
+			audioManager.setSpeakerphoneOn(true);
 			ringtone = RingtoneManager.getRingtone(this, ringUri);
 			ringtone.play();
 		}
@@ -203,7 +205,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
                                     finish();                                       
                                 }
                                 
-                            }, 1000);
+                            }, 1500);
                         }
                         
                         @Override
@@ -318,6 +320,9 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			float audioCurrentVolumn = audioManager.getStreamVolume(AudioManager.STREAM_RING);
 			float volumnRatio = audioCurrentVolumn/audioMaxVolumn;
 			
+			audioManager.setMode(AudioManager.MODE_RINGTONE);
+			audioManager.setSpeakerphoneOn(false);
+			
 			//播放
 			int id = soundPool.play(outgoing,     //声音资源
 			    volumnRatio,         //左声道
@@ -350,7 +355,6 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	public void openSpeakerOn() {
         try{
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-//        audioManager.setMode(AudioManager.ROUTE_SPEAKER);
 
 //        if(!audioManager.isSpeakerphoneOn()) {
           audioManager.setSpeakerphoneOn(true);
@@ -383,7 +387,6 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-          //Toast.makeText(context,"扬声器已经关闭",Toast.LENGTH_SHORT).show();
     }
     
 }
