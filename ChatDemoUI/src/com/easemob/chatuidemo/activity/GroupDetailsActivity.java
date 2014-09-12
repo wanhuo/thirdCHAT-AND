@@ -29,6 +29,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,11 +40,12 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.utils.PreferenceUtils;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.util.EMLog;
 import com.easemob.util.NetUtils;
 
-public class GroupDetailsActivity extends BaseActivity {
+public class GroupDetailsActivity extends BaseActivity implements OnClickListener {
 	private static final String TAG = "GroupDetailsActivity";
 	private static final int REQUEST_CODE_ADD_USER = 0;
 	private static final int REQUEST_CODE_EXIT = 1;
@@ -61,6 +63,16 @@ public class GroupDetailsActivity extends BaseActivity {
 	private int referenceHeight;
 	private ProgressDialog progressDialog;
 	
+	private RelativeLayout rl_switch_block_groupmsg;
+	/**
+	 * 屏蔽群消息imageView
+	 */
+	private ImageView iv_switch_block_groupmsg;
+	/**
+	 * 关闭屏蔽群消息imageview
+	 */
+	private ImageView iv_switch_unblock_groupmsg;
+	
 	public static GroupDetailsActivity instance;
 	
 	//清空所有聊天记录
@@ -77,6 +89,13 @@ public class GroupDetailsActivity extends BaseActivity {
 		loadingPB = (ProgressBar) findViewById(R.id.progressBar);
 		exitBtn = (Button) findViewById(R.id.btn_exit_grp);
 		deleteBtn = (Button) findViewById(R.id.btn_exitdel_grp);
+		
+		rl_switch_block_groupmsg = (RelativeLayout)findViewById(R.id.rl_switch_block_groupmsg);
+		
+		iv_switch_block_groupmsg = (ImageView) findViewById(R.id.iv_switch_block_groupmsg);
+		iv_switch_unblock_groupmsg = (ImageView) findViewById(R.id.iv_switch_unblock_groupmsg);
+		
+		rl_switch_block_groupmsg.setOnClickListener(this);
 
 		Drawable referenceDrawable = getResources().getDrawable(R.drawable.smiley_add_btn);
 		referenceWidth = referenceDrawable.getIntrinsicWidth();
@@ -502,6 +521,16 @@ public class GroupDetailsActivity extends BaseActivity {
 								deleteBtn.setVisibility(View.GONE);
 								
 							}
+							
+							//update block 
+					        System.out.println("group msg is blocked:" + group.getMsgBlocked());
+					        if (group.getMsgBlocked()) {
+					        	iv_switch_block_groupmsg.setVisibility(View.VISIBLE);
+								iv_switch_unblock_groupmsg.setVisibility(View.INVISIBLE);
+					        } else {
+					        	iv_switch_block_groupmsg.setVisibility(View.INVISIBLE);
+								iv_switch_unblock_groupmsg.setVisibility(View.VISIBLE);
+					        }
 						}
 					});
 
@@ -535,6 +564,39 @@ public class GroupDetailsActivity extends BaseActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		instance = null;
+	}
+
+
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.rl_switch_block_groupmsg:
+			if (iv_switch_block_groupmsg.getVisibility() == View.VISIBLE) {
+				System.out.println("change to unblock group msg");
+				try {
+				    EMGroupManager.getInstance().unblockGroupMessage(groupId);
+				    iv_switch_block_groupmsg.setVisibility(View.INVISIBLE);
+					iv_switch_unblock_groupmsg.setVisibility(View.VISIBLE);
+				} catch (Exception e) {
+					e.printStackTrace();
+					//todo: 显示错误给用户
+				}
+			} else {
+				System.out.println("change to block group msg");
+				try {
+				    EMGroupManager.getInstance().blockGroupMessage(groupId);
+				    iv_switch_block_groupmsg.setVisibility(View.VISIBLE);
+					iv_switch_unblock_groupmsg.setVisibility(View.INVISIBLE);
+				} catch (Exception e) {
+					e.printStackTrace();
+					//todo: 显示错误给用户
+				}
+			}
+			break;
+			default:
+		}
+		
 	}
 	
 	

@@ -3,6 +3,7 @@
 
     <string name="app_name">环信UI演示</string>
     <string name="text_ack_msg">已读</string>
+    <string name="text_delivered_msg">送达</string>
     <string name="back">返回</string>
     <string name="save">保存</string>
     <string name="button_pushtotalk">按住说话</string>
@@ -49,8 +50,6 @@
     <string name="button_search">查找</string>
     <string name="button_add">添加</string>
     <string name="search_header">S</string>
-    
-    <string name="voip_unknown_user">未知联系人</string>
     
     <string name="network_isnot_available">网络不可用</string>
     <string name="recoding_fail">录音失败，请重试！</string>

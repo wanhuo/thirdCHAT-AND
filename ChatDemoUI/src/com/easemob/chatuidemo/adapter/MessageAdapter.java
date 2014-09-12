@@ -288,11 +288,24 @@ public class MessageAdapter extends BaseAdapter {
 		// 如果是发送的消息并且不是群聊消息，显示已读textview
 		if (message.direct == EMMessage.Direct.SEND && chatType != ChatType.GroupChat) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
+			holder.tv_delivered = (TextView) convertView.findViewById(R.id.tv_delivered);
 			if (holder.tv_ack != null) { 
 				if (message.isAcked) {
+					if (holder.tv_delivered != null) {
+						holder.tv_delivered.setVisibility(View.INVISIBLE);	
+					}
 					holder.tv_ack.setVisibility(View.VISIBLE);
 				} else {
 					holder.tv_ack.setVisibility(View.INVISIBLE);
+					
+					//check and display msg delivered ack status
+				    if (holder.tv_delivered != null) {
+					    if (message.isDelivered) {
+					    	holder.tv_delivered.setVisibility(View.VISIBLE);
+					    } else {
+					    	holder.tv_delivered.setVisibility(View.INVISIBLE);
+					    }
+					}
 				}
 			}
 		} else {
@@ -1200,7 +1213,11 @@ public class MessageAdapter extends BaseAdapter {
 		LinearLayout container_status_btn;
 		LinearLayout ll_container;
 		ImageView iv_read_status;
+		//显示已读回执状态
 		TextView tv_ack;
+		//显示送达回执状态
+		TextView tv_delivered;
+		
 		TextView tv_file_name;
 		TextView tv_file_size;
 		TextView tv_file_download_state;

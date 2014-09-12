@@ -96,9 +96,8 @@
                 android:layout_height="50dip"
                 android:background="@drawable/btn_bottom_selector"
                 android:layout_marginTop="6dp"
-                android:gravity="center"
-                
-                ><TextView
+                android:gravity="center">
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -108,8 +107,43 @@
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     android:typeface="serif" />
-                
             </RelativeLayout>
+            
+            <RelativeLayout
+                    android:id="@+id/rl_switch_block_groupmsg"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dip"
+                    android:background="@drawable/btn_bottom_selector"
+                    android:padding="10dip" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:paddingLeft="10dip"
+                        android:text="屏蔽群消息"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"
+                        android:typeface="serif" />
+
+                    <ImageView
+                        android:id="@+id/iv_switch_block_groupmsg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/open_icon"
+                        android:visibility="invisible" />
+
+                    <ImageView
+                        android:id="@+id/iv_switch_unblock_groupmsg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/close_icon"
+                        android:visibility="visible" />
+                </RelativeLayout>
             
               <TextView
                         android:layout_width="match_parent"
