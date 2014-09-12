@@ -31,6 +31,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -208,10 +210,14 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
 								@Override
 								public void run() {
+									saveCallRecord();
+									Animation animation = new AlphaAnimation(1.0f, 0.0f);
+									animation.setDuration(800);
+									findViewById(R.id.root_layout).startAnimation(animation);
 									finish();
 								}
 
-							}, 1500);
+							},200);
 						}
 
 						@Override
@@ -261,9 +267,10 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
                 EMChatManager.getInstance().rejectCall();
             } catch (Exception e1) {
                 e1.printStackTrace();
+                saveCallRecord();
+                finish();
             }
 			callingState = CallingState.REFUESD;
-			finish();
 			break;
 
 		case R.id.btn_answer_call: // 接听电话
@@ -278,6 +285,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
+                    saveCallRecord();
                     finish();
                 }
 			}
@@ -291,8 +299,9 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 				EMChatManager.getInstance().endCall();
 			} catch (Exception e) {
 				e.printStackTrace();
+				saveCallRecord();
+				finish();
 			}
-			finish();
 			break;
 
 		case R.id.iv_mute: // 静音开关
@@ -361,13 +370,13 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			soundPool.release();
 		if (ringtone != null && ringtone.isPlaying())
 			ringtone.stop();
-		saveCallRecord();
 		super.onDestroy();
 	}
 
 	@Override
 	public void onBackPressed() {
 		EMChatManager.getInstance().endCall();
+		saveCallRecord();
 		finish();
 	}
 
@@ -376,13 +385,12 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		try {
 			AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-			// if(!audioManager.isSpeakerphoneOn()) {
-			audioManager.setSpeakerphoneOn(true);
+			 if(!audioManager.isSpeakerphoneOn()) 
+				 audioManager.setSpeakerphoneOn(true);
 			audioManager.setMode(AudioManager.MODE_IN_CALL);
 			// audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
 			// audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL ),
 			// AudioManager.STREAM_VOICE_CALL);
-			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -394,14 +402,13 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		try {
 			AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 			if (audioManager != null) {
-				// if(audioManager.isSpeakerphoneOn()) {
-				audioManager.setSpeakerphoneOn(false);
+				 if(audioManager.isSpeakerphoneOn()) 
+					 audioManager.setSpeakerphoneOn(false);
 				audioManager.setMode(AudioManager.MODE_IN_CALL);
 				// int currVolume =
 				// audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
 				// audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,currVolume,
 				// AudioManager.STREAM_VOICE_CALL);
-				// }
 			}
 
 		} catch (Exception e) {
@@ -443,7 +450,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		message.setMsgId(UUID.randomUUID().toString());
 
 		//保存
-		EMChatManager.getInstance().saveMessage(message);
+		EMChatManager.getInstance().saveMessage(message,false);
 	}
 
 	enum CallingState {
