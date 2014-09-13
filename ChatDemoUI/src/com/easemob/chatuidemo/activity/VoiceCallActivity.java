@@ -235,8 +235,12 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 								callStateTextView.setText("连接建立失败！...");
 								postDelayedCloseMsg();
 							} else if (fError == CallError.ERROR_INAVAILABLE) {
+								callingState = CallingState.OFFLINE;
 								callStateTextView.setText("对方不在线，请稍后再拨...");
 								postDelayedCloseMsg();
+							} else if(fError == CallError.ERROR_BUSY){
+								callingState = CallingState.BUSY;
+								callStateTextView.setText("对方正在通话中，请稍后再拨");
 							} else {
 								if (endCallTriggerByMe) {
 									callStateTextView.setText("挂断...");
@@ -415,6 +419,9 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
+	/**
+	 * 保存通话消息记录
+	 */
 	private void saveCallRecord() {
 		EMMessage message = null;
 		TextMessageBody txtBody = null; 
@@ -436,7 +443,12 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		case BEREFUESD:
 			txtBody = new TextMessageBody("对方已拒绝");
 			break;
-
+		case OFFLINE:
+			txtBody = new TextMessageBody("对方不在线");
+			break;
+		case BUSY:
+			txtBody = new TextMessageBody("对方正在通话中");
+			break;
 		default:
 			txtBody = new TextMessageBody("已取消");
 			break;
@@ -453,6 +465,6 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	}
 
 	enum CallingState {
-		CANCED, NORMAL, REFUESD, BEREFUESD
+		CANCED, NORMAL, REFUESD, BEREFUESD,OFFLINE,BUSY
 	}
 }
