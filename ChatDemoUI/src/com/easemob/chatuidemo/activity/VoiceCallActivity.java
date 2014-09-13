@@ -242,7 +242,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 									callStateTextView.setText("对方已经挂断...");
 								}
 								postDelayedCloseMsg();
-							}
+							} 
 						}
 
 					});
@@ -405,10 +405,6 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 				 if(audioManager.isSpeakerphoneOn()) 
 					 audioManager.setSpeakerphoneOn(false);
 				audioManager.setMode(AudioManager.MODE_IN_CALL);
-				// int currVolume =
-				// audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
-				// audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,currVolume,
-				// AudioManager.STREAM_VOICE_CALL);
 			}
 
 		} catch (Exception e) {

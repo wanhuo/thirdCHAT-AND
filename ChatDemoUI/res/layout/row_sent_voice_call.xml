@@ -51,7 +51,6 @@
                 android:layout_toRightOf="@id/iv_call_icon"
                 android:background="@null"
                 android:padding="6dp"
-                android:layout_marginLeft="6dp"
               />
         </RelativeLayout>
 
