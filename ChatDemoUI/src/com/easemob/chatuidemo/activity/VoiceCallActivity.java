@@ -230,14 +230,11 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 							if (fError == CallError.REJECTED) {
 								callingState = CallingState.BEREFUESD;
 								callStateTextView.setText("对方拒绝接受！...");
-								postDelayedCloseMsg();
 							} else if (fError == CallError.ERROR_TRANSPORT) {
 								callStateTextView.setText("连接建立失败！...");
-								postDelayedCloseMsg();
 							} else if (fError == CallError.ERROR_INAVAILABLE) {
 								callingState = CallingState.OFFLINE;
 								callStateTextView.setText("对方不在线，请稍后再拨...");
-								postDelayedCloseMsg();
 							} else if(fError == CallError.ERROR_BUSY){
 								callingState = CallingState.BUSY;
 								callStateTextView.setText("对方正在通话中，请稍后再拨");
@@ -247,8 +244,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 								} else {
 									callStateTextView.setText("对方已经挂断...");
 								}
-								postDelayedCloseMsg();
 							} 
+							postDelayedCloseMsg();
 						}
 
 					});
@@ -383,6 +380,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	@Override
 	public void onBackPressed() {
 		EMChatManager.getInstance().endCall();
+		callDruationText = chronometer.getText().toString();
 		saveCallRecord();
 		finish();
 	}
