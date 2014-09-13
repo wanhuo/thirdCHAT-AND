@@ -30,12 +30,11 @@
         <ImageView
             android:id="@+id/iv_voice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/iv_userhead"
             android:background="@drawable/chatfrom_bg"
             android:clickable="true"
-            android:scaleType="fitCenter"
             android:src="@drawable/chatfrom_voice_playing" />
 
         <TextView

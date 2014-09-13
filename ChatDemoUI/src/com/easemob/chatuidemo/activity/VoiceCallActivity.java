@@ -372,6 +372,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			soundPool.release();
 		if (ringtone != null && ringtone.isPlaying())
 			ringtone.stop();
+		audioManager.setMode(AudioManager.MODE_NORMAL);
 		super.onDestroy();
 	}
 
