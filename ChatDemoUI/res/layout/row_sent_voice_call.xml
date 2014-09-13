@@ -36,11 +36,12 @@
             android:background="@drawable/chatto_bg" >
 
             <ImageView
+                android:layout_marginLeft="4dp"
                 android:id="@+id/iv_call_icon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_launcher" />
+                android:src="@drawable/chat_voice_call_self" />
 
             <TextView
                 android:id="@+id/tv_chatcontent"
@@ -50,6 +51,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/iv_call_icon"
                 android:background="@null"
+                android:minHeight="40dp"
                 android:padding="6dp"
               />
         </RelativeLayout>

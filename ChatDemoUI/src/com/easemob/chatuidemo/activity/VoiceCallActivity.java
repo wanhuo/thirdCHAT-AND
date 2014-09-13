@@ -78,6 +78,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private String callDruationText;
 	private String username;
 	private CallingState callingState = CallingState.CANCED;
+	String msgid;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +110,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
 		// 注册语音电话的状态的监听
 		addCallStateListener();
+		msgid = UUID.randomUUID().toString();
 
 		username = getIntent().getStringExtra("username");
 		// 语音电话是否为接收的
@@ -128,7 +130,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 						streamID = playMakeCallSounds();
 					}
 				}, 300);
-				// 拨打语言电话
+				// 拨打语音电话
 				EMChatManager.getInstance().makeVoiceCall(username);
 			} catch (EMServiceNotReadyException e) {
 				e.printStackTrace();
@@ -443,7 +445,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
 		// 设置消息body
 		message.addBody(txtBody);
-		message.setMsgId(UUID.randomUUID().toString());
+		message.setMsgId(msgid);
 
 		//保存
 		EMChatManager.getInstance().saveMessage(message,false);
