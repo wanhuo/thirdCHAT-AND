@@ -238,6 +238,9 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 							} else if(fError == CallError.ERROR_BUSY){
 								callingState = CallingState.BUSY;
 								callStateTextView.setText("对方正在通话中，请稍后再拨");
+							} else if(fError == CallError.ERROR_NORESPONSE){
+							    callingState = CallingState.NORESPONSE;
+							    callStateTextView.setText("对方无法接通");
 							} else {
 								if (endCallTriggerByMe) {
 									callStateTextView.setText("挂断...");
@@ -392,7 +395,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
 			 if(!audioManager.isSpeakerphoneOn()) 
 				 audioManager.setSpeakerphoneOn(true);
-			audioManager.setMode(AudioManager.MODE_IN_CALL);
+			 audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+			//audioManager.setMode(AudioManager.MODE_IN_CALL);
 			// audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
 			// audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL ),
 			// AudioManager.STREAM_VOICE_CALL);
@@ -409,7 +413,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			if (audioManager != null) {
 				 if(audioManager.isSpeakerphoneOn()) 
 					 audioManager.setSpeakerphoneOn(false);
-				audioManager.setMode(AudioManager.MODE_IN_CALL);
+				 audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+				//audioManager.setMode(AudioManager.MODE_IN_CALL);
 			}
 
 		} catch (Exception e) {
@@ -447,6 +452,9 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		case BUSY:
 			txtBody = new TextMessageBody("对方正在通话中");
 			break;
+		case NORESPONSE:
+		    txtBody = new TextMessageBody("对方无法接通");
+		    break;
 		default:
 			txtBody = new TextMessageBody("已取消");
 			break;
@@ -463,6 +471,6 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	}
 
 	enum CallingState {
-		CANCED, NORMAL, REFUESD, BEREFUESD,OFFLINE,BUSY
+		CANCED, NORMAL, REFUESD, BEREFUESD,OFFLINE,NORESPONSE,BUSY
 	}
 }
