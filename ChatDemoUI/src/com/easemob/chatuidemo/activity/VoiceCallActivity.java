@@ -80,6 +80,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private CallingState callingState = CallingState.CANCED;
 	String msgid;
 	private boolean isAnswered;
+	private LinearLayout voiceContronlLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +97,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		nickTextView = (TextView) findViewById(R.id.tv_nick);
 		durationTextView = (TextView) findViewById(R.id.tv_calling_duration);
 		chronometer = (Chronometer) findViewById(R.id.chronometer);
+		voiceContronlLayout = (LinearLayout) findViewById(R.id.ll_voice_control);
 
 		refuseBtn.setOnClickListener(this);
 		answerBtn.setOnClickListener(this);
@@ -142,6 +144,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 				});
 			}
 		} else { // 有电话进来
+			voiceContronlLayout.setVisibility(View.INVISIBLE);
 			Uri ringUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
 			audioManager.setMode(AudioManager.MODE_RINGTONE);
 			audioManager.setSpeakerphoneOn(true);
@@ -244,14 +247,20 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 								callStateTextView.setText("对方未接听");
 							} else {
 								if (isAnswered) {
+									callingState = CallingState.NORMAL;
 									if (endCallTriggerByMe) {
 										callStateTextView.setText("挂断...");
 									} else {
 										callStateTextView.setText("对方已经挂断...");
 									}
 								} else {
-									callingState = CallingState.UNANSWERED;
-									callStateTextView.setText("未接听");
+									if(isInComingCall){
+										callingState = CallingState.UNANSWERED;
+										callStateTextView.setText("未接听");
+									}else{
+										callingState = CallingState.CANCED;
+										callStateTextView.setText("已取消");
+									}
 								}
 							}
 							postDelayedCloseMsg();
@@ -288,13 +297,14 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		case R.id.btn_answer_call: // 接听电话
 			comingBtnContainer.setVisibility(View.INVISIBLE);
 			hangupBtn.setVisibility(View.VISIBLE);
+			voiceContronlLayout.setVisibility(View.VISIBLE);
 			if (ringtone != null)
 				ringtone.stop();
 			closeSpeakerOn();
 			if (isInComingCall) {
 				try {
-					EMChatManager.getInstance().answerCall();
 					isAnswered = true;
+					EMChatManager.getInstance().answerCall();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
