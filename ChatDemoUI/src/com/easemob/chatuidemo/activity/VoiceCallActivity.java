@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMCallStateChangeListener;
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMChatService;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chatuidemo.Constant;
@@ -124,7 +126,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		if (!isInComingCall) {// 拨打电话
 			soundPool = new SoundPool(1, AudioManager.STREAM_RING, 0);
 			outgoing = soundPool.load(this, R.raw.outgoing, 1);
-			try {
+			
 				comingBtnContainer.setVisibility(View.INVISIBLE);
 				hangupBtn.setVisibility(View.VISIBLE);
 				callStateTextView.setText("正在呼叫...");
@@ -133,16 +135,17 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 						streamID = playMakeCallSounds();
 					}
 				}, 300);
-				// 拨打语音电话
-				EMChatManager.getInstance().makeVoiceCall(username);
-			} catch (EMServiceNotReadyException e) {
-				e.printStackTrace();
-				runOnUiThread(new Runnable() {
-					public void run() {
-						Toast.makeText(VoiceCallActivity.this, "尚未连接至服务器", 0);
-					}
-				});
-			}
+				try {
+					// 拨打语音电话
+					EMChatManager.getInstance().makeVoiceCall(username);
+				} catch (EMServiceNotReadyException e) {
+					e.printStackTrace();
+					runOnUiThread(new Runnable() {
+						public void run() {
+							Toast.makeText(VoiceCallActivity.this, "尚未连接至服务器", 0);
+						}
+					});
+				}
 		} else { // 有电话进来
 			voiceContronlLayout.setVisibility(View.INVISIBLE);
 			Uri ringUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
