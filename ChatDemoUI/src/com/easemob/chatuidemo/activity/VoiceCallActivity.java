@@ -60,7 +60,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
 	private boolean isMuteState;
 	private boolean isHandsfreeState;
-	private boolean isComingCall;
+	private boolean isInComingCall;
 	private TextView callStateTextView;
 	private SoundPool soundPool;
 	private int streamID;
@@ -79,6 +79,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private String username;
 	private CallingState callingState = CallingState.CANCED;
 	String msgid;
+	private boolean isAnswered;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -114,11 +115,11 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 
 		username = getIntent().getStringExtra("username");
 		// 语音电话是否为接收的
-		isComingCall = getIntent().getBooleanExtra("isComingCall", false);
+		isInComingCall = getIntent().getBooleanExtra("isComingCall", false);
 
 		// 设置通话人
 		nickTextView.setText(username);
-		if (!isComingCall) {// 拨打电话
+		if (!isInComingCall) {// 拨打电话
 			soundPool = new SoundPool(1, AudioManager.STREAM_RING, 0);
 			outgoing = soundPool.load(this, R.raw.outgoing, 1);
 			try {
@@ -219,7 +220,7 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 									finish();
 								}
 
-							},200);
+							}, 200);
 						}
 
 						@Override
@@ -235,19 +236,24 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 							} else if (fError == CallError.ERROR_INAVAILABLE) {
 								callingState = CallingState.OFFLINE;
 								callStateTextView.setText("对方不在线，请稍后再拨...");
-							} else if(fError == CallError.ERROR_BUSY){
+							} else if (fError == CallError.ERROR_BUSY) {
 								callingState = CallingState.BUSY;
 								callStateTextView.setText("对方正在通话中，请稍后再拨");
-							} else if(fError == CallError.ERROR_NORESPONSE){
-							    callingState = CallingState.NORESPONSE;
-							    callStateTextView.setText("对方无法接通");
+							} else if (fError == CallError.ERROR_NORESPONSE) {
+								callingState = CallingState.NORESPONSE;
+								callStateTextView.setText("对方未接听");
 							} else {
-								if (endCallTriggerByMe) {
-									callStateTextView.setText("挂断...");
+								if (isAnswered) {
+									if (endCallTriggerByMe) {
+										callStateTextView.setText("挂断...");
+									} else {
+										callStateTextView.setText("对方已经挂断...");
+									}
 								} else {
-									callStateTextView.setText("对方已经挂断...");
+									callingState = CallingState.UNANSWERED;
+									callStateTextView.setText("未接听");
 								}
-							} 
+							}
 							postDelayedCloseMsg();
 						}
 
@@ -269,13 +275,13 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		case R.id.btn_refuse_call: // 拒绝接听
 			if (ringtone != null)
 				ringtone.stop();
-		    try {
-                EMChatManager.getInstance().rejectCall();
-            } catch (Exception e1) {
-                e1.printStackTrace();
-                saveCallRecord();
-                finish();
-            }
+			try {
+				EMChatManager.getInstance().rejectCall();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				saveCallRecord();
+				finish();
+			}
 			callingState = CallingState.REFUESD;
 			break;
 
@@ -285,15 +291,16 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			if (ringtone != null)
 				ringtone.stop();
 			closeSpeakerOn();
-			if (isComingCall) {
+			if (isInComingCall) {
 				try {
-                    EMChatManager.getInstance().answerCall();
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    saveCallRecord();
-                    finish();
-                }
+					EMChatManager.getInstance().answerCall();
+					isAnswered = true;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					saveCallRecord();
+					finish();
+				}
 			}
 			break;
 
@@ -393,10 +400,10 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		try {
 			AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-			 if(!audioManager.isSpeakerphoneOn()) 
-				 audioManager.setSpeakerphoneOn(true);
-			 audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-			//audioManager.setMode(AudioManager.MODE_IN_CALL);
+			if (!audioManager.isSpeakerphoneOn())
+				audioManager.setSpeakerphoneOn(true);
+			audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+			// audioManager.setMode(AudioManager.MODE_IN_CALL);
 			// audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
 			// audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL ),
 			// AudioManager.STREAM_VOICE_CALL);
@@ -411,10 +418,10 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		try {
 			AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 			if (audioManager != null) {
-				 if(audioManager.isSpeakerphoneOn()) 
-					 audioManager.setSpeakerphoneOn(false);
-				 audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-				//audioManager.setMode(AudioManager.MODE_IN_CALL);
+				if (audioManager.isSpeakerphoneOn())
+					audioManager.setSpeakerphoneOn(false);
+				audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+				// audioManager.setMode(AudioManager.MODE_IN_CALL);
 			}
 
 		} catch (Exception e) {
@@ -427,8 +434,8 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	 */
 	private void saveCallRecord() {
 		EMMessage message = null;
-		TextMessageBody txtBody = null; 
-		if (!isComingCall) { // 打出去的通话
+		TextMessageBody txtBody = null;
+		if (!isInComingCall) { // 打出去的通话
 			message = EMMessage.createSendMessage(EMMessage.Type.TXT);
 			message.setReceipt(username);
 		} else {
@@ -453,8 +460,11 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 			txtBody = new TextMessageBody("对方正在通话中");
 			break;
 		case NORESPONSE:
-		    txtBody = new TextMessageBody("对方无法接通");
-		    break;
+			txtBody = new TextMessageBody("对方未接听");
+			break;
+		case UNANSWERED:
+			txtBody = new TextMessageBody("未接听");
+			break;
 		default:
 			txtBody = new TextMessageBody("已取消");
 			break;
@@ -466,11 +476,11 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		message.addBody(txtBody);
 		message.setMsgId(msgid);
 
-		//保存
-		EMChatManager.getInstance().saveMessage(message,false);
+		// 保存
+		EMChatManager.getInstance().saveMessage(message, false);
 	}
 
 	enum CallingState {
-		CANCED, NORMAL, REFUESD, BEREFUESD,OFFLINE,NORESPONSE,BUSY
+		CANCED, NORMAL, REFUESD, BEREFUESD, UNANSWERED, OFFLINE, NORESPONSE, BUSY
 	}
 }
