@@ -17,7 +17,6 @@ package com.easemob.chatuidemo.activity;
 import java.text.SimpleDateFormat;
 import java.util.UUID;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.Ringtone;
@@ -30,7 +29,6 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
@@ -42,14 +40,16 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMCallStateChangeListener;
 import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
-import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.R;
 import com.easemob.exceptions.EMServiceNotReadyException;
 
+/**
+ * 语音通话页面
+ *
+ */
 public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private LinearLayout comingBtnContainer;
 	private Button hangupBtn;

@@ -148,7 +148,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				Intent intent=new Intent(GroupDetailsActivity.this, AlertDialog.class);
 				intent.putExtra("cancel",true);
 				intent.putExtra("titleIsCancel", true);
-				intent.putExtra("msg","确定删除群的聊天记录吗？");
+				intent.putExtra("msg","确定清空此群的聊天记录吗？");
 				startActivityForResult(intent, REQUEST_CODE_CLEAR_ALL_HISTORY);
 			}
 		});
@@ -183,10 +183,10 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				deleteGrop();
 				break;
 			case REQUEST_CODE_CLEAR_ALL_HISTORY:
-				//删除此群聊的聊天记录
-				progressDialog.setMessage("正在删除群消息...");
+				//清空此群聊的聊天记录
+				progressDialog.setMessage("正在清空群消息...");
 				
-				deleteGroupHistory();
+				clearGroupHistory();
 				
 				
 				break;
@@ -222,12 +222,12 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	
 	
 	/**
-	 * 删除群聊天记录
+	 * 清空群聊天记录
 	 */
-	public void deleteGroupHistory(){
+	public void clearGroupHistory(){
 		
 		
-		EMChatManager.getInstance().deleteConversation(group.getGroupId());
+		EMChatManager.getInstance().clearConversation(group.getGroupId());
 		progressDialog.dismiss();
 //		adapter.refresh(EMChatManager.getInstance().getConversation(toChatUsername));
 		
