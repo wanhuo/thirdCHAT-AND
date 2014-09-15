@@ -165,8 +165,13 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 			digest = getStrng(context, R.string.video);
 			break;
 		case TXT: // 文本消息
-			TextMessageBody txtBody = (TextMessageBody) message.getBody();
-			digest = txtBody.getMessage();
+			if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
+				TextMessageBody txtBody = (TextMessageBody) message.getBody();
+				digest = txtBody.getMessage();
+			}else{
+				TextMessageBody txtBody = (TextMessageBody) message.getBody();
+				digest = getStrng(context, R.string.voice_call) + txtBody.getMessage();
+			}
 			break;
 		case FILE: // 普通文件消息
 			digest = getStrng(context, R.string.file);

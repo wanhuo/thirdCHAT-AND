@@ -52,6 +52,7 @@ import com.easemob.chat.NormalFileMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VideoMessageBody;
 import com.easemob.chat.VoiceMessageBody;
+import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.AlertDialog;
 import com.easemob.chatuidemo.activity.BaiduMapActivity;
@@ -88,6 +89,9 @@ public class MessageAdapter extends BaseAdapter {
 	private static final int MESSAGE_TYPE_RECV_VIDEO = 9;
 	private static final int MESSAGE_TYPE_SENT_FILE = 10;
 	private static final int MESSAGE_TYPE_RECV_FILE = 11;
+	private static final int MESSAGE_TYPE_SENT_VOICE_CALL = 12;
+	private static final int MESSAGE_TYPE_RECV_VOICE_CALL = 13;
+	
 
 	public static final String IMAGE_DIR = "chat/image/";
 	public static final String VOICE_DIR = "chat/audio/";
@@ -142,7 +146,9 @@ public class MessageAdapter extends BaseAdapter {
 	public int getItemViewType(int position) {
 		EMMessage message = conversation.getMessage(position);
 		if (message.getType() == EMMessage.Type.TXT) {
-			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_TXT : MESSAGE_TYPE_SENT_TXT;
+			if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false))
+				return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_TXT : MESSAGE_TYPE_SENT_TXT;
+			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_VOICE_CALL : MESSAGE_TYPE_SENT_VOICE_CALL;
 		}
 		if (message.getType() == EMMessage.Type.IMAGE) {
 			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_IMAGE : MESSAGE_TYPE_SENT_IMAGE;
@@ -165,7 +171,7 @@ public class MessageAdapter extends BaseAdapter {
 	}
 
 	public int getViewTypeCount() {
-		return 12;
+		return 14;
 	}
 
 	private View createViewByMessage(EMMessage message, int position) {
@@ -187,6 +193,10 @@ public class MessageAdapter extends BaseAdapter {
 			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_file, null) : inflater.inflate(
 					R.layout.row_sent_file, null);
 		default:
+			//语音电话
+			if(message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false))
+				return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_voice_call, null) : inflater.inflate(
+						R.layout.row_sent_voice_call, null);
 			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_message, null) : inflater.inflate(
 					R.layout.row_sent_message, null);
 		}
@@ -210,7 +220,9 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
 				} catch (Exception e) {
 				}
+				
 			} else if (message.getType() == EMMessage.Type.TXT) {
+				
 				try {
 					holder.pb = (ProgressBar) convertView.findViewById(R.id.pb_sending);
 					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
@@ -220,6 +232,13 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
 				} catch (Exception e) {
 				}
+				
+				//语音通话
+				if(message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
+					holder.iv = (ImageView) convertView.findViewById(R.id.iv_call_icon);
+					holder.tv = (TextView) convertView.findViewById(R.id.tv_chatcontent);
+				}
+					
 			} else if (message.getType() == EMMessage.Type.VOICE) {
 				try {
 					holder.iv = ((ImageView) convertView.findViewById(R.id.iv_voice));
@@ -311,12 +330,15 @@ public class MessageAdapter extends BaseAdapter {
 		} else {
 			// 如果是文本或者地图消息并且不是group messgae，显示的时候给对方发送已读回执
 			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked && chatType != ChatType.GroupChat) {
-				try {
-					EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-					// 发送已读回执
-					message.isAcked = true;
-				} catch (Exception e) {
-					e.printStackTrace();
+				//不是语音通话记录
+				if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
+					try {
+						EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+						// 发送已读回执
+						message.isAcked = true;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -327,7 +349,10 @@ public class MessageAdapter extends BaseAdapter {
 			handleImageMessage(message, holder, position, convertView);
 			break;
 		case TXT: //文本
-			handleTextMessage(message, holder, position);
+			if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false))
+				handleTextMessage(message, holder, position);
+			else //语音电话
+				handleVoiceCallMessage(message, holder, position);
 			break;
 		case LOCATION: //位置
 			handleLocationMessage(message, holder, position, convertView);
@@ -449,7 +474,20 @@ public class MessageAdapter extends BaseAdapter {
 			}
 		}
 	}
+	
+	/**
+	 * 语音通话记录
+	 * @param message
+	 * @param holder
+	 * @param position
+	 */
+	private void handleVoiceCallMessage(EMMessage message, ViewHolder holder, final int position) {
+		TextMessageBody txtBody = (TextMessageBody) message.getBody();
+		holder.tv.setText(txtBody.getMessage());
+		
+	}
 
+	
 	/**
 	 * 图片消息
 	 * 

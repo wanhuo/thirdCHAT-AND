@@ -313,6 +313,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 群聊
 			findViewById(R.id.container_to_group).setVisibility(View.VISIBLE);
 			findViewById(R.id.container_remove).setVisibility(View.GONE);
+			findViewById(R.id.container_voice_call).setVisibility(View.GONE);
 			toChatUsername = getIntent().getStringExtra("groupId");
 			group = EMGroupManager.getInstance().getGroup(toChatUsername);
 			((TextView) findViewById(R.id.name)).setText(group.getGroupName());
@@ -592,7 +593,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		} else if (id == R.id.btn_file) { // 点击文件图标
 			selectFileFromLocal();
 		} else if (id == R.id.btn_voice_call) { //点击语音电话图标
-			startActivity(new Intent(ChatActivity.this, VoiceCallActivity.class));
+			startActivity(new Intent(ChatActivity.this, VoiceCallActivity.class).
+					putExtra("username", toChatUsername).
+					putExtra("isComingCall", false));
 		}
 	}
 
