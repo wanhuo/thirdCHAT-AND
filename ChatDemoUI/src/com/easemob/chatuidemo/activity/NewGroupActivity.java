@@ -96,7 +96,8 @@ public class NewGroupActivity extends BaseActivity {
 							//创建公开群，此种方式创建的群，可以自由加入
 //							EMGroupManager.getInstance().createPublicGroup(groupName, desc, members, false);
 							//创建公开群，此种方式创建的群，用户需要申请，等群主同意后才能加入此群
-							EMGroupManager.getInstance().createPublicGroup(groupName, desc, members, true);
+//							EMGroupManager.getInstance().createPublicGroup(groupName, desc, members, true);
+							EMGroupManager.getInstance().createAnonymousGroup(groupName, "我是群主", desc, null, 200);
 						}else{
 							//创建不公开群
 							EMGroupManager.getInstance().createPrivateGroup(groupName, desc, members, memberCheckbox.isChecked());

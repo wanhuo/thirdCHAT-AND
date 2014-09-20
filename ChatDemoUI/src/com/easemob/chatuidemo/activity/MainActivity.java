@@ -83,11 +83,13 @@ public class MainActivity extends FragmentActivity {
 	private NewMessageBroadcastReceiver msgReceiver;
 	// 账号在别处登录
 	private boolean isConflict = false;
+	public static MainActivity instance;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		instance = this;
 		initView();
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
@@ -197,6 +199,8 @@ public class MainActivity extends FragmentActivity {
 			conflictBuilder.create().dismiss();
 			conflictBuilder = null;
 		}
+		
+		instance = null;
 
 	}
 

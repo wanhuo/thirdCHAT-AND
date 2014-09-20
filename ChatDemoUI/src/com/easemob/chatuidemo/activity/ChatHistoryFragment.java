@@ -102,15 +102,15 @@ public class ChatHistoryFragment extends Fragment {
 					Toast.makeText(getActivity(), "不能和自己聊天", 0).show();
 				else {
 					// 进入聊天页面
-					  Intent intent = new Intent(getActivity(), ChatActivity.class);
-					 if (emContact instanceof EMGroup) {
-		                    //it is group chat
-		                    intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
-		                    intent.putExtra("groupId", ((EMGroup) emContact).getGroupId());
-		                } else {
-		                    //it is single chat
-		                    intent.putExtra("userId", emContact.getUsername());
-		                } 
+					Intent intent = new Intent(getActivity(), ChatActivity.class);
+					if (emContact instanceof EMGroup) {
+						// it is group chat
+						intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
+						intent.putExtra("groupId", ((EMGroup) emContact).getGroupId());
+					} else {
+						// it is single chat
+						intent.putExtra("userId", emContact.getUsername());
+					}
 					startActivity(intent);
 				}
 			}
@@ -137,7 +137,7 @@ public class ChatHistoryFragment extends Fragment {
 		clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
 		query.addTextChangedListener(new TextWatcher() {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				
+
 				adapter.getFilter().filter(s);
 				if (s.length() > 0) {
 					clearSearch.setVisibility(View.VISIBLE);
@@ -175,10 +175,10 @@ public class ChatHistoryFragment extends Fragment {
 		if (item.getItemId() == R.id.delete_message) {
 			EMContact tobeDeleteUser = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
 			boolean isGroup = false;
-			if(tobeDeleteUser instanceof EMGroup)
+			if (tobeDeleteUser instanceof EMGroup)
 				isGroup = true;
 			// 删除此会话
-			EMChatManager.getInstance().deleteConversation(tobeDeleteUser.getUsername(),isGroup);
+			EMChatManager.getInstance().deleteConversation(tobeDeleteUser.getUsername(), isGroup);
 			InviteMessgeDao inviteMessgeDao = new InviteMessgeDao(getActivity());
 			inviteMessgeDao.deleteMessage(tobeDeleteUser.getUsername());
 			adapter.remove(tobeDeleteUser);
@@ -201,8 +201,6 @@ public class ChatHistoryFragment extends Fragment {
 		adapter.notifyDataSetChanged();
 	}
 
-	
-	
 	/**
 	 * 获取有聊天记录的users和groups
 	 * 
@@ -211,21 +209,21 @@ public class ChatHistoryFragment extends Fragment {
 	 */
 	private List<EMContact> loadUsersWithRecentChat() {
 		List<EMContact> resultList = new ArrayList<EMContact>();
-		//获取有聊天记录的users，不包括陌生人
+		// 获取有聊天记录的users，不包括陌生人
 		for (User user : contactList.values()) {
 			EMConversation conversation = EMChatManager.getInstance().getConversation(user.getUsername());
 			if (conversation.getMsgCount() > 0) {
 				resultList.add(user);
 			}
 		}
-		for(EMGroup group : EMGroupManager.getInstance().getAllGroups()){
+		for (EMGroup group : EMGroupManager.getInstance().getAllGroups()) {
 			EMConversation conversation = EMChatManager.getInstance().getConversation(group.getGroupId());
-			if(conversation.getMsgCount() > 0){
+			if (conversation.getMsgCount() > 0) {
 				resultList.add(group);
 			}
-			
+
 		}
-		
+
 		// 排序
 		sortUserByLastChatTime(resultList);
 		return resultList;
@@ -273,6 +271,5 @@ public class ChatHistoryFragment extends Fragment {
 			refresh();
 		}
 	}
-	
-	
+
 }

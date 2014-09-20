@@ -61,7 +61,7 @@
         <!-- 聊天页面 -->
         <activity
             android:name=".activity.ChatActivity"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/horizontal_slide"
             android:windowSoftInputMode="adjustResize" >
         </activity>

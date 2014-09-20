@@ -303,9 +303,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "demo");
 		// 判断单聊还是群聊
 		chatType = getIntent().getIntExtra("chatType", CHATTYPE_SINGLE);
+		//匿名群组私聊
+		anonymousUsername = getIntent().getStringExtra("anonymousUsername");
 
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
+			if(anonymousUsername != null)
+				toChatUsername = anonymousUsername;
 			((TextView) findViewById(R.id.name)).setText(toChatUsername);
 			// conversation =
 			// EMChatManager.getInstance().getConversation(toChatUsername,false);
@@ -648,6 +652,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		if (content.length() > 0) {
 			EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
+			
+			if(!TextUtils.isEmpty(anonymousUsername)){
+				message.setAnonymous(true);
+			}
 			// 如果是群聊，设置chattype,默认是单聊
 			if (chatType == CHATTYPE_GROUP)
 				message.setChatType(ChatType.GroupChat);
@@ -1046,6 +1054,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 	};
 	private PowerManager.WakeLock wakeLock;
+	private String anonymousUsername;
 
 	/**
 	 * 按住说话listener
@@ -1274,6 +1283,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 */
 	public void back(View view) {
 		finish();
+		if(MainActivity.instance == null)
+			startActivity(new Intent(this, MainActivity.class));
 	}
 
 	/**
@@ -1286,7 +1297,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			iv_emoticons_normal.setVisibility(View.VISIBLE);
 			iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		} else {
-			super.onBackPressed();
+			back(null);
 		}
 	}
 

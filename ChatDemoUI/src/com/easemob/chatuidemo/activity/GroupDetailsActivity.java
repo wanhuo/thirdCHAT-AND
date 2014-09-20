@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.DemoApplication;
@@ -48,8 +49,8 @@ public class GroupDetailsActivity extends BaseActivity {
 	private static final int REQUEST_CODE_ADD_USER = 0;
 	private static final int REQUEST_CODE_EXIT = 1;
 	private static final int REQUEST_CODE_EXIT_DELETE = 2;
-	private static final int REQUEST_CODE_CLEAR_ALL_HISTORY=3;
-	
+	private static final int REQUEST_CODE_CLEAR_ALL_HISTORY = 3;
+
 	private ExpandGridView userGridview;
 	private String groupId;
 	private ProgressBar loadingPB;
@@ -60,19 +61,18 @@ public class GroupDetailsActivity extends BaseActivity {
 	private int referenceWidth;
 	private int referenceHeight;
 	private ProgressDialog progressDialog;
-	
+
 	public static GroupDetailsActivity instance;
-	
-	//清空所有聊天记录
+
+	// 清空所有聊天记录
 	private RelativeLayout clearAllHistory;
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_group_details);
 		instance = this;
-		clearAllHistory=(RelativeLayout) findViewById(R.id.clear_all_history);
+		clearAllHistory = (RelativeLayout) findViewById(R.id.clear_all_history);
 		userGridview = (ExpandGridView) findViewById(R.id.gridview);
 		loadingPB = (ProgressBar) findViewById(R.id.progressBar);
 		exitBtn = (Button) findViewById(R.id.btn_exit_grp);
@@ -87,7 +87,7 @@ public class GroupDetailsActivity extends BaseActivity {
 		group = EMGroupManager.getInstance().getGroup(groupId);
 
 		// 如果自己是群主，显示解散按钮
-		if(group.getOwner() == null || "".equals(group.getOwner())){
+		if (group.getOwner() == null || "".equals(group.getOwner())) {
 			exitBtn.setVisibility(View.GONE);
 			deleteBtn.setVisibility(View.GONE);
 		}
@@ -95,7 +95,7 @@ public class GroupDetailsActivity extends BaseActivity {
 			exitBtn.setVisibility(View.GONE);
 			deleteBtn.setVisibility(View.VISIBLE);
 		}
-		((TextView) findViewById(R.id.group_name)).setText(group.getGroupName()+"("+group.getAffiliationsCount()+"人)");
+		((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount() + "人)");
 		adapter = new GridAdapter(this, R.layout.grid, group.getMembers());
 		userGridview.setAdapter(adapter);
 
@@ -121,23 +121,20 @@ public class GroupDetailsActivity extends BaseActivity {
 				return false;
 			}
 		});
-		
+
 		clearAllHistory.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				Intent intent=new Intent(GroupDetailsActivity.this, AlertDialog.class);
-				intent.putExtra("cancel",true);
+				Intent intent = new Intent(GroupDetailsActivity.this, AlertDialog.class);
+				intent.putExtra("cancel", true);
 				intent.putExtra("titleIsCancel", true);
-				intent.putExtra("msg","确定删除群的聊天记录吗？");
+				intent.putExtra("msg", "确定删除群的聊天记录吗？");
 				startActivityForResult(intent, REQUEST_CODE_CLEAR_ALL_HISTORY);
 			}
 		});
-		
-		
-	}
 
-	
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -164,12 +161,11 @@ public class GroupDetailsActivity extends BaseActivity {
 				deleteGrop();
 				break;
 			case REQUEST_CODE_CLEAR_ALL_HISTORY:
-				//删除此群聊的聊天记录
+				// 删除此群聊的聊天记录
 				progressDialog.setMessage("正在删除群消息...");
-				
+
 				deleteGroupHistory();
-				
-				
+
 				break;
 
 			default:
@@ -199,24 +195,17 @@ public class GroupDetailsActivity extends BaseActivity {
 
 	}
 
-	
-	
-	
 	/**
 	 * 删除群聊天记录
 	 */
-	public void deleteGroupHistory(){
-		
-		
+	public void deleteGroupHistory() {
+
 		EMChatManager.getInstance().deleteConversation(group.getGroupId());
 		progressDialog.dismiss();
-//		adapter.refresh(EMChatManager.getInstance().getConversation(toChatUsername));
-		
-		
-		
+		// adapter.refresh(EMChatManager.getInstance().getConversation(toChatUsername));
+
 	}
-	
-	
+
 	/**
 	 * 退出群组
 	 * 
@@ -287,17 +276,18 @@ public class GroupDetailsActivity extends BaseActivity {
 
 			public void run() {
 				try {
-					//创建者调用add方法
-					if(EMChatManager.getInstance().getCurrentUser().equals(group.getOwner())){
+					// 创建者调用add方法
+					if (EMChatManager.getInstance().getCurrentUser().equals(group.getOwner())) {
 						EMGroupManager.getInstance().addUsersToGroup(groupId, newmembers);
-					}else{
-						//一般成员调用invite方法
+					} else {
+						// 一般成员调用invite方法
 						EMGroupManager.getInstance().inviteUser(groupId, newmembers, null);
 					}
 					runOnUiThread(new Runnable() {
 						public void run() {
 							adapter.notifyDataSetChanged();
-							((TextView) findViewById(R.id.group_name)).setText(group.getGroupName()+"("+group.getAffiliationsCount()+"人)");
+							((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount()
+									+ "人)");
 							progressDialog.dismiss();
 						}
 					});
@@ -368,7 +358,7 @@ public class GroupDetailsActivity extends BaseActivity {
 			} else if (position == getCount() - 2) { // 添加群组成员按钮
 				button.setText("");
 				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_add_btn, 0, 0);
-				//如果不是创建者或者没有相应权限
+				// 如果不是创建者或者没有相应权限
 				if (!group.isAllowInvites() && !group.getOwner().equals(DemoApplication.getInstance().getUserName())) {
 					// if current user is not group admin, hide add/remove btn
 					convertView.setVisibility(View.INVISIBLE);
@@ -423,15 +413,22 @@ public class GroupDetailsActivity extends BaseActivity {
 							deleteMembersFromGroup(username);
 						} else {
 							// 正常情况下点击user，可以进入用户详情或者聊天页面等等
-							// startActivity(new
-							// Intent(GroupDetailsActivity.this,
-							// ChatActivity.class).putExtra("userId",
-							// user.getUsername()));
+							Intent intent = new Intent(GroupDetailsActivity.this, ChatActivity.class);
+							if("true".equals(group.getDescription())){
+								intent.putExtra("anonymousUsername", EMContactManager.getAnonymousName(groupId, username));
+							}else{
+								intent.putExtra("userId", username);
+								
+							}
+							
+							startActivity(intent);
+								
 						}
 					}
-					
+
 					/**
 					 * 删除群成员
+					 * 
 					 * @param username
 					 */
 					protected void deleteMembersFromGroup(final String username) {
@@ -453,7 +450,8 @@ public class GroupDetailsActivity extends BaseActivity {
 										public void run() {
 											deleteDialog.dismiss();
 											notifyDataSetChanged();
-											((TextView) findViewById(R.id.group_name)).setText(group.getGroupName()+"("+group.getAffiliationsCount()+"人)");
+											((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "("
+													+ group.getAffiliationsCount() + "人)");
 										}
 									});
 								} catch (final Exception e) {
@@ -478,29 +476,30 @@ public class GroupDetailsActivity extends BaseActivity {
 			return super.getCount() + 2;
 		}
 	}
-	
+
 	protected void updateGroup() {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
 					EMGroup returnGroup = EMGroupManager.getInstance().getGroupFromServer(groupId);
-					//更新本地数据
+					// 更新本地数据
 					EMGroupManager.getInstance().createOrUpdateLocalGroup(returnGroup);
-					
+
 					runOnUiThread(new Runnable() {
 						public void run() {
-							((TextView) findViewById(R.id.group_name)).setText(group.getGroupName()+"("+group.getAffiliationsCount()+"人)");
+							((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount()
+									+ "人)");
 							loadingPB.setVisibility(View.INVISIBLE);
 							adapter.notifyDataSetChanged();
 							if (EMChatManager.getInstance().getCurrentUser().equals(group.getOwner())) {
-								//显示解散按钮
+								// 显示解散按钮
 								exitBtn.setVisibility(View.GONE);
 								deleteBtn.setVisibility(View.VISIBLE);
-							}else{
-								//显示退出按钮
+							} else {
+								// 显示退出按钮
 								exitBtn.setVisibility(View.VISIBLE);
 								deleteBtn.setVisibility(View.GONE);
-								
+
 							}
 						}
 					});
@@ -521,23 +520,16 @@ public class GroupDetailsActivity extends BaseActivity {
 		finish();
 	}
 
-
-
 	@Override
 	public void onBackPressed() {
 		setResult(RESULT_OK);
 		finish();
 	}
 
-
-
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		instance = null;
 	}
-	
-	
-	
-	
+
 }
