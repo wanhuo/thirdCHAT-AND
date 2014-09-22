@@ -507,7 +507,8 @@ public class MessageAdapter extends BaseAdapter {
 				return true;
 			}
 		});
-
+		
+		//接收方向的消息
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 			//"it is receive msg";
 			if (message.status == EMMessage.Status.INPROGRESS) {
@@ -532,7 +533,8 @@ public class MessageAdapter extends BaseAdapter {
 			}
 			return;
 		}
-
+		
+		//发送的消息
 		// process send message
 		// send pic, show the pic directly
 		ImageMessageBody imgBody = (ImageMessageBody) message.getBody();

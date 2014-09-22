@@ -121,6 +121,7 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 			TextView nameTextview = (TextView) convertView.findViewById(R.id.name);
 			TextView tvHeader = (TextView) convertView.findViewById(R.id.header);
 			User user = getItem(position);
+			Log.d("ContactAdapter", position + "");
 			//设置nick，demo里不涉及到完整user，用username代替nick显示
 			String username = user.getUsername();
 			String header = user.getHeader();
@@ -166,7 +167,7 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 	
 	@Override
 	public int getCount() {
-		//有搜索框，cout+1
+		//有搜索框，count+1
 		return super.getCount() + 1;
 	}
 

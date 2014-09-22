@@ -1108,6 +1108,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					v.setPressed(false);
 					if (wakeLock.isHeld())
 						wakeLock.release();
+					if(voiceRecorder != null)
+						voiceRecorder.discardRecording();
 					recordingContainer.setVisibility(View.INVISIBLE);
 					Toast.makeText(ChatActivity.this, R.string.recoding_fail, Toast.LENGTH_SHORT).show();
 					return false;
@@ -1151,6 +1153,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				}
 				return true;
 			default:
+				recordingContainer.setVisibility(View.INVISIBLE);
+				if(voiceRecorder != null)
+					voiceRecorder.discardRecording();
 				return false;
 			}
 		}
