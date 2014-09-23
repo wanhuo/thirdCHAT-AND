@@ -806,7 +806,8 @@ public class MessageAdapter extends BaseAdapter {
 			holder.staus_iv.setVisibility(View.VISIBLE);
 			break;
 		case INPROGRESS:
-
+			holder.pb.setVisibility(View.VISIBLE);
+			holder.staus_iv.setVisibility(View.GONE);
 			break;
 		default:
 			sendMsgInBackground(message, holder);
