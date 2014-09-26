@@ -467,6 +467,7 @@ public class MessageAdapter extends BaseAdapter {
 				break;
 			case INPROGRESS: //发送中
 				holder.pb.setVisibility(View.VISIBLE);
+				holder.staus_iv.setVisibility(View.GONE);
 				break;
 			default:
 				//发送消息
@@ -1000,6 +1001,8 @@ public class MessageAdapter extends BaseAdapter {
 		// final ImageMessageBody msgbody = (ImageMessageBody)
 		// message.getBody();
 		final FileMessageBody msgbody = (FileMessageBody) message.getBody();
+		holder.pb.setVisibility(View.VISIBLE);
+		holder.tv.setVisibility(View.VISIBLE);
 
 		msgbody.setDownloadCallback(new EMCallBack() {
 
