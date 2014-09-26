@@ -343,6 +343,7 @@ public class MessageAdapter extends BaseAdapter {
 			}
 		}
 
+		
 		switch (message.getType()) {
 		// 根据消息type显示item
 		case IMAGE: //图片
@@ -967,13 +968,16 @@ public class MessageAdapter extends BaseAdapter {
 	 * 
 	 * @param message
 	 * @param holder
+	 * @param position 
 	 */
 	public void sendMsgInBackground(final EMMessage message, final ViewHolder holder) {
 		holder.staus_iv.setVisibility(View.GONE);
 		holder.pb.setVisibility(View.VISIBLE);
+		
+		
 		//调用sdk发送异步发送方法
 		EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
-
+			
 			@Override
 			public void onSuccess() {
 				updateSendedView(message, holder);
@@ -1114,24 +1118,26 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv.setVisibility(View.GONE);
 				}
 				if (message.status == EMMessage.Status.SUCCESS) {
-					if (message.getType() == EMMessage.Type.FILE) {
-						holder.pb.setVisibility(View.INVISIBLE);
-						holder.staus_iv.setVisibility(View.INVISIBLE);
-					} else {
-						holder.pb.setVisibility(View.GONE);
-						holder.staus_iv.setVisibility(View.GONE);
-					}
+//					if (message.getType() == EMMessage.Type.FILE) {
+//						holder.pb.setVisibility(View.INVISIBLE);
+//						holder.staus_iv.setVisibility(View.INVISIBLE);
+//					} else {
+//						holder.pb.setVisibility(View.GONE);
+//						holder.staus_iv.setVisibility(View.GONE);
+//					}
 
 				} else if (message.status == EMMessage.Status.FAIL) {
-					if (message.getType() == EMMessage.Type.FILE) {
-						holder.pb.setVisibility(View.INVISIBLE);
-					} else {
-						holder.pb.setVisibility(View.GONE);
-					}
-					holder.staus_iv.setVisibility(View.VISIBLE);
+//					if (message.getType() == EMMessage.Type.FILE) {
+//						holder.pb.setVisibility(View.INVISIBLE);
+//					} else {
+//						holder.pb.setVisibility(View.GONE);
+//					}
+//					holder.staus_iv.setVisibility(View.VISIBLE);
 					Toast.makeText(activity, activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
 							.show();
 				}
+				
+				notifyDataSetChanged();
 			}
 		});
 	}
