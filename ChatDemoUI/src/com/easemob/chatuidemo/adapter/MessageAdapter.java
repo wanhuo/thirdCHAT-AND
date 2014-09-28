@@ -15,6 +15,9 @@ package com.easemob.chatuidemo.adapter;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -91,7 +94,6 @@ public class MessageAdapter extends BaseAdapter {
 	private static final int MESSAGE_TYPE_RECV_FILE = 11;
 	private static final int MESSAGE_TYPE_SENT_VOICE_CALL = 12;
 	private static final int MESSAGE_TYPE_RECV_VOICE_CALL = 13;
-	
 
 	public static final String IMAGE_DIR = "chat/image/";
 	public static final String VOICE_DIR = "chat/audio/";
@@ -105,6 +107,8 @@ public class MessageAdapter extends BaseAdapter {
 	private EMConversation conversation;
 
 	private Context context;
+
+	private Map<String, Timer> timers = new Hashtable<String, Timer>();
 
 	public MessageAdapter(Context context, String username, int chatType) {
 		this.username = username;
@@ -124,7 +128,7 @@ public class MessageAdapter extends BaseAdapter {
 	public int getCount() {
 		return conversation.getMsgCount();
 	}
-	
+
 	/**
 	 * 刷新页面
 	 */
@@ -146,7 +150,7 @@ public class MessageAdapter extends BaseAdapter {
 	public int getItemViewType(int position) {
 		EMMessage message = conversation.getMessage(position);
 		if (message.getType() == EMMessage.Type.TXT) {
-			if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false))
+			if (!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false))
 				return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_TXT : MESSAGE_TYPE_SENT_TXT;
 			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_VOICE_CALL : MESSAGE_TYPE_SENT_VOICE_CALL;
 		}
@@ -193,10 +197,10 @@ public class MessageAdapter extends BaseAdapter {
 			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_file, null) : inflater.inflate(
 					R.layout.row_sent_file, null);
 		default:
-			//语音电话
-			if(message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false))
-				return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_voice_call, null) : inflater.inflate(
-						R.layout.row_sent_voice_call, null);
+			// 语音电话
+			if (message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false))
+				return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_voice_call, null) : inflater
+						.inflate(R.layout.row_sent_voice_call, null);
 			return message.direct == EMMessage.Direct.RECEIVE ? inflater.inflate(R.layout.row_received_message, null) : inflater.inflate(
 					R.layout.row_sent_message, null);
 		}
@@ -220,9 +224,9 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
 				} catch (Exception e) {
 				}
-				
+
 			} else if (message.getType() == EMMessage.Type.TXT) {
-				
+
 				try {
 					holder.pb = (ProgressBar) convertView.findViewById(R.id.pb_sending);
 					holder.staus_iv = (ImageView) convertView.findViewById(R.id.msg_status);
@@ -232,13 +236,13 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv_userId = (TextView) convertView.findViewById(R.id.tv_userid);
 				} catch (Exception e) {
 				}
-				
-				//语音通话
-				if(message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
+
+				// 语音通话
+				if (message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false)) {
 					holder.iv = (ImageView) convertView.findViewById(R.id.iv_call_icon);
 					holder.tv = (TextView) convertView.findViewById(R.id.tv_chatcontent);
 				}
-					
+
 			} else if (message.getType() == EMMessage.Type.VOICE) {
 				try {
 					holder.iv = ((ImageView) convertView.findViewById(R.id.iv_voice));
@@ -284,7 +288,7 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv_file_download_state = (TextView) convertView.findViewById(R.id.tv_file_state);
 					holder.ll_container = (LinearLayout) convertView.findViewById(R.id.ll_file_container);
 					// 这里是进度值
-					holder.tv = (TextView)convertView.findViewById(R.id.pb_sending);
+					holder.tv = (TextView) convertView.findViewById(R.id.percentage);
 				} catch (Exception e) {
 				}
 				try {
@@ -308,30 +312,30 @@ public class MessageAdapter extends BaseAdapter {
 		if (message.direct == EMMessage.Direct.SEND && chatType != ChatType.GroupChat) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);
 			holder.tv_delivered = (TextView) convertView.findViewById(R.id.tv_delivered);
-			if (holder.tv_ack != null) { 
+			if (holder.tv_ack != null) {
 				if (message.isAcked) {
 					if (holder.tv_delivered != null) {
-						holder.tv_delivered.setVisibility(View.INVISIBLE);	
+						holder.tv_delivered.setVisibility(View.INVISIBLE);
 					}
 					holder.tv_ack.setVisibility(View.VISIBLE);
 				} else {
 					holder.tv_ack.setVisibility(View.INVISIBLE);
-					
-					//check and display msg delivered ack status
-				    if (holder.tv_delivered != null) {
-					    if (message.isDelivered) {
-					    	holder.tv_delivered.setVisibility(View.VISIBLE);
-					    } else {
-					    	holder.tv_delivered.setVisibility(View.INVISIBLE);
-					    }
+
+					// check and display msg delivered ack status
+					if (holder.tv_delivered != null) {
+						if (message.isDelivered) {
+							holder.tv_delivered.setVisibility(View.VISIBLE);
+						} else {
+							holder.tv_delivered.setVisibility(View.INVISIBLE);
+						}
 					}
 				}
 			}
 		} else {
 			// 如果是文本或者地图消息并且不是group messgae，显示的时候给对方发送已读回执
 			if ((message.getType() == Type.TXT || message.getType() == Type.LOCATION) && !message.isAcked && chatType != ChatType.GroupChat) {
-				//不是语音通话记录
-				if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
+				// 不是语音通话记录
+				if (!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false)) {
 					try {
 						EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
 						// 发送已读回执
@@ -343,28 +347,28 @@ public class MessageAdapter extends BaseAdapter {
 			}
 		}
 
-		
 		switch (message.getType()) {
 		// 根据消息type显示item
-		case IMAGE: //图片
+		case IMAGE: // 图片
 			handleImageMessage(message, holder, position, convertView);
 			break;
-		case TXT: //文本
-			if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false))
+		case TXT: // 文本
+			if (!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL, false))
 				handleTextMessage(message, holder, position);
-			else //语音电话
+			else
+				// 语音电话
 				handleVoiceCallMessage(message, holder, position);
 			break;
-		case LOCATION: //位置
+		case LOCATION: // 位置
 			handleLocationMessage(message, holder, position, convertView);
 			break;
-		case VOICE: //语音
+		case VOICE: // 语音
 			handleVoiceMessage(message, holder, position, convertView);
 			break;
-		case VIDEO: //视频
+		case VIDEO: // 视频
 			handleVideoMessage(message, holder, position, convertView);
 			break;
-		case FILE: //一般文件
+		case FILE: // 一般文件
 			handleFileMessage(message, holder, position, convertView);
 			break;
 		default:
@@ -373,7 +377,7 @@ public class MessageAdapter extends BaseAdapter {
 
 		if (message.direct == EMMessage.Direct.SEND) {
 			View statusView = convertView.findViewById(R.id.msg_status);
-			//重发按钮点击事件
+			// 重发按钮点击事件
 			statusView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -400,17 +404,17 @@ public class MessageAdapter extends BaseAdapter {
 				}
 			});
 
-		}else{
-			//长按头像，移入黑名单
+		} else {
+			// 长按头像，移入黑名单
 			holder.head_iv.setOnLongClickListener(new OnLongClickListener() {
-				
+
 				@Override
 				public boolean onLongClick(View v) {
 					Intent intent = new Intent(activity, AlertDialog.class);
 					intent.putExtra("msg", "移入到黑名单？");
 					intent.putExtra("cancel", true);
 					intent.putExtra("position", position);
-					activity.startActivityForResult(intent,ChatActivity.REQUEST_CODE_ADD_TO_BLACKLIST);
+					activity.startActivityForResult(intent, ChatActivity.REQUEST_CODE_ADD_TO_BLACKLIST);
 					return true;
 				}
 			});
@@ -422,7 +426,7 @@ public class MessageAdapter extends BaseAdapter {
 			timestamp.setText(DateUtils.getTimestampString(new Date(message.getMsgTime())));
 			timestamp.setVisibility(View.VISIBLE);
 		} else {
-			//两条消息时间离得如果稍长，显示时间
+			// 两条消息时间离得如果稍长，显示时间
 			if (DateUtils.isCloseEnough(message.getMsgTime(), conversation.getMessage(position - 1).getMsgTime())) {
 				timestamp.setVisibility(View.GONE);
 			} else {
@@ -443,9 +447,9 @@ public class MessageAdapter extends BaseAdapter {
 	private void handleTextMessage(EMMessage message, ViewHolder holder, final int position) {
 		TextMessageBody txtBody = (TextMessageBody) message.getBody();
 		Spannable span = SmileUtils.getSmiledText(context, txtBody.getMessage());
-		//设置内容
+		// 设置内容
 		holder.tv.setText(span, BufferType.SPANNABLE);
-		//设置长按事件监听
+		// 设置长按事件监听
 		holder.tv.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -455,30 +459,31 @@ public class MessageAdapter extends BaseAdapter {
 				return true;
 			}
 		});
-		
+
 		if (message.direct == EMMessage.Direct.SEND) {
 			switch (message.status) {
-			case SUCCESS: //发送成功
+			case SUCCESS: // 发送成功
 				holder.pb.setVisibility(View.GONE);
 				holder.staus_iv.setVisibility(View.GONE);
 				break;
-			case FAIL: //发送失败
+			case FAIL: // 发送失败
 				holder.pb.setVisibility(View.GONE);
 				holder.staus_iv.setVisibility(View.VISIBLE);
 				break;
-			case INPROGRESS: //发送中
+			case INPROGRESS: // 发送中
 				holder.pb.setVisibility(View.VISIBLE);
 				holder.staus_iv.setVisibility(View.GONE);
 				break;
 			default:
-				//发送消息
+				// 发送消息
 				sendMsgInBackground(message, holder);
 			}
 		}
 	}
-	
+
 	/**
 	 * 语音通话记录
+	 * 
 	 * @param message
 	 * @param holder
 	 * @param position
@@ -486,10 +491,9 @@ public class MessageAdapter extends BaseAdapter {
 	private void handleVoiceCallMessage(EMMessage message, ViewHolder holder, final int position) {
 		TextMessageBody txtBody = (TextMessageBody) message.getBody();
 		holder.tv.setText(txtBody.getMessage());
-		
+
 	}
 
-	
 	/**
 	 * 图片消息
 	 * 
@@ -509,41 +513,41 @@ public class MessageAdapter extends BaseAdapter {
 				return true;
 			}
 		});
-		
-		//接收方向的消息
+
+		// 接收方向的消息
 		if (message.direct == EMMessage.Direct.RECEIVE) {
-			//"it is receive msg";
+			// "it is receive msg";
 			if (message.status == EMMessage.Status.INPROGRESS) {
-				//"!!!! back receive";
+				// "!!!! back receive";
 				holder.iv.setImageResource(R.drawable.default_image);
 				showDownloadImageProgress(message, holder);
 				// downloadImage(message, holder);
 			} else {
-				//"!!!! not back receive, show image directly");
+				// "!!!! not back receive, show image directly");
 				holder.pb.setVisibility(View.GONE);
 				holder.tv.setVisibility(View.GONE);
 				holder.iv.setImageResource(R.drawable.default_image);
 				ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
 				if (imgBody.getLocalUrl() != null) {
-//					String filePath = imgBody.getLocalUrl();
-					String remotePath=imgBody.getRemoteUrl();
-					String filePath=ImageUtils.getImagePath(remotePath);
-					String thumbRemoteUrl=imgBody.getThumbnailUrl();
+					// String filePath = imgBody.getLocalUrl();
+					String remotePath = imgBody.getRemoteUrl();
+					String filePath = ImageUtils.getImagePath(remotePath);
+					String thumbRemoteUrl = imgBody.getThumbnailUrl();
 					String thumbnailPath = ImageUtils.getThumbnailImagePath(thumbRemoteUrl);
 					showImageView(thumbnailPath, holder.iv, filePath, imgBody.getRemoteUrl(), message);
 				}
 			}
 			return;
 		}
-		
-		//发送的消息
+
+		// 发送的消息
 		// process send message
 		// send pic, show the pic directly
 		ImageMessageBody imgBody = (ImageMessageBody) message.getBody();
 		String filePath = imgBody.getLocalUrl();
-		if (filePath!=null&&new File(filePath).exists()){
+		if (filePath != null && new File(filePath).exists()) {
 			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, null, message);
-		}else {
+		} else {
 			showImageView(ImageUtils.getThumbnailImagePath(filePath), holder.iv, filePath, IMAGE_DIR, message);
 		}
 
@@ -559,8 +563,14 @@ public class MessageAdapter extends BaseAdapter {
 			holder.staus_iv.setVisibility(View.VISIBLE);
 			break;
 		case INPROGRESS:
+			holder.staus_iv.setVisibility(View.GONE);
+			holder.pb.setVisibility(View.VISIBLE);
+			holder.tv.setVisibility(View.VISIBLE);
+			if (timers.containsKey(message.getMsgId()))
+				return;
 			// set a timer
 			final Timer timer = new Timer();
+			timers.put(message.getMsgId(), timer);
 			timer.schedule(new TimerTask() {
 
 				@Override
@@ -648,14 +658,14 @@ public class MessageAdapter extends BaseAdapter {
 
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 
-			//System.err.println("it is receive msg");
+			// System.err.println("it is receive msg");
 			if (message.status == EMMessage.Status.INPROGRESS) {
-				//System.err.println("!!!! back receive");
+				// System.err.println("!!!! back receive");
 				holder.iv.setImageResource(R.drawable.default_image);
 				showDownloadImageProgress(message, holder);
 
 			} else {
-				//System.err.println("!!!! not back receive, show image directly");
+				// System.err.println("!!!! not back receive, show image directly");
 				holder.iv.setImageResource(R.drawable.default_image);
 				if (localThumb != null) {
 					showVideoThumbView(localThumb, holder.iv, videoBody.getThumbnailUrl(), message);
@@ -680,8 +690,11 @@ public class MessageAdapter extends BaseAdapter {
 			holder.staus_iv.setVisibility(View.VISIBLE);
 			break;
 		case INPROGRESS:
+			if (timers.containsKey(message.getMsgId()))
+				return;
 			// set a timer
 			final Timer timer = new Timer();
+			timers.put(message.getMsgId(), timer);
 			timer.schedule(new TimerTask() {
 
 				@Override
@@ -745,7 +758,6 @@ public class MessageAdapter extends BaseAdapter {
 				return true;
 			}
 		});
-		
 
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 			if (message.isAcked) {
@@ -763,14 +775,14 @@ public class MessageAdapter extends BaseAdapter {
 					@Override
 					public void onSuccess() {
 						activity.runOnUiThread(new Runnable() {
-							
+
 							@Override
 							public void run() {
 								holder.pb.setVisibility(View.INVISIBLE);
 								notifyDataSetChanged();
 							}
 						});
-						
+
 					}
 
 					@Override
@@ -780,13 +792,13 @@ public class MessageAdapter extends BaseAdapter {
 					@Override
 					public void onError(int code, String message) {
 						activity.runOnUiThread(new Runnable() {
-							
+
 							@Override
 							public void run() {
 								holder.pb.setVisibility(View.INVISIBLE);
 							}
 						});
-						
+
 					}
 				});
 
@@ -830,18 +842,18 @@ public class MessageAdapter extends BaseAdapter {
 		holder.tv_file_name.setText(fileMessageBody.getFileName());
 		holder.tv_file_size.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
 		holder.ll_container.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View view) {
 				File file = new File(filePath);
-				if(file != null && file.exists()){
-					//文件存在，直接打开
+				if (file != null && file.exists()) {
+					// 文件存在，直接打开
 					FileUtils.openFile(file, (Activity) context);
-				}else{
-					//下载
-					context.startActivity(new Intent(context,ShowNormalFileActivity.class).putExtra("msgbody", fileMessageBody));
+				} else {
+					// 下载
+					context.startActivity(new Intent(context, ShowNormalFileActivity.class).putExtra("msgbody", fileMessageBody));
 				}
-				if(message.direct == EMMessage.Direct.RECEIVE && !message.isAcked){
+				if (message.direct == EMMessage.Direct.RECEIVE && !message.isAcked) {
 					try {
 						EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
 						message.isAcked = true;
@@ -856,9 +868,9 @@ public class MessageAdapter extends BaseAdapter {
 		if (message.direct == EMMessage.Direct.RECEIVE) { // 接收的消息
 			System.err.println("it is receive msg");
 			File file = new File(filePath);
-			if(file != null && file.exists()){
+			if (file != null && file.exists()) {
 				holder.tv_file_download_state.setText("已下载");
-			}else{
+			} else {
 				holder.tv_file_download_state.setText("未下载");
 			}
 			return;
@@ -868,15 +880,20 @@ public class MessageAdapter extends BaseAdapter {
 		switch (message.status) {
 		case SUCCESS:
 			holder.pb.setVisibility(View.INVISIBLE);
+			holder.tv.setVisibility(View.INVISIBLE);
 			holder.staus_iv.setVisibility(View.INVISIBLE);
 			break;
 		case FAIL:
 			holder.pb.setVisibility(View.INVISIBLE);
+			holder.tv.setVisibility(View.INVISIBLE);
 			holder.staus_iv.setVisibility(View.VISIBLE);
 			break;
 		case INPROGRESS:
+			if (timers.containsKey(message.getMsgId()))
+				return;
 			// set a timer
 			final Timer timer = new Timer();
+			timers.put(message.getMsgId(), timer);
 			timer.schedule(new TimerTask() {
 
 				@Override
@@ -886,18 +903,15 @@ public class MessageAdapter extends BaseAdapter {
 						@Override
 						public void run() {
 							holder.pb.setVisibility(View.VISIBLE);
-							// holder.tv.setVisibility(View.VISIBLE);
-							// holder.tv.setText(message.progress + "%");
+							holder.tv.setVisibility(View.VISIBLE);
+							holder.tv.setText(message.progress + "%");
 							if (message.status == EMMessage.Status.SUCCESS) {
 								holder.pb.setVisibility(View.INVISIBLE);
-								// holder.tv.setVisibility(View.GONE);
-								// message.setSendingStatus(Message.SENDING_STATUS_SUCCESS);
+								holder.tv.setVisibility(View.INVISIBLE);
 								timer.cancel();
 							} else if (message.status == EMMessage.Status.FAIL) {
 								holder.pb.setVisibility(View.INVISIBLE);
-								// holder.tv.setVisibility(View.GONE);
-								// message.setSendingStatus(Message.SENDING_STATUS_FAIL);
-								// message.setProgress(0);
+								holder.tv.setVisibility(View.INVISIBLE);
 								holder.staus_iv.setVisibility(View.VISIBLE);
 								Toast.makeText(activity,
 										activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
@@ -912,7 +926,7 @@ public class MessageAdapter extends BaseAdapter {
 			}, 0, 500);
 			break;
 		default:
-			//发送消息
+			// 发送消息
 			sendMsgInBackground(message, holder);
 		}
 
@@ -968,16 +982,15 @@ public class MessageAdapter extends BaseAdapter {
 	 * 
 	 * @param message
 	 * @param holder
-	 * @param position 
+	 * @param position
 	 */
 	public void sendMsgInBackground(final EMMessage message, final ViewHolder holder) {
 		holder.staus_iv.setVisibility(View.GONE);
 		holder.pb.setVisibility(View.VISIBLE);
-		
-		
-		//调用sdk发送异步发送方法
+
+		// 调用sdk发送异步发送方法
 		EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
-			
+
 			@Override
 			public void onSuccess() {
 				updateSendedView(message, holder);
@@ -1118,25 +1131,25 @@ public class MessageAdapter extends BaseAdapter {
 					holder.tv.setVisibility(View.GONE);
 				}
 				if (message.status == EMMessage.Status.SUCCESS) {
-//					if (message.getType() == EMMessage.Type.FILE) {
-//						holder.pb.setVisibility(View.INVISIBLE);
-//						holder.staus_iv.setVisibility(View.INVISIBLE);
-//					} else {
-//						holder.pb.setVisibility(View.GONE);
-//						holder.staus_iv.setVisibility(View.GONE);
-//					}
+					// if (message.getType() == EMMessage.Type.FILE) {
+					// holder.pb.setVisibility(View.INVISIBLE);
+					// holder.staus_iv.setVisibility(View.INVISIBLE);
+					// } else {
+					// holder.pb.setVisibility(View.GONE);
+					// holder.staus_iv.setVisibility(View.GONE);
+					// }
 
 				} else if (message.status == EMMessage.Status.FAIL) {
-//					if (message.getType() == EMMessage.Type.FILE) {
-//						holder.pb.setVisibility(View.INVISIBLE);
-//					} else {
-//						holder.pb.setVisibility(View.GONE);
-//					}
-//					holder.staus_iv.setVisibility(View.VISIBLE);
+					// if (message.getType() == EMMessage.Type.FILE) {
+					// holder.pb.setVisibility(View.INVISIBLE);
+					// } else {
+					// holder.pb.setVisibility(View.GONE);
+					// }
+					// holder.staus_iv.setVisibility(View.VISIBLE);
 					Toast.makeText(activity, activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0)
 							.show();
 				}
-				
+
 				notifyDataSetChanged();
 			}
 		});
@@ -1152,7 +1165,9 @@ public class MessageAdapter extends BaseAdapter {
 	 */
 	private boolean showImageView(final String thumbernailPath, final ImageView iv, final String localFullSizePath, String remoteDir,
 			final EMMessage message) {
-//		String imagename = localFullSizePath.substring(localFullSizePath.lastIndexOf("/") + 1, localFullSizePath.length());
+		// String imagename =
+		// localFullSizePath.substring(localFullSizePath.lastIndexOf("/") + 1,
+		// localFullSizePath.length());
 		// final String remote = remoteDir != null ? remoteDir+imagename :
 		// imagename;
 		final String remote = remoteDir;
@@ -1245,7 +1260,7 @@ public class MessageAdapter extends BaseAdapter {
 			});
 
 		} else {
-			new LoadVideoImageTask().execute(localThumb, thumbnailUrl, iv,activity, message,this);
+			new LoadVideoImageTask().execute(localThumb, thumbnailUrl, iv, activity, message, this);
 		}
 
 	}
@@ -1263,11 +1278,11 @@ public class MessageAdapter extends BaseAdapter {
 		LinearLayout container_status_btn;
 		LinearLayout ll_container;
 		ImageView iv_read_status;
-		//显示已读回执状态
+		// 显示已读回执状态
 		TextView tv_ack;
-		//显示送达回执状态
+		// 显示送达回执状态
 		TextView tv_delivered;
-		
+
 		TextView tv_file_name;
 		TextView tv_file_size;
 		TextView tv_file_download_state;
