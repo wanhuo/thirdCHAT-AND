@@ -9,4 +9,6 @@
         <item name="android:windowAnimationStyle">@style/AnimFade2</item>
     </style>
 
+    <style name="nornal_style" parent="android:style/Theme.Holo.Light.NoActionBar"></style>
+
 </resources>

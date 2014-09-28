@@ -47,11 +47,12 @@ import com.easemob.util.HanziToPinyin;
  * 
  */
 public class LoginActivity extends BaseActivity {
-	public static final int REQUEST_CODE_SETNICK=1;
+	public static final int REQUEST_CODE_SETNICK = 1;
 	private EditText usernameEditText;
 	private EditText passwordEditText;
 
 	private boolean progressShow;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -94,29 +95,24 @@ public class LoginActivity extends BaseActivity {
 			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
 			return;
 		}
-		Intent intent=new Intent(LoginActivity.this, com.easemob.chatuidemo.activity.AlertDialog.class);
+		Intent intent = new Intent(LoginActivity.this, com.easemob.chatuidemo.activity.AlertDialog.class);
 		intent.putExtra("editTextShow", true);
-		intent.putExtra("titleIsCancel",true);
+		intent.putExtra("titleIsCancel", true);
 		intent.putExtra("msg", "请设置当前用户的昵称\n为了ios离线推送不是userid而是nick，详情见注释");
 		startActivityForResult(intent, REQUEST_CODE_SETNICK);
-		 
-		
+
 	}
 
-	
-	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if(resultCode==RESULT_OK)
-		{
-			if(requestCode==REQUEST_CODE_SETNICK)
-			{
-				DemoApplication.currentUserNick=data.getStringExtra("edittext");
-				
+		if (resultCode == RESULT_OK) {
+			if (requestCode == REQUEST_CODE_SETNICK) {
+				DemoApplication.currentUserNick = data.getStringExtra("edittext");
+
 				final String username = usernameEditText.getText().toString();
 				final String password = passwordEditText.getText().toString();
-				
+
 				if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
 					progressShow = true;
 					final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
@@ -181,12 +177,10 @@ public class LoginActivity extends BaseActivity {
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
-									boolean updatenick = EMChatManager.getInstance()
-											.updateCurrentUserNick(DemoApplication.currentUserNick);
-									if (!updatenick) {
-										EMLog.e("LoginActivity",
-												"update current user nick fail");
-									}
+							boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(DemoApplication.currentUserNick);
+							if (!updatenick) {
+								EMLog.e("LoginActivity", "update current user nick fail");
+							}
 
 							if (!LoginActivity.this.isFinishing())
 								pd.dismiss();
@@ -215,27 +209,12 @@ public class LoginActivity extends BaseActivity {
 						}
 					});
 				}
-				
-				
-				
+
 			}
-			
-			
+
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	/**
 	 * 注册
 	 * 

@@ -313,6 +313,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 群聊
 			findViewById(R.id.container_to_group).setVisibility(View.VISIBLE);
 			findViewById(R.id.container_remove).setVisibility(View.GONE);
+			findViewById(R.id.container_voice_call).setVisibility(View.GONE);
 			toChatUsername = getIntent().getStringExtra("groupId");
 			group = EMGroupManager.getInstance().getGroup(toChatUsername);
 			((TextView) findViewById(R.id.name)).setText(group.getGroupName());
@@ -356,6 +357,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		ackMessageIntentFilter.setPriority(5);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 
+		// 注册一个消息送达的BroadcastReceiver
+		IntentFilter deliveryAckMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getDeliveryAckMessageBroadcastAction());
+		deliveryAckMessageIntentFilter.setPriority(5);
+		registerReceiver(deliveryAckMessageReceiver, deliveryAckMessageIntentFilter);
+		
 		// 监听当前会话的群聊解散被T事件
 		groupListener = new GroupListener();
 		EMGroupManager.getInstance().addGroupChangeListener(groupListener);
@@ -586,6 +592,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
 		} else if (id == R.id.btn_file) { // 点击文件图标
 			selectFileFromLocal();
+		} else if (id == R.id.btn_voice_call) { //点击语音电话图标
+			if(!EMChatManager.getInstance().isConnected())
+				Toast.makeText(this, "尚未连接至服务器，请稍后重试", 0).show();
+			else
+				startActivity(new Intent(ChatActivity.this, VoiceCallActivity.class).
+						putExtra("username", toChatUsername).
+						putExtra("isComingCall", false));
 		}
 	}
 
@@ -717,7 +730,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		message.setReceipt(to);
 		ImageMessageBody body = new ImageMessageBody(new File(filePath));
 		// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
-		// body.setSendOriginalImage(true)
+//		 body.setSendOriginalImage(true);
 		message.addBody(body);
 		conversation.addMessage(message);
 
@@ -1045,6 +1058,27 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			adapter.notifyDataSetChanged();
 		}
 	};
+	
+	/**
+	 * 消息送达BroadcastReceiver
+	 */
+	private BroadcastReceiver deliveryAckMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String msgid = intent.getStringExtra("msgid");
+			String from = intent.getStringExtra("from");
+			EMConversation conversation = EMChatManager.getInstance().getConversation(from);
+			if (conversation != null) {
+				// 把message设为已读
+				EMMessage msg = conversation.getMessage(msgid);
+				if (msg != null) {
+					msg.isDelivered = true;
+				}
+			}
+			abortBroadcast();
+			adapter.notifyDataSetChanged();
+		}
+	};
 	private PowerManager.WakeLock wakeLock;
 
 	/**
@@ -1074,6 +1108,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					v.setPressed(false);
 					if (wakeLock.isHeld())
 						wakeLock.release();
+					if(voiceRecorder != null)
+						voiceRecorder.discardRecording();
 					recordingContainer.setVisibility(View.INVISIBLE);
 					Toast.makeText(ChatActivity.this, R.string.recoding_fail, Toast.LENGTH_SHORT).show();
 					return false;
@@ -1117,6 +1153,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				}
 				return true;
 			default:
+				recordingContainer.setVisibility(View.INVISIBLE);
+				if(voiceRecorder != null)
+					voiceRecorder.discardRecording();
 				return false;
 			}
 		}
@@ -1212,6 +1251,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		try {
 			unregisterReceiver(ackMessageReceiver);
 			ackMessageReceiver = null;
+			unregisterReceiver(deliveryAckMessageReceiver);
+			deliveryAckMessageReceiver = null;
 		} catch (Exception e) {
 		}
 	}
