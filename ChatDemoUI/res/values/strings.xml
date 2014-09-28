@@ -3,6 +3,7 @@
 
     <string name="app_name">环信UI演示</string>
     <string name="text_ack_msg">已读</string>
+    <string name="text_delivered_msg">送达</string>
     <string name="back">返回</string>
     <string name="save">保存</string>
     <string name="button_pushtotalk">按住说话</string>
@@ -12,6 +13,7 @@
     <string name="attach_take_pic">拍照</string>
     <string name="attach_location">位置</string>
     <string name="attach_file">文件</string>
+    <string name="attach_voice_call">语音电话</string>
     <string name="user_card">名片</string>
     <string name="move_up_to_cancel">手指上滑，取消发送</string>
     <string name="release_to_cancel">松开手指，取消发送</string>
@@ -42,6 +44,7 @@
     <string name="picture">[图片]</string>
     <string name="video">[视频]</string>
     <string name="file">[文件]</string>
+    <string name="voice_call">[语音通话]</string>
     
       <string name="button_cancel">取消</string>
     <string name="button_save">保存</string>

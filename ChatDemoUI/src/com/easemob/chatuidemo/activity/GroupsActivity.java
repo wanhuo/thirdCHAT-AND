@@ -60,6 +60,7 @@ public class GroupsActivity extends BaseActivity {
 					//新建群聊
 					startActivityForResult(new Intent(GroupsActivity.this, NewGroupActivity.class), 0);
 				} else {
+					
 					//进入群聊
 					Intent intent = new Intent(GroupsActivity.this, ChatActivity.class);
 					// it is group chat

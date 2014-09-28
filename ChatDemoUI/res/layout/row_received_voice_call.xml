@@ -27,42 +27,36 @@
             android:background="@drawable/mini_avatar_shadow"
             android:scaleType="fitXY" />
 
-        <ImageView
-            android:id="@+id/iv_voice"
+        <RelativeLayout
+            android:id="@+id/row_recv_pic"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_chat_activity"
             android:layout_toRightOf="@id/iv_userhead"
-            android:background="@drawable/chatfrom_bg"
-            android:clickable="true"
-            android:src="@drawable/chatfrom_voice_playing" />
+            android:background="@drawable/chatfrom_bg" >
 
-        <TextView
-            android:id="@+id/tv_length"
-            style="@style/chat_text_name_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/iv_voice"
-            android:gravity="center"
-            android:text="3&apos;&apos;" />
+            <ImageView
+                android:layout_marginLeft="4dp"
+                android:id="@+id/iv_call_icon"
+               android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/chat_voice_call_receive" 
+                 />
 
-        <ImageView
-            android:id="@+id/iv_unread_voice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/tv_length"
-            android:src="@drawable/voice_unread" />
-
-        <ProgressBar
-            android:id="@+id/pb_sending"
-            android:layout_toRightOf="@id/iv_unread_voice"
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="5dp"
-            android:visibility="invisible" />
+            <TextView
+                android:layout_toRightOf="@id/iv_call_icon"
+                android:id="@+id/tv_chatcontent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="苏定方"
+               android:padding="6dp"
+                android:minHeight="40dp"
+                android:textSize="15sp"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:textColor="#ff000000" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tv_userid"
@@ -71,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@id/iv_userhead"
-            android:layout_toLeftOf="@id/iv_voice" />
+            android:layout_toLeftOf="@id/row_recv_pic" />
     </RelativeLayout>
 
 </LinearLayout>

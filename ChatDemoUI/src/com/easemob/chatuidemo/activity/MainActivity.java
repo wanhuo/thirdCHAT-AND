@@ -59,6 +59,7 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.HanziToPinyin;
 import com.easemob.util.NetUtils;
 
@@ -118,9 +119,9 @@ public class MainActivity extends FragmentActivity {
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 
 		// 注册一个离线消息的BroadcastReceiver
-		IntentFilter offlineMessageIntentFilter = new IntentFilter(EMChatManager.getInstance()
-				.getOfflineMessageBroadcastAction());
-		registerReceiver(offlineMessageReceiver, offlineMessageIntentFilter);
+//		IntentFilter offlineMessageIntentFilter = new IntentFilter(EMChatManager.getInstance()
+//				.getOfflineMessageBroadcastAction());
+//		registerReceiver(offlineMessageReceiver, offlineMessageIntentFilter);
 		
 		// setContactListener监听联系人的变化等
 		EMContactManager.getInstance().setContactListener(new MyContactListener());
@@ -190,10 +191,10 @@ public class MainActivity extends FragmentActivity {
 			unregisterReceiver(ackMessageReceiver);
 		} catch (Exception e) {
 		}
-		try {
-			unregisterReceiver(offlineMessageReceiver);
-		} catch (Exception e) {
-		}
+//		try {
+//			unregisterReceiver(offlineMessageReceiver);
+//		} catch (Exception e) {
+//		}
 
 		if (conflictBuilder != null) {
 			conflictBuilder.create().dismiss();
@@ -314,25 +315,25 @@ public class MainActivity extends FragmentActivity {
 	 * sdk 登录后，服务器会推送离线消息到client，这个receiver，是通知UI 有哪些人发来了离线消息
 	 * UI 可以做相应的操作，比如下载用户信息
 	 */
-	private BroadcastReceiver offlineMessageReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String[] users = intent.getStringArrayExtra("fromuser");
-			String[] groups = intent.getStringArrayExtra("fromgroup");
-			if (users != null) {
-				for (String user : users) {
-					System.out.println("收到user离线消息：" + user);
-				}
-			}
-			if (groups != null) {
-				for (String group : groups) {
-					System.out.println("收到group离线消息：" + group);
-				}
-			}
-			abortBroadcast();
-		}
-	};
+//	private BroadcastReceiver offlineMessageReceiver = new BroadcastReceiver() {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			String[] users = intent.getStringArrayExtra("fromuser");
+//			String[] groups = intent.getStringArrayExtra("fromgroup");
+//			if (users != null) {
+//				for (String user : users) {
+//					System.out.println("收到user离线消息：" + user);
+//				}
+//			}
+//			if (groups != null) {
+//				for (String group : groups) {
+//					System.out.println("收到group离线消息：" + group);
+//				}
+//			}
+//			abortBroadcast();
+//		}
+//	};
 	
 	private InviteMessgeDao inviteMessgeDao;
 	private UserDao userDao;
@@ -395,7 +396,7 @@ public class MainActivity extends FragmentActivity {
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
 			for (InviteMessage inviteMessage : msgs) {
 				if (inviteMessage.getGroupId() == null && inviteMessage.getFrom().equals(username)) {
-					return;
+				    inviteMessgeDao.deleteMessage(username);
 				}
 			}
 			// 自己封装的javabean
