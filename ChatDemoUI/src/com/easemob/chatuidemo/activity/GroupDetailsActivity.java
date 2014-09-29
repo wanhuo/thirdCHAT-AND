@@ -434,13 +434,17 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 							// 正常情况下点击user，可以进入用户详情或者聊天页面等等
 							Intent intent = new Intent(GroupDetailsActivity.this, ChatActivity.class);
 							if("true".equals(group.getDescription())){
+								if(username.equals(group.getCurrentUserNick())){
+									Toast.makeText(GroupDetailsActivity.this, "不能和自己聊天", 0).show();
+									return;
+								}
 								intent.putExtra("anonymousUsername", EMContactManager.getAnonymousName(groupId, username));
+								startActivity(intent);
 							}else{
-								intent.putExtra("userId", username);
-								
+//								intent.putExtra("userId", username);
+//								startActivity(intent);
 							}
 							
-							startActivity(intent);
 								
 						}
 					}
