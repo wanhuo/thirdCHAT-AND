@@ -101,7 +101,7 @@ public class GroupSimpleDetailActivity extends BaseActivity {
 					if(group.isMembersOnly()){
 						EMGroupManager.getInstance().applyJoinToGroup(groupid, "求加入");
 					}else{
-						EMGroupManager.getInstance().joinGroup(groupid);
+						EMGroupManager.getInstance().joinAnonymousGroup(groupid,EMGroupManager.getInstance().getRandomString(9));
 					}
 					runOnUiThread(new Runnable() {
 						public void run() {
