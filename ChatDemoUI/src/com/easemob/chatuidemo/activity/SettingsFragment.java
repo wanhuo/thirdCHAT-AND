@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import org.jivesoftware.smack.XMPPException;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -270,7 +272,9 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 			startActivity(new Intent(getActivity(), LoginActivity.class));
 			break;
 		case R.id.ll_black_list:
-			startActivity(new Intent(getActivity(), BlacklistActivity.class));
+			//startActivity(new Intent(getActivity(), BlacklistActivity.class));
+			startActivity(new Intent(this.getActivity(), MediaConferenceCallActivity.class));
+			
 			break;
 		case R.id.ll_diagnose:
 			startActivity(new Intent(getActivity(), DiagnoseActivity.class));

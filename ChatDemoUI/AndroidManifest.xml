@@ -89,6 +89,12 @@
             android:theme="@style/horizontal_slide"
             android:windowSoftInputMode="adjustPan" >
         </activity>
+        <activity
+            android:name=".activity.MediaConferenceCallActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
         <!-- 新建群组 -->
         <activity
             android:name=".activity.NewGroupActivity"
