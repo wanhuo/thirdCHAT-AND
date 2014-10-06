@@ -98,6 +98,8 @@ public class ContactlistFragment extends Fragment {
 				} else if (Constant.GROUP_USERNAME.equals(username)) {
 					// 进入群聊列表页面
 					startActivity(new Intent(getActivity(), GroupsActivity.class));
+				} else if(Constant.MEDIA_CONF_USERNAME.equals(username)){
+					startActivity(new Intent(getActivity(), MediaConferenceCallActivity.class));
 				} else {
 					// demo中直接进入聊天页面，实际一般是进入用户详情页
 					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getUsername()));
@@ -271,7 +273,7 @@ public class ContactlistFragment extends Fragment {
 		Iterator<Entry<String, User>> iterator = users.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, User> entry = iterator.next();
-			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME) && !entry.getKey().equals(Constant.GROUP_USERNAME))
+			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME) && !entry.getKey().equals(Constant.GROUP_USERNAME) && !entry.getKey().equals(Constant.MEDIA_CONF_USERNAME))
 				contactList.add(entry.getValue());
 		}
 		// 排序
@@ -283,6 +285,7 @@ public class ContactlistFragment extends Fragment {
 			}
 		});
 
+		contactList.add(0, users.get(Constant.MEDIA_CONF_USERNAME));
 		// 加入"申请与通知"和"群聊"
 		contactList.add(0, users.get(Constant.GROUP_USERNAME));
 		// 把"申请与通知"添加到首位

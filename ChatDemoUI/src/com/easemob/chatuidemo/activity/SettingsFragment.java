@@ -272,9 +272,7 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 			startActivity(new Intent(getActivity(), LoginActivity.class));
 			break;
 		case R.id.ll_black_list:
-			//startActivity(new Intent(getActivity(), BlacklistActivity.class));
-			startActivity(new Intent(this.getActivity(), MediaConferenceCallActivity.class));
-			
+			startActivity(new Intent(getActivity(), BlacklistActivity.class));
 			break;
 		case R.id.ll_diagnose:
 			startActivity(new Intent(getActivity(), DiagnoseActivity.class));

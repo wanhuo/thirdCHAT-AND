@@ -164,6 +164,12 @@ public class LoginActivity extends BaseActivity {
 								groupUser.setNick("群聊");
 								groupUser.setHeader("");
 								userlist.put(Constant.GROUP_USERNAME, groupUser);
+								// 添加电话会议
+								User confUser = new User();
+								confUser.setUsername(Constant.MEDIA_CONF_USERNAME);
+								confUser.setNick("电话会议");
+								confUser.setHeader("");
+								userlist.put(Constant.MEDIA_CONF_USERNAME, confUser);
 
 								// 存入内存
 								DemoApplication.getInstance().setContactList(userlist);

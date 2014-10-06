@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.jivesoftware.smack.XMPPException;
 
+import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.core.EMConferenceIQ.EMConferenceRoom;
 import com.easemob.chatuidemo.R;
@@ -19,30 +20,30 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class MediaConferenceCallActivity extends BaseActivity{
 	private ListView listView;
 	private List<EMConferenceRoom> confList = null;
 	private MediaConferenceAdapter adapter = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_media_conference);
 		listView = (ListView)findViewById(R.id.list);
-	}
-	
-	@Override
-	protected void onStart(){
-		super.onStart();
+		
 		final ProgressDialog pd = new ProgressDialog(this);
-		pd.setMessage("loading media rooms");
+		pd.setMessage("loading media conference rooms");
+		pd.setCancelable(false);
+		pd.setCanceledOnTouchOutside(false);
 		pd.show();
 		new Thread(){
 			@Override
 			public void run(){
 				try {
-					confList = EMChatManager.getInstance().getMediaRooms();
+					confList = EMChatManager.getInstance().getMediaConferenceRooms();
 					
 					MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
 						@Override
@@ -55,9 +56,39 @@ public class MediaConferenceCallActivity extends BaseActivity{
 								public void onItemClick(AdapterView<?> parent,
 										View view, int position, long id) {
 									// TODO Auto-generated method stub
-									String confId = confList.get(position).getConferenceID();
+									final String confId = confList.get(position).getConferenceID();
 									
 									Log.i("", "the selected conf id : " + confId);
+									pd.setMessage("joining conference room : " + confList.get(position).getConferenceName());
+									pd.setCancelable(false);
+									pd.setCanceledOnTouchOutside(false);
+									pd.show();
+									new Thread(){
+										@Override
+										public void run(){
+											try {
+												EMChatManager.getInstance().joinMediaConferenceRoom(confId);
+												MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
+													@Override
+													public void run(){
+														pd.dismiss();
+												        Toast.makeText(getApplicationContext(), "加入成功", 0).show();
+													}
+												});
+											} catch (XMPPException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+												final String msg = e.getMessage();
+												MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
+													@Override
+													public void run(){
+														pd.dismiss();
+												        Toast.makeText(getApplicationContext(), "加入失败: " + msg, 0).show();
+													}
+												});
+											}	
+										}
+									}.start();
 								}
 								
 							});
@@ -68,11 +99,13 @@ public class MediaConferenceCallActivity extends BaseActivity{
 				} catch (XMPPException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					final String msg = e.getMessage();
 					MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
 						@Override
 						public void run(){
 							pd.setMessage("faild to load media rooms");
 							pd.dismiss();
+							Toast.makeText(getApplicationContext(), "获取会议失败: " + msg, 0).show();
 						}
 					});
 				}
@@ -80,6 +113,10 @@ public class MediaConferenceCallActivity extends BaseActivity{
 		}.start();
 	}
 	
+	@Override
+	protected void onStart(){
+		super.onStart();
+	}
 }
 
 class MediaConferenceAdapter extends ArrayAdapter<EMConferenceRoom> {

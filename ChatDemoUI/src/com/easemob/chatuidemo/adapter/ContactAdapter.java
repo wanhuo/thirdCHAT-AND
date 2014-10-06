@@ -150,6 +150,10 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 				//群聊item
 				nameTextview.setText(user.getNick());
 				avatar.setImageResource(R.drawable.groups_icon);
+			}else if(username.equals(Constant.MEDIA_CONF_USERNAME)){
+				//群聊item
+				nameTextview.setText(user.getNick());
+				avatar.setImageResource(R.drawable.groups_icon);
 			}else{
 				nameTextview.setText(username);
 				if(unreadMsgView != null)
