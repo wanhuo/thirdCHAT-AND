@@ -1,112 +1,86 @@
 package com.easemob.chatuidemo.activity;
 
-import java.util.List;
-
 import org.jivesoftware.smack.XMPPException;
 
-import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
-import com.easemob.chat.core.EMConferenceIQ.EMConferenceRoom;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.R.color;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class MediaConferenceCallActivity extends BaseActivity{
-	private ListView listView;
-	private List<EMConferenceRoom> confList = null;
-	private MediaConferenceAdapter adapter = null;
+	private TextView tokenSatus = null;
+	private Button requireToken = null;
+	private boolean isTalkTokenGranted = false;
+	private String confId = null;
+	private String confName = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_media_conference);
-		listView = (ListView)findViewById(R.id.list);
+		setContentView(R.layout.activity_media_conference_call);
 		
-		final ProgressDialog pd = new ProgressDialog(this);
-		pd.setMessage("loading media conference rooms");
-		pd.setCancelable(false);
-		pd.setCanceledOnTouchOutside(false);
-		pd.show();
+		tokenSatus = (TextView) findViewById(R.id.token_status);
+		requireToken = (Button) findViewById(R.id.talk);
+		
+		confId = getIntent().getStringExtra("confId");
+		confName = getIntent().getStringExtra("confName");
+		
+		requireToken.setOnTouchListener(new OnTouchListener(){
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				if(event.getAction() == MotionEvent.ACTION_DOWN){
+					if(!isTalkTokenGranted){
+						requireToken.setBackgroundColor(color.gray_pressed);
+						requireTalkToken();
+					}
+					return true;
+				}else if(event.getAction() == MotionEvent.ACTION_UP){
+					requireToken.setBackgroundColor(color.gray_normal);
+					requireToken.requestLayout();
+				    releaseTalkToken();
+					return true;
+				}
+				return false;
+			}
+			
+		});
+	}
+	
+	private void requireTalkToken(){
 		new Thread(){
 			@Override
 			public void run(){
 				try {
-					confList = EMChatManager.getInstance().getMediaConferenceRooms();
-					
+					EMChatManager.getInstance().requireTalkToken(confId);
+					isTalkTokenGranted = true;
 					MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
-						@Override
-						public void run(){
-							adapter = new MediaConferenceAdapter(MediaConferenceCallActivity.this,1,confList);
-							listView.setAdapter(adapter);
-							listView.setOnItemClickListener(new OnItemClickListener(){
 
-								@Override
-								public void onItemClick(AdapterView<?> parent,
-										View view, int position, long id) {
-									// TODO Auto-generated method stub
-									final String confId = confList.get(position).getConferenceID();
-									
-									Log.i("", "the selected conf id : " + confId);
-									pd.setMessage("joining conference room : " + confList.get(position).getConferenceName());
-									pd.setCancelable(false);
-									pd.setCanceledOnTouchOutside(false);
-									pd.show();
-									new Thread(){
-										@Override
-										public void run(){
-											try {
-												EMChatManager.getInstance().joinMediaConferenceRoom(confId);
-												MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
-													@Override
-													public void run(){
-														pd.dismiss();
-												        Toast.makeText(getApplicationContext(), "加入成功", 0).show();
-													}
-												});
-											} catch (XMPPException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-												final String msg = e.getMessage();
-												MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
-													@Override
-													public void run(){
-														pd.dismiss();
-												        Toast.makeText(getApplicationContext(), "加入失败: " + msg, 0).show();
-													}
-												});
-											}	
-										}
-									}.start();
-								}
-								
-							});
-							adapter.notifyDataSetChanged();
-							pd.dismiss();	
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							tokenSatus.setText("talk is granted!");
 						}
+						
 					});
 				} catch (XMPPException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					final String msg = e.getMessage();
 					MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
+
 						@Override
-						public void run(){
-							pd.setMessage("faild to load media rooms");
-							pd.dismiss();
-							Toast.makeText(getApplicationContext(), "获取会议失败: " + msg, 0).show();
+						public void run() {
+							// TODO Auto-generated method stub
+							tokenSatus.setText("failed to require the talk token, please try later...");
 						}
+						
 					});
 				}
 			}
@@ -114,33 +88,31 @@ public class MediaConferenceCallActivity extends BaseActivity{
 	}
 	
 	@Override
-	protected void onStart(){
-		super.onStart();
-	}
-}
-
-class MediaConferenceAdapter extends ArrayAdapter<EMConferenceRoom> {
-
-	private LayoutInflater inflater;
-
-	public MediaConferenceAdapter(Context context, int res, List<EMConferenceRoom> groups) {
-		super(context, res, groups);
-		this.inflater = LayoutInflater.from(context);
+	public void onDestroy(){
+		exitRoom();
+		super.onDestroy();
 	}
 	
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.row_media_conference_room, null);
-		}
-		
-		((TextView)convertView.findViewById(R.id.name)).setText(getItem(position).getConferenceName());
-		return convertView;
-	}
+	private void releaseTalkToken(){
+		new Thread(){
+			@Override
+			public void run(){
+				EMChatManager.getInstance().releaseTalkToken(confId);
+				isTalkTokenGranted = false;
+				MediaConferenceCallActivity.this.runOnUiThread(new Runnable(){
 
-	@Override
-	public int getCount() {
-		return super.getCount();
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						tokenSatus.setText("token is released!");
+					}
+					
+				});
+			}
+		}.start();
 	}
-
+	
+	private void exitRoom(){
+		EMChatManager.getInstance().exitMediaConferenceRoom(confId);
+	}
 }
