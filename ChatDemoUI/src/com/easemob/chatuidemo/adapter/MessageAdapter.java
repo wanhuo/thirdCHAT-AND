@@ -1018,7 +1018,9 @@ public class MessageAdapter extends BaseAdapter {
 		// final ImageMessageBody msgbody = (ImageMessageBody)
 		// message.getBody();
 		final FileMessageBody msgbody = (FileMessageBody) message.getBody();
+		if(holder.pb!=null)
 		holder.pb.setVisibility(View.VISIBLE);
+		if(holder.tv!=null)
 		holder.tv.setVisibility(View.VISIBLE);
 
 		msgbody.setDownloadCallback(new EMCallBack() {

@@ -137,13 +137,13 @@ public class RecorderVideoActivity extends BaseActivity implements OnClickListen
 			for (int i = 0; i < supportedPreviewFrameRates.size(); i++) {
 				int supportRate = supportedPreviewFrameRates.get(i);
 
-				if (supportRate == 10) {
+				if (supportRate == 15) {
 					hasSupportRate = true;
 				}
 
 			}
 			if (hasSupportRate) {
-				defaultVideoFrameRate = 10;
+				defaultVideoFrameRate = 15;
 			} else {
 				defaultVideoFrameRate = supportedPreviewFrameRates.get(0);
 			}
@@ -212,8 +212,11 @@ public class RecorderVideoActivity extends BaseActivity implements OnClickListen
 			mediarecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 			// 设置录制的视频编码h263 h264
 			mediarecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+			
 			// 设置视频录制的分辨率。必须放在设置编码和格式的后面，否则报错
 			mediarecorder.setVideoSize(previewWidth, previewHeight);
+			// 设置视频的比特率
+			mediarecorder.setVideoEncodingBitRate(384 * 1024);
 			// // 设置录制的视频帧率。必须放在设置编码和格式的后面，否则报错
 			if (defaultVideoFrameRate != -1) {
 				mediarecorder.setVideoFrameRate(defaultVideoFrameRate);
