@@ -127,23 +127,23 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 			if (message.direct == EMMessage.Direct.RECEIVE) {
 				//从sdk中提到了ui中，使用更简单不犯错的获取string方法
 //				digest = EasyUtils.getAppResourceString(context, "location_recv");
-				digest = getStrng(context, R.string.location_recv);
+				digest = getString(context, R.string.location_recv);
 				digest = String.format(digest, message.getFrom());
 				return digest;
 			} else {
 //				digest = EasyUtils.getAppResourceString(context, "location_prefix");
-				digest = getStrng(context, R.string.location_prefix);
+				digest = getString(context, R.string.location_prefix);
 			}
 			break;
 		case IMAGE: // 图片消息
 			ImageMessageBody imageBody = (ImageMessageBody) message.getBody();
-			digest = getStrng(context, R.string.picture) + imageBody.getFileName();
+			digest = getString(context, R.string.picture) + imageBody.getFileName();
 			break;
 		case VOICE:// 语音消息
-			digest = getStrng(context, R.string.voice);
+			digest = getString(context, R.string.voice);
 			break;
 		case VIDEO: // 视频消息
-			digest = getStrng(context, R.string.video);
+			digest = getString(context, R.string.video);
 			break;
 		case TXT: // 文本消息
 			if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
@@ -151,11 +151,11 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 				digest = txtBody.getMessage();
 			}else{
 				TextMessageBody txtBody = (TextMessageBody) message.getBody();
-				digest = getStrng(context, R.string.voice_call) + txtBody.getMessage();
+				digest = getString(context, R.string.voice_call) + txtBody.getMessage();
 			}
 			break;
 		case FILE: //普通文件消息
-			digest = getStrng(context, R.string.file);
+			digest = getString(context, R.string.file);
 			break;
 		default:
 			System.err.println("error, unknow type");
@@ -184,7 +184,7 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		
 	}
 	
-	String getStrng(Context context, int resId){
+	String getString(Context context, int resId){
 		return context.getResources().getString(resId);
 	}
 }

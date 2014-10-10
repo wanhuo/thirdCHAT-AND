@@ -144,11 +144,27 @@ public class MediaConferenceCallActivity extends BaseActivity implements OnClick
 	}
 	
 	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.btn_exit:
+			finish();
+			break;
+			
+
+		default:
+			break;
+		}
+	}
+	
+	@Override
 	public void onDestroy(){
 		exitRoom();
 		super.onDestroy();
 	}
 	
+	/**
+	 * 退出房间
+	 */
 	private void exitRoom(){
 		EMChatManager.getInstance().exitMediaConferenceRoom(confId);
 	}
@@ -176,18 +192,6 @@ public class MediaConferenceCallActivity extends BaseActivity implements OnClick
 		}
 	}
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.btn_exit:
-			finish();
-			break;
-			
-
-		default:
-			break;
-		}
-	}
 	
 	
 }
