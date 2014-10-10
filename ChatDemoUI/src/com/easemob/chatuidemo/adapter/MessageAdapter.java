@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.text.Spannable;
 import android.util.Log;
@@ -76,7 +77,7 @@ import com.easemob.util.FileUtils;
 import com.easemob.util.LatLng;
 import com.easemob.util.TextFormater;
 
-public class MessageAdapter extends BaseAdapter {
+public class MessageAdapter extends BaseAdapter{
 
 	private final static String TAG = "msg";
 
@@ -758,7 +759,29 @@ public class MessageAdapter extends BaseAdapter {
 				return true;
 			}
 		});
-
+		if (((ChatActivity)activity).playMsgId != null
+				&& ((ChatActivity)activity).playMsgId.equals(message
+						.getMsgId())&&VoicePlayClickListener.isPlaying) {
+			AnimationDrawable voiceAnimation;
+			if (message.direct == EMMessage.Direct.RECEIVE) {
+				holder.iv.setImageResource(R.anim.voice_from_icon);
+			} else {
+				holder.iv.setImageResource(R.anim.voice_to_icon);
+			}
+			voiceAnimation = (AnimationDrawable) holder.iv.getDrawable();
+			voiceAnimation.start();
+		} else {
+			if (message.direct == EMMessage.Direct.RECEIVE) {
+				holder.iv.setImageResource(R.drawable.chatfrom_voice_playing);
+			} else {
+				holder.iv.setImageResource(R.drawable.chatto_voice_playing);
+			}
+		}
+		
+		
+		
+		
+		
 		if (message.direct == EMMessage.Direct.RECEIVE) {
 			if (message.isAcked) {
 				// 隐藏语音未读标志
@@ -1315,5 +1338,7 @@ public class MessageAdapter extends BaseAdapter {
 		}
 
 	}
+
+ 
 
 }

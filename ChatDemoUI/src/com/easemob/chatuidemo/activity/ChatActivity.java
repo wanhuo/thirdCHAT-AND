@@ -176,6 +176,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private final int pagesize = 20;
 	private boolean haveMoreData = true;
 	private Button btnMore;
+	public String playMsgId;
+	
 
 	private Handler micImageHandler = new Handler() {
 		@Override
