@@ -100,6 +100,7 @@ public class ContactlistFragment extends Fragment {
 					startActivity(new Intent(getActivity(), GroupsActivity.class));
 				} else if(Constant.MEDIA_CONF_USERNAME.equals(username)){
 					startActivity(new Intent(getActivity(), MediaConferenceListActivity.class));
+//					startActivity(new Intent(getActivity(), MediaConferenceCallActivity.class));
 				} else {
 					// demo中直接进入聊天页面，实际一般是进入用户详情页
 					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getUsername()));

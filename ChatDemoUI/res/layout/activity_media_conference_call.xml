@@ -2,30 +2,161 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#1D1E1D"
     android:orientation="vertical" >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <TextView
-            android:id="@+id/token_status"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="获取token"
-            android:textSize="20dp" />
+        android:layout_height="43dp"
+        android:background="@drawable/talk_room_title_bg"
+        android:gravity="center"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" >
 
         <Button
-            android:id="@+id/talk"
-            android:layout_width="200dp"
-            android:layout_height="100dp"
-            android:layout_alignLeft="@+id/token_status"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="52dp"
-            android:text="talk" />
+            android:id="@+id/btn_exit"
+            android:layout_width="39.0dip"
+            android:layout_height="39.0dip"
+            android:background="@drawable/talk_room_exit_btn_bg"
+            android:visibility="visible" />
 
-    </RelativeLayout>
+        <LinearLayout
+            android:layout_width="0.0dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="#ff222222"
+                android:singleLine="true"
+                android:text="实时对讲"
+                android:textColor="#ffbfbfbf"
+                android:textSize="15.0sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- <Button
+            android:id="@+id/btn_up"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            android:background="@drawable/talk_room_up_btn_bg" /> -->
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="114dp" >
+
+        <LinearLayout
+            android:layout_width="290.0dip"
+            android:layout_height="103.0dip"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5.0dip"
+            android:background="@drawable/talk_room_avatars_frame_bg"
+            android:orientation="vertical"
+            android:paddingBottom="6.0dip"
+            android:paddingLeft="3.0dip"
+            android:paddingRight="3.0dip"
+            android:paddingTop="6.0dip" >
+
+            <com.easemob.chatuidemo.widget.HorizontalListView
+                android:id="@+id/user_listview"
+                android:layout_width="290.0dip"
+                android:layout_height="58.0dip"
+                android:fadingEdge="none"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6.0dip"
+                android:paddingLeft="3.0dip"
+                android:paddingRight="3.0dip" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="27.0dip" >
+
+                <ImageView
+                    android:id="@+id/ic_person"
+                    android:layout_width="15.0dip"
+                    android:layout_height="15.0dip"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10.0dip"
+                    android:contentDescription="@null"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/talk_room_persons_ic" />
+
+                <TextView
+                    android:id="@+id/count_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/ic_person"
+                    android:singleLine="true"
+                    android:text="0"
+                    android:textSize="13.0sp" />
+
+                <TextView
+                    android:id="@+id/tv_mic_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:shadowColor="#ff222222"
+                    android:singleLine="true"
+                    android:textColor="#ff79ffc5"
+                    android:textSize="13.0sp"
+                    android:textStyle="bold" />
+
+                <Chronometer
+                    android:id="@+id/chronometer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10.0dip"
+                    android:textColor="#ff79ffc5"
+                    android:textSize="13.0sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="320.0dip"
+            android:layout_height="114.0dip"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/talk_room_avatars_frame_frame" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0.0dip"
+        android:layout_gravity="center"
+        android:layout_weight="1.0" >
+
+        <FrameLayout
+            android:layout_width="245.0dip"
+            android:layout_height="252.0dip"
+            android:layout_gravity="center" >
+
+            <ImageView
+                android:id="@+id/iv_led"
+                android:layout_width="14.0dip"
+                android:layout_height="14.0dip"
+                android:layout_gravity="top|right|center"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/talk_room_led_black" />
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/btn_talk"
+            android:layout_width="245.0dip"
+            android:layout_height="252.0dip"
+            android:layout_gravity="center"
+            android:background="@drawable/talk_room_talk_btn_bg"
+            android:scaleType="fitXY" />
+    </FrameLayout>
 
 </LinearLayout>
