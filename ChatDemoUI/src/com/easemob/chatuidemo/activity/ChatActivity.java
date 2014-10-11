@@ -165,6 +165,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private MessageAdapter adapter;
 	private File cameraFile;
 	static int resendPos;
+	
+	private PowerManager.WakeLock wakeLock;
+	//匿名群单聊对方的名字
+	private String anonymousUsername;
 
 	private GroupListener groupListener;
 
@@ -1087,8 +1091,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			adapter.notifyDataSetChanged();
 		}
 	};
-	private PowerManager.WakeLock wakeLock;
-	private String anonymousUsername;
 
 	/**
 	 * 按住说话listener
