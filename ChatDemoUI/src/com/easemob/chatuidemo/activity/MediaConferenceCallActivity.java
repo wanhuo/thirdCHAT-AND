@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.widget.HorizontalListView;
@@ -87,47 +88,57 @@ public class MediaConferenceCallActivity extends BaseActivity implements OnClick
 	 */
 	private void requireTalkToken(){
 		micInfoText.setText("准备中...");
-		new Thread(){
+		EMChatManager.getInstance().requireTalkToken(confId, new EMCallBack(){
+
 			@Override
-			public void run(){
-				try {
-					EMChatManager.getInstance().requireTalkToken(confId);
-					isTalkTokenGranted = true;
-					runOnUiThread(new Runnable(){
+			public void onSuccess() {
+				// TODO Auto-generated method stub
+				isTalkTokenGranted = true;
+				runOnUiThread(new Runnable(){
 
-						@Override
-						public void run() {
-							chronometer.setVisibility(View.VISIBLE);
-							chronometer.setBase(SystemClock.elapsedRealtime());
-							// 开始记时
-							chronometer.start();
-							micInfoText.setText("说话中...");
-						}
-						
-					});
-				} catch (XMPPException e) {
-					e.printStackTrace();
-					runOnUiThread(new Runnable(){
-
-						@Override
-						public void run() {
-							Toast.makeText(MediaConferenceCallActivity.this, "failed to require the talk token", 0).show();
-						}
-						
-					});
-				}
+					@Override
+					public void run() {
+						chronometer.setVisibility(View.VISIBLE);
+						chronometer.setBase(SystemClock.elapsedRealtime());
+						// 开始记时
+						chronometer.start();
+						micInfoText.setText("说话中...");
+					}
+					
+				});
 			}
-		}.start();
+
+			@Override
+			public void onError(int code, String message) {
+				// TODO Auto-generated method stub
+				runOnUiThread(new Runnable(){
+
+					@Override
+					public void run() {
+						Toast.makeText(MediaConferenceCallActivity.this, "failed to require the talk token", 0).show();
+					}
+					
+				});
+			}
+
+			@Override
+			public void onProgress(int progress, String status) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 	}
 	
 	/**
 	 * 释放话语token
 	 */
 	private void releaseTalkToken(){
-		new Thread(){
+		EMChatManager.getInstance().releaseTalkToken(confId,new EMCallBack(){
+
 			@Override
-			public void run(){
-				EMChatManager.getInstance().releaseTalkToken(confId);
+			public void onSuccess() {
+				// TODO Auto-generated method stub
 				isTalkTokenGranted = false;
 				runOnUiThread(new Runnable(){
 
@@ -140,7 +151,20 @@ public class MediaConferenceCallActivity extends BaseActivity implements OnClick
 					
 				});
 			}
-		}.start();
+
+			@Override
+			public void onError(int code, String message) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onProgress(int progress, String status) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 	}
 	
 	@Override
@@ -166,7 +190,7 @@ public class MediaConferenceCallActivity extends BaseActivity implements OnClick
 	 * 退出房间
 	 */
 	private void exitRoom(){
-		EMChatManager.getInstance().exitMediaConferenceRoom(confId);
+	    EMChatManager.getInstance().exitMediaConferenceRoom(confId);
 	}
 	
 	private class UserAdapter extends ArrayAdapter<String>{

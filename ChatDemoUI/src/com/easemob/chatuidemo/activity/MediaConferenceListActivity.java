@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.jivesoftware.smack.XMPPException;
 
+import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConferenceRoomInfo;
 import com.easemob.chatuidemo.R;
@@ -64,41 +65,52 @@ public class MediaConferenceListActivity extends BaseActivity{
 									pd.setCancelable(false);
 									pd.setCanceledOnTouchOutside(false);
 									pd.show();
-									new Thread(){
+									EMChatManager.getInstance().joinMediaConferenceRoom(confId,new EMCallBack(){
+
 										@Override
-										public void run(){
-											try {
-												EMChatManager.getInstance().joinMediaConferenceRoom(confId);
-												MediaConferenceListActivity.this.runOnUiThread(new Runnable(){
-													@Override
-													public void run(){
-														pd.dismiss();
-												        Toast.makeText(getApplicationContext(), "加入成功", 0).show();
-												        Intent intent = new Intent(MediaConferenceListActivity.this, MediaConferenceCallActivity.class);
-												        intent.putExtra("confId", confId);
-												        intent.putExtra("confName", confName);
-												        startActivity(intent);
-													}
-												});
-											} catch (XMPPException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-												final String msg = e.getMessage();
-												MediaConferenceListActivity.this.runOnUiThread(new Runnable(){
-													@Override
-													public void run(){
-														pd.dismiss();
-												        Toast.makeText(getApplicationContext(), "加入失败: " + msg, 0).show();
-													}
-												});
-											}	
+										public void onSuccess() {
+											// TODO Auto-generated method stub
+											MediaConferenceListActivity.this.runOnUiThread(new Runnable(){
+												@Override
+												public void run(){
+													pd.dismiss();
+											        Toast.makeText(getApplicationContext(), "加入成功", 0).show();
+											        Intent intent = new Intent(MediaConferenceListActivity.this, MediaConferenceCallActivity.class);
+											        intent.putExtra("confId", confId);
+											        intent.putExtra("confName", confName);
+											        startActivity(intent);
+												}
+											});
 										}
-									}.start();
+
+										@Override
+										public void onError(
+												int code,
+												String message) {
+											// TODO Auto-generated method stub
+											final String msg = message;
+											MediaConferenceListActivity.this.runOnUiThread(new Runnable(){
+												@Override
+												public void run(){
+													pd.dismiss();
+											        Toast.makeText(getApplicationContext(), "加入失败: " + msg, 0).show();
+												}
+											});
+										}
+
+										@Override
+										public void onProgress(
+												int progress,
+												String status) {
+											// TODO Auto-generated method stub
+											
+										}
+										
+									});
+							        adapter.notifyDataSetChanged();
+							        pd.dismiss();
 								}
-								
-							});
-							adapter.notifyDataSetChanged();
-							pd.dismiss();	
+							});  
 						}
 					});
 				} catch (XMPPException e) {
