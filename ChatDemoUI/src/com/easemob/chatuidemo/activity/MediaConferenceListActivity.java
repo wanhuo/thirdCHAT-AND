@@ -107,10 +107,10 @@ public class MediaConferenceListActivity extends BaseActivity{
 										}
 										
 									});
-							        adapter.notifyDataSetChanged();
-							        pd.dismiss();
 								}
-							});  
+							});
+							adapter.notifyDataSetChanged();
+					        pd.dismiss();
 						}
 					});
 				} catch (XMPPException e) {
