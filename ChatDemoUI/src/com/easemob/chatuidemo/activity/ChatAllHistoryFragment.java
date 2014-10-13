@@ -108,7 +108,10 @@ public class ChatAllHistoryFragment extends Fragment {
 						intent.putExtra("groupId", ((EMGroup) emContact).getGroupId());
 					} else {
 						// it is single chat
-						intent.putExtra("userId", username);
+						if(conversation.isAnonymousGropPrivateChat())
+							intent.putExtra("anonymousUsername", username);
+						else
+							intent.putExtra("userId", username);
 					}
 					startActivity(intent);
 				}
