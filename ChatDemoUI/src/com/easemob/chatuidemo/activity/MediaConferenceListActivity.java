@@ -4,9 +4,8 @@ import java.util.List;
 
 import org.jivesoftware.smack.XMPPException;
 
-import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
-import com.easemob.chat.core.EMConferenceIQ.EMConferenceRoom;
+import com.easemob.chat.EMConferenceRoomInfo;
 import com.easemob.chatuidemo.R;
 
 import android.app.ProgressDialog;
@@ -26,7 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class MediaConferenceListActivity extends BaseActivity{
 	private ListView listView;
-	private List<EMConferenceRoom> confList = null;
+	private List<EMConferenceRoomInfo> confList = null;
 	private MediaConferenceAdapter adapter = null;
 	
 	@Override
@@ -125,11 +124,11 @@ public class MediaConferenceListActivity extends BaseActivity{
 	}
 }
 
-class MediaConferenceAdapter extends ArrayAdapter<EMConferenceRoom> {
+class MediaConferenceAdapter extends ArrayAdapter<EMConferenceRoomInfo> {
 
 	private LayoutInflater inflater;
 
-	public MediaConferenceAdapter(Context context, int res, List<EMConferenceRoom> groups) {
+	public MediaConferenceAdapter(Context context, int res, List<EMConferenceRoomInfo> groups) {
 		super(context, res, groups);
 		this.inflater = LayoutInflater.from(context);
 	}
