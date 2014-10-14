@@ -368,7 +368,6 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					button.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View v) {
-							EMLog.d(TAG, "删除按钮被点击");
 							isInDeleteMode = true;
 							notifyDataSetChanged();
 						}
