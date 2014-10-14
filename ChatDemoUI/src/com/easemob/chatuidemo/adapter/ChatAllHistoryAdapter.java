@@ -28,6 +28,7 @@ import android.widget.TextView.BufferType;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContact;
+import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
@@ -102,7 +103,19 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 			} else if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
 				holder.name.setText("申请与通知");
 			}
+			
 			holder.name.setText(username);
+			//匿名群组的单聊
+			if(conversation.isAnonymousGropPrivateChat()){
+				String nick = EMContactManager.parseAnonymousNick(username);
+				String groupId = EMContactManager.parseAnonymousGroupId(username);
+				EMGroup group = EMGroupManager.getInstance().getGroup(groupId);
+				if(group != null){
+					holder.name.setText(nick + "(来自群:" + group.getGroupName() + ")");
+				}else{
+					holder.name.setText(nick + "(来自群:" + groupId + ")");
+				}
+			}
 		}
 
 		if (conversation.getUnreadMsgCount() > 0) {

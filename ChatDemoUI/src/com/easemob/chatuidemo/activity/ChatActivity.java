@@ -224,6 +224,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		more = findViewById(R.id.more);
 		edittext_layout.setBackgroundResource(R.drawable.input_bar_bg_normal);
+		nameTextView = ((TextView) findViewById(R.id.name));
 
 		// 动画资源文件,用于录制语音时
 		micImages = new Drawable[] { getResources().getDrawable(R.drawable.record_animate_01),
@@ -312,11 +313,18 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
-			if(anonymousUsername != null)
+			nameTextView.setText(toChatUsername);
+			if(anonymousUsername != null){ //匿名群组的单聊
 				toChatUsername = anonymousUsername;
-			((TextView) findViewById(R.id.name)).setText(toChatUsername);
-			// conversation =
-			// EMChatManager.getInstance().getConversation(toChatUsername,false);
+				String nick = EMContactManager.parseAnonymousNick(anonymousUsername);
+				String groupId = EMContactManager.parseAnonymousGroupId(anonymousUsername);
+				EMGroup group = EMGroupManager.getInstance().getGroup(groupId);
+				if(group != null){
+					nameTextView.setText(nick + "(来自群:" + group.getGroupName() + ")");
+				}else{
+					nameTextView.setText(nick + "(来自群:" + groupId + ")");
+				}
+			}
 		} else {
 			// 群聊
 			findViewById(R.id.container_to_group).setVisibility(View.VISIBLE);
@@ -324,9 +332,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			findViewById(R.id.container_voice_call).setVisibility(View.GONE);
 			toChatUsername = getIntent().getStringExtra("groupId");
 			group = EMGroupManager.getInstance().getGroup(toChatUsername);
-			((TextView) findViewById(R.id.name)).setText(group.getGroupName());
-			// conversation =
-			// EMChatManager.getInstance().getConversation(toChatUsername,true);
+			nameTextView.setText(group.getGroupName());
 		}
 		conversation = EMChatManager.getInstance().getConversation(toChatUsername);
 		// 把此会话的未读数置为0
@@ -1091,6 +1097,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			adapter.notifyDataSetChanged();
 		}
 	};
+	private TextView nameTextView;
 
 	/**
 	 * 按住说话listener

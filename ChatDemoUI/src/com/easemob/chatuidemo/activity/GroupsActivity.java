@@ -19,8 +19,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -52,13 +55,13 @@ public class GroupsActivity extends BaseActivity {
 		groupListView = (ListView)findViewById(R.id.list);
 		groupAdapter = new GroupAdapter(this, 1, grouplist);
 		groupListView.setAdapter(groupAdapter);
+		registerForContextMenu(groupListView);
 		groupListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (position == groupAdapter.getCount() - 1) {
-					//新建群聊
-					startActivityForResult(new Intent(GroupsActivity.this, NewGroupActivity.class), 0);
+					view.showContextMenu();
 				} else {
 					
 					//进入群聊
@@ -93,8 +96,22 @@ public class GroupsActivity extends BaseActivity {
 	}
 	
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		menu.add(0,0,0,"新建群聊");
+		menu.add(0,1,0,"新建匿名群");
+		super.onCreateContextMenu(menu, v, menuInfo);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		if(item.getItemId() == 0){
+			//新建群聊
+			startActivity(new Intent(GroupsActivity.this, NewGroupActivity.class));
+		}else{
+			startActivity(new Intent(GroupsActivity.this, NewAnonymousGropActivity.class));
+		}
+		
+		return super.onContextItemSelected(item);
 	}
 	
 	@Override

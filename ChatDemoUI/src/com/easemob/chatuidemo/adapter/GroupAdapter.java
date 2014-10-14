@@ -92,7 +92,7 @@ public class GroupAdapter extends ArrayAdapter<EMGroup> {
 				convertView = inflater.inflate(R.layout.row_add_group, null);
 			}
 			((ImageView)convertView.findViewById(R.id.avatar)).setImageResource(R.drawable.roominfo_add_btn);
-			((TextView)convertView.findViewById(R.id.name)).setText("新建群组");
+			((TextView)convertView.findViewById(R.id.name)).setText("新建群聊");
 		} else {
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.row_group, null);

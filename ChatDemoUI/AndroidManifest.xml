@@ -96,6 +96,13 @@
             android:theme="@style/horizontal_slide"
             android:windowSoftInputMode="adjustPan" >
         </activity>
+        <!-- 新建匿名群 -->
+        <activity
+            android:name=".activity.NewAnonymousGropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
         <!-- 退出群组提示框 -->
         <activity
             android:name=".activity.ExitGroupDialog"

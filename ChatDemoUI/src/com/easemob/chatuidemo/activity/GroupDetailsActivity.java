@@ -63,7 +63,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	private int referenceWidth;
 	private int referenceHeight;
 	private ProgressDialog progressDialog;
-	
+
 	private RelativeLayout rl_switch_block_groupmsg;
 	/**
 	 * 屏蔽群消息imageView
@@ -73,7 +73,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	 * 关闭屏蔽群消息imageview
 	 */
 	private ImageView iv_switch_unblock_groupmsg;
-	
+
 	public static GroupDetailsActivity instance;
 
 	// 清空所有聊天记录
@@ -89,12 +89,12 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		loadingPB = (ProgressBar) findViewById(R.id.progressBar);
 		exitBtn = (Button) findViewById(R.id.btn_exit_grp);
 		deleteBtn = (Button) findViewById(R.id.btn_exitdel_grp);
-		
-		rl_switch_block_groupmsg = (RelativeLayout)findViewById(R.id.rl_switch_block_groupmsg);
-		
+
+		rl_switch_block_groupmsg = (RelativeLayout) findViewById(R.id.rl_switch_block_groupmsg);
+
 		iv_switch_block_groupmsg = (ImageView) findViewById(R.id.iv_switch_block_groupmsg);
 		iv_switch_unblock_groupmsg = (ImageView) findViewById(R.id.iv_switch_unblock_groupmsg);
-		
+
 		rl_switch_block_groupmsg.setOnClickListener(this);
 
 		Drawable referenceDrawable = getResources().getDrawable(R.drawable.smiley_add_btn);
@@ -148,7 +148,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				Intent intent = new Intent(GroupDetailsActivity.this, AlertDialog.class);
 				intent.putExtra("cancel", true);
 				intent.putExtra("titleIsCancel", true);
-				intent.putExtra("msg","确定清空此群的聊天记录吗？");
+				intent.putExtra("msg", "确定清空此群的聊天记录吗？");
 				startActivityForResult(intent, REQUEST_CODE_CLEAR_ALL_HISTORY);
 			}
 		});
@@ -180,11 +180,11 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				deleteGrop();
 				break;
 			case REQUEST_CODE_CLEAR_ALL_HISTORY:
-				//清空此群聊的聊天记录
+				// 清空此群聊的聊天记录
 				progressDialog.setMessage("正在清空群消息...");
-				
+
 				clearGroupHistory();
-				
+
 				break;
 
 			default:
@@ -217,8 +217,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	/**
 	 * 清空群聊天记录
 	 */
-	public void clearGroupHistory(){
-		
+	public void clearGroupHistory() {
+
 		EMChatManager.getInstance().clearConversation(group.getGroupId());
 		progressDialog.dismiss();
 		// adapter.refresh(EMChatManager.getInstance().getConversation(toChatUsername));
@@ -353,7 +353,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				// 设置成删除按钮
 				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_minus_btn, 0, 0);
 				// 如果不是创建者或者没有相应权限，不提供加减人按钮
-				if (!group.getOwner().equals(DemoApplication.getInstance().getUserName())) {
+				if (!group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
 					// if current user is not group admin, hide add/remove btn
 					convertView.setVisibility(View.INVISIBLE);
 				} else { // 显示删除按钮
@@ -375,127 +375,139 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					});
 				}
 			} else if (position == getCount() - 2) { // 添加群组成员按钮
-				button.setText("");
-				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_add_btn, 0, 0);
-				// 如果不是创建者或者没有相应权限
-				if (!group.isAllowInvites() && !group.getOwner().equals(DemoApplication.getInstance().getUserName())) {
-					// if current user is not group admin, hide add/remove btn
-					convertView.setVisibility(View.INVISIBLE);
-				} else {
-					// 正处于删除模式下,隐藏添加按钮
-					if (isInDeleteMode) {
+				if (!group.isAnonymous()) {
+					button.setText("");
+					button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_add_btn, 0, 0);
+					// 如果不是创建者或者没有相应权限
+					if (!group.isAllowInvites() && !group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
+						// if current user is not group admin, hide add/remove
+						// btn
 						convertView.setVisibility(View.INVISIBLE);
 					} else {
-						convertView.setVisibility(View.VISIBLE);
-						convertView.findViewById(R.id.badge_delete).setVisibility(View.INVISIBLE);
-					}
-					button.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							EMLog.d(TAG, "添加按钮被点击");
-							// 进入选人页面
-							startActivityForResult(
-									(new Intent(GroupDetailsActivity.this, GroupPickContactsActivity.class).putExtra("groupId", groupId)),
-									REQUEST_CODE_ADD_USER);
+						// 正处于删除模式下,隐藏添加按钮
+						if (isInDeleteMode) {
+							convertView.setVisibility(View.INVISIBLE);
+						} else {
+							convertView.setVisibility(View.VISIBLE);
+							convertView.findViewById(R.id.badge_delete).setVisibility(View.INVISIBLE);
 						}
-					});
+
+						button.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								EMLog.d(TAG, "添加按钮被点击");
+								// 进入选人页面
+								startActivityForResult((new Intent(GroupDetailsActivity.this, GroupPickContactsActivity.class).putExtra(
+										"groupId", groupId)), REQUEST_CODE_ADD_USER);
+							}
+						});
+					}
+				} else {
+					getNormalView(position, convertView, button);
 				}
 			} else { // 普通item，显示群组成员
-				final String username = getItem(position);
-				button.setText(username);
-				convertView.setVisibility(View.VISIBLE);
-				button.setVisibility(View.VISIBLE);
-				Drawable avatar = getResources().getDrawable(R.drawable.default_avatar);
-				avatar.setBounds(0, 0, referenceWidth, referenceHeight);
-				button.setCompoundDrawables(null, avatar, null, null);
-				// demo群组成员的头像都用默认头像，需由开发者自己去设置头像
-				if (isInDeleteMode) {
-					// 如果是删除模式下，显示减人图标
-					convertView.findViewById(R.id.badge_delete).setVisibility(View.VISIBLE);
-				} else {
-					convertView.findViewById(R.id.badge_delete).setVisibility(View.INVISIBLE);
-				}
-				button.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						if (isInDeleteMode) {
-							// 如果是删除自己，return
-							if (EMChatManager.getInstance().getCurrentUser().equals(username)) {
-								startActivity(new Intent(GroupDetailsActivity.this, AlertDialog.class).putExtra("msg", "不能删除自己"));
-								return;
-							}
-							if (!NetUtils.hasNetwork(getApplicationContext())) {
-								Toast.makeText(getApplicationContext(), getString(R.string.network_unavailable), 0).show();
-								return;
-							}
-							EMLog.d("group", "remove user from group:" + username);
-							deleteMembersFromGroup(username);
-						} else {
-							// 正常情况下点击user，可以进入用户详情或者聊天页面等等
-							Intent intent = new Intent(GroupDetailsActivity.this, ChatActivity.class);
-							if("true".equals(group.getDescription())){
-								if(username.equals(group.getCurrentUserNick())){
-									Toast.makeText(GroupDetailsActivity.this, "不能和自己聊天", 0).show();
-									return;
-								}
-								intent.putExtra("anonymousUsername", EMContactManager.getAnonymousName(groupId, username));
-								startActivity(intent);
-							}else{
-//								intent.putExtra("userId", username);
-//								startActivity(intent);
-							}
-							
-								
-						}
-					}
-
-					/**
-					 * 删除群成员
-					 * 
-					 * @param username
-					 */
-					protected void deleteMembersFromGroup(final String username) {
-						final ProgressDialog deleteDialog = new ProgressDialog(GroupDetailsActivity.this);
-						deleteDialog.setMessage("正在移除...");
-						deleteDialog.setCanceledOnTouchOutside(false);
-						deleteDialog.show();
-						new Thread(new Runnable() {
-
-							@Override
-							public void run() {
-								try {
-									// 删除被选中的成员
-									EMGroupManager.getInstance().removeUserFromGroup(groupId, username);
-									isInDeleteMode = false;
-									runOnUiThread(new Runnable() {
-
-										@Override
-										public void run() {
-											deleteDialog.dismiss();
-											notifyDataSetChanged();
-											((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "("
-													+ group.getAffiliationsCount() + "人)");
-										}
-									});
-								} catch (final Exception e) {
-									deleteDialog.dismiss();
-									runOnUiThread(new Runnable() {
-										public void run() {
-											Toast.makeText(getApplicationContext(), "删除失败：" + e.getMessage(), 1).show();
-										}
-									});
-								}
-
-							}
-						}).start();
-					}
-				});
+				getNormalView(position, convertView, button);
 			}
 			return convertView;
 		}
 
+		void getNormalView(final int position, View convertView, final Button button) {
+			final String username = getItem(position);
+			button.setText(username);
+			convertView.setVisibility(View.VISIBLE);
+			button.setVisibility(View.VISIBLE);
+			Drawable avatar = getResources().getDrawable(R.drawable.default_avatar);
+			avatar.setBounds(0, 0, referenceWidth, referenceHeight);
+			button.setCompoundDrawables(null, avatar, null, null);
+			// demo群组成员的头像都用默认头像，需由开发者自己去设置头像
+			if (isInDeleteMode) {
+				// 如果是删除模式下，显示减人图标
+				convertView.findViewById(R.id.badge_delete).setVisibility(View.VISIBLE);
+			} else {
+				convertView.findViewById(R.id.badge_delete).setVisibility(View.INVISIBLE);
+			}
+			button.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (isInDeleteMode) {
+						// 如果是删除自己，return
+						if (EMChatManager.getInstance().getCurrentUser().equals(username)) {
+							startActivity(new Intent(GroupDetailsActivity.this, AlertDialog.class).putExtra("msg", "不能删除自己"));
+							return;
+						}
+						if (!NetUtils.hasNetwork(getApplicationContext())) {
+							Toast.makeText(getApplicationContext(), getString(R.string.network_unavailable), 0).show();
+							return;
+						}
+						EMLog.d("group", "remove user from group:" + username);
+						deleteMembersFromGroup(username);
+					} else {
+						// 正常情况下点击user，可以进入用户详情或者聊天页面等等
+						Intent intent = new Intent(GroupDetailsActivity.this, ChatActivity.class);
+						if (group.isAnonymous()) {
+							if (username.equals(group.getCurrentUserNick())) {
+								Toast.makeText(GroupDetailsActivity.this, "不能和自己聊天", 0).show();
+								return;
+							}
+							intent.putExtra("anonymousUsername", EMContactManager.getAnonymousName(groupId, username));
+							startActivity(intent);
+						} else {
+							// intent.putExtra("userId", username);
+							// startActivity(intent);
+						}
+
+					}
+				}
+
+			});
+		}
+
+		/**
+		 * 删除群成员
+		 * 
+		 * @param username
+		 */
+		protected void deleteMembersFromGroup(final String username) {
+			final ProgressDialog deleteDialog = new ProgressDialog(GroupDetailsActivity.this);
+			deleteDialog.setMessage("正在移除...");
+			deleteDialog.setCanceledOnTouchOutside(false);
+			deleteDialog.show();
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						// 删除被选中的成员
+						EMGroupManager.getInstance().removeUserFromGroup(groupId, username);
+						isInDeleteMode = false;
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								deleteDialog.dismiss();
+								notifyDataSetChanged();
+								((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "("
+										+ group.getAffiliationsCount() + "人)");
+							}
+						});
+					} catch (final Exception e) {
+						deleteDialog.dismiss();
+						runOnUiThread(new Runnable() {
+							public void run() {
+								Toast.makeText(getApplicationContext(), "删除失败：" + e.getMessage(), 1).show();
+							}
+						});
+					}
+
+				}
+			}).start();
+		}
+
 		@Override
 		public int getCount() {
+			if (group.isAnonymous())
+				return super.getCount() + 1;
+
 			return super.getCount() + 2;
 		}
 	}
@@ -524,16 +536,16 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 								deleteBtn.setVisibility(View.GONE);
 
 							}
-							
-							//update block 
-					        System.out.println("group msg is blocked:" + group.getMsgBlocked());
-					        if (group.getMsgBlocked()) {
-					        	iv_switch_block_groupmsg.setVisibility(View.VISIBLE);
+
+							// update block
+							System.out.println("group msg is blocked:" + group.getMsgBlocked());
+							if (group.getMsgBlocked()) {
+								iv_switch_block_groupmsg.setVisibility(View.VISIBLE);
 								iv_switch_unblock_groupmsg.setVisibility(View.INVISIBLE);
-					        } else {
-					        	iv_switch_block_groupmsg.setVisibility(View.INVISIBLE);
+							} else {
+								iv_switch_block_groupmsg.setVisibility(View.INVISIBLE);
 								iv_switch_unblock_groupmsg.setVisibility(View.VISIBLE);
-					        }
+							}
 						}
 					});
 
@@ -565,8 +577,6 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		instance = null;
 	}
 
-
-
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -574,31 +584,28 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 			if (iv_switch_block_groupmsg.getVisibility() == View.VISIBLE) {
 				System.out.println("change to unblock group msg");
 				try {
-				    EMGroupManager.getInstance().unblockGroupMessage(groupId);
-				    iv_switch_block_groupmsg.setVisibility(View.INVISIBLE);
+					EMGroupManager.getInstance().unblockGroupMessage(groupId);
+					iv_switch_block_groupmsg.setVisibility(View.INVISIBLE);
 					iv_switch_unblock_groupmsg.setVisibility(View.VISIBLE);
 				} catch (Exception e) {
 					e.printStackTrace();
-					//todo: 显示错误给用户
+					// todo: 显示错误给用户
 				}
 			} else {
 				System.out.println("change to block group msg");
 				try {
-				    EMGroupManager.getInstance().blockGroupMessage(groupId);
-				    iv_switch_block_groupmsg.setVisibility(View.VISIBLE);
+					EMGroupManager.getInstance().blockGroupMessage(groupId);
+					iv_switch_block_groupmsg.setVisibility(View.VISIBLE);
 					iv_switch_unblock_groupmsg.setVisibility(View.INVISIBLE);
 				} catch (Exception e) {
 					e.printStackTrace();
-					//todo: 显示错误给用户
+					// todo: 显示错误给用户
 				}
 			}
 			break;
-			default:
+		default:
 		}
-		
+
 	}
-	
-	
-	
-	
+
 }
