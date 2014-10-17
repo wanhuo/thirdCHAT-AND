@@ -85,6 +85,8 @@ public class DemoApplication extends Application {
 
 		// 获取到EMChatOptions对象
 		EMChatOptions options = EMChatManager.getInstance().getChatOptions();
+		// 默认环信是不维护好友关系列表的，如果app依赖环信的好友关系，把这个属性设置为true
+		options.setUseRoster(true);
 		// 默认添加好友时，是不需要验证的，改成需要验证
 		options.setAcceptInvitationAlways(false);
 		// 设置收到消息是否有新消息通知，默认为true
