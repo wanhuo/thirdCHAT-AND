@@ -57,14 +57,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.easemob.EMErrorCode;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMConversation;
@@ -731,13 +729,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			message.setChatType(ChatType.GroupChat);
 
 		message.setReceipt(to);
-		ImageMessageBody body = null;
-		try {
-			body = new ImageMessageBody(new File(filePath));
-		} catch (EaseMobException e) {
-			EMLog.e("chat","errorcode:"+e.getErrorCode()+";errormsg:"+e.getMessage());
-			 return;
-		}
+		ImageMessageBody body = new ImageMessageBody(new File(filePath));
 		// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
 //		 body.setSendOriginalImage(true);
 		message.addBody(body);
@@ -765,13 +757,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				message.setChatType(ChatType.GroupChat);
 			String to = toChatUsername;
 			message.setReceipt(to);
-			VideoMessageBody body=null;
-			try {
-				body = new VideoMessageBody(videoFile, thumbPath, length, videoFile.length());
-			} catch (EaseMobException e) {
-				EMLog.e("chat","errorcode:"+e.getErrorCode()+";errormsg:"+e.getMessage());
-				 return;
-			}
+			VideoMessageBody body = new VideoMessageBody(videoFile, thumbPath, length, videoFile.length());
 			message.addBody(body);
 			conversation.addMessage(message);
 			listView.setAdapter(adapter);
@@ -885,15 +871,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		message.setReceipt(toChatUsername);
 		// add message body
-		NormalFileMessageBody body = null;
-		try {
-			body = new NormalFileMessageBody(new File(filePath));
-		} catch (EaseMobException e) {
-			EMLog.e("chatuidemo", "errorcode:"+e.getErrorCode()+";errormsg:"+e.getMessage());
-			return;
-		}
+		NormalFileMessageBody body = new NormalFileMessageBody(new File(filePath));
 		message.addBody(body);
-
 		conversation.addMessage(message);
 		listView.setAdapter(adapter);
 		adapter.refresh();
