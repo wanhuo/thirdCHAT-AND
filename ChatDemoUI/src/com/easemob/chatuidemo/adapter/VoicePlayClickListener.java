@@ -133,7 +133,6 @@ public class VoicePlayClickListener implements View.OnClickListener {
 					if (iv_read_status != null && iv_read_status.getVisibility() == View.VISIBLE) {
 						//隐藏自己未播放这条语音消息的标志
 						iv_read_status.setVisibility(View.INVISIBLE);
-						EMChatDB.getInstance().updateMessageAck(message.getMsgId(), true);
 					}
 					//告知对方已读这条消息
 					if(chatType != ChatType.GroupChat)
