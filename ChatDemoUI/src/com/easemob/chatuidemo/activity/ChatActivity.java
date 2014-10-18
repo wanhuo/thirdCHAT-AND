@@ -873,7 +873,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		// add message body
 		NormalFileMessageBody body = new NormalFileMessageBody(new File(filePath));
 		message.addBody(body);
-
 		conversation.addMessage(message);
 		listView.setAdapter(adapter);
 		adapter.refresh();

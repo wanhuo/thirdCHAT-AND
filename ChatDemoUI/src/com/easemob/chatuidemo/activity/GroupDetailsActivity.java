@@ -15,7 +15,6 @@ package com.easemob.chatuidemo.activity;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,9 +37,7 @@ import android.widget.Toast;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
-import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.utils.PreferenceUtils;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.util.EMLog;
 import com.easemob.util.NetUtils;
@@ -363,7 +360,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				// 设置成删除按钮
 				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_minus_btn, 0, 0);
 				// 如果不是创建者或者没有相应权限，不提供加减人按钮
-				if (!group.getOwner().equals(DemoApplication.getInstance().getUserName())) {
+				if (!group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
 					// if current user is not group admin, hide add/remove btn
 					convertView.setVisibility(View.INVISIBLE);
 				} else { // 显示删除按钮
@@ -388,7 +385,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				button.setText("");
 				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_add_btn, 0, 0);
 				//如果不是创建者或者没有相应权限
-				if (!group.isAllowInvites() && !group.getOwner().equals(DemoApplication.getInstance().getUserName())) {
+				if (!group.isAllowInvites() && !group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
 					// if current user is not group admin, hide add/remove btn
 					convertView.setVisibility(View.INVISIBLE);
 				} else {
