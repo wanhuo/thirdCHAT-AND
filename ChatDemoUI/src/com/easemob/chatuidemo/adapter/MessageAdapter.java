@@ -779,12 +779,9 @@ public class MessageAdapter extends BaseAdapter{
 		}
 		
 		
-		
-		
-		
 		if (message.direct == EMMessage.Direct.RECEIVE) {
-			if (message.isAcked) {
-				// 隐藏语音未读标志
+			if (message.isListened()) {
+				// 隐藏语音未听标志
 				holder.iv_read_status.setVisibility(View.INVISIBLE);
 			} else {
 				holder.iv_read_status.setVisibility(View.VISIBLE);
