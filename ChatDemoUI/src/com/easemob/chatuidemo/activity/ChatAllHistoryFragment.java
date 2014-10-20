@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -44,7 +44,6 @@ import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ChatAllHistoryAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
-import com.easemob.chatuidemo.domain.User;
 
 /**
  * 显示所有会话记录，比较简单的实现，更好的可能是把陌生人存入本地，这样取到的聊天记录是可控的
@@ -54,7 +53,6 @@ public class ChatAllHistoryFragment extends Fragment {
 
 	private InputMethodManager inputMethodManager;
 	private ListView listView;
-	private Map<String, User> contactList;
 	private ChatAllHistoryAdapter adapter;
 	private EditText query;
 	private ImageButton clearSearch;
@@ -62,6 +60,7 @@ public class ChatAllHistoryFragment extends Fragment {
 	public TextView errorText;
 	private boolean hidden;
 	private List<EMGroup> groups;
+	private List<EMConversation> conversationList;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,15 +73,16 @@ public class ChatAllHistoryFragment extends Fragment {
 		inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		errorItem = (RelativeLayout) getView().findViewById(R.id.rl_error_item);
 		errorText = (TextView) errorItem.findViewById(R.id.tv_connect_errormsg);
-		// contact list
-		contactList = DemoApplication.getInstance().getContactList();
+		
+		conversationList = loadConversationsWithRecentChat();
 		listView = (ListView) getView().findViewById(R.id.list);
-		adapter = new ChatAllHistoryAdapter(getActivity(), 1, loadConversationsWithRecentChat());
-
-		groups = EMGroupManager.getInstance().getAllGroups();
-
+		adapter = new ChatAllHistoryAdapter(getActivity(), 1, conversationList);
 		// 设置adapter
 		listView.setAdapter(adapter);
+				
+		groups = EMGroupManager.getInstance().getAllGroups();
+
+		
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -122,13 +122,10 @@ public class ChatAllHistoryFragment extends Fragment {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				// 隐藏软键盘
-				if (getActivity().getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-					if (getActivity().getCurrentFocus() != null)
-						inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-								InputMethodManager.HIDE_NOT_ALWAYS);
-				}
+				hideSoftKeyboard();
 				return false;
 			}
+
 		});
 		// 搜索框
 		query = (EditText) getView().findViewById(R.id.query);
@@ -155,12 +152,19 @@ public class ChatAllHistoryFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				query.getText().clear();
-
+				hideSoftKeyboard();
 			}
 		});
 
 	}
 
+	void hideSoftKeyboard() {
+		if (getActivity().getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+			if (getActivity().getCurrentFocus() != null)
+				inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+						InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+	}
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -174,7 +178,7 @@ public class ChatAllHistoryFragment extends Fragment {
 		if (item.getItemId() == R.id.delete_message) {
 			EMConversation tobeDeleteCons = adapter.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
 			// 删除此会话
-			EMChatManager.getInstance().deleteConversation(tobeDeleteCons.getUserName(),tobeDeleteCons.isGroup());
+			EMChatManager.getInstance().deleteConversation(tobeDeleteCons.getUserName(), tobeDeleteCons.isGroup());
 			InviteMessgeDao inviteMessgeDao = new InviteMessgeDao(getActivity());
 			inviteMessgeDao.deleteMessage(tobeDeleteCons.getUserName());
 			adapter.remove(tobeDeleteCons);
@@ -192,8 +196,8 @@ public class ChatAllHistoryFragment extends Fragment {
 	 * 刷新页面
 	 */
 	public void refresh() {
-		adapter = new ChatAllHistoryAdapter(getActivity(), R.layout.row_chat_history, loadConversationsWithRecentChat());
-		listView.setAdapter(adapter);
+		conversationList.clear();
+		conversationList.addAll(loadConversationsWithRecentChat());
 		adapter.notifyDataSetChanged();
 	}
 
@@ -206,15 +210,15 @@ public class ChatAllHistoryFragment extends Fragment {
 	private List<EMConversation> loadConversationsWithRecentChat() {
 		// 获取所有会话，包括陌生人
 		Hashtable<String, EMConversation> conversations = EMChatManager.getInstance().getAllConversations();
-		List<EMConversation> conversationList = new ArrayList<EMConversation>();
-		//过滤掉messages seize为0的conversation
-		for(EMConversation conversation : conversations.values()){
-			if(conversation.getAllMessages().size() != 0)
-				conversationList.add(conversation);
+		List<EMConversation> list = new ArrayList<EMConversation>();
+		// 过滤掉messages seize为0的conversation
+		for (EMConversation conversation : conversations.values()) {
+			if (conversation.getAllMessages().size() != 0)
+				list.add(conversation);
 		}
 		// 排序
-		sortConversationByLastChatTime(conversationList);
-		return conversationList;
+		sortConversationByLastChatTime(list);
+		return list;
 	}
 
 	/**
@@ -257,5 +261,7 @@ public class ChatAllHistoryFragment extends Fragment {
 			refresh();
 		}
 	}
+
+
 
 }
