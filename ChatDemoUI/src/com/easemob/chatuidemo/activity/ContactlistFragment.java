@@ -32,11 +32,11 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -228,7 +228,7 @@ public class ContactlistFragment extends Fragment {
 			public void run() {
 				try {
 					//加入到黑名单
-					EMContactManager.getInstance().addUserToBlackList(username,true);
+					EMContactManager.getInstance().addUserToBlackList(username,false);
 					getActivity().runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();

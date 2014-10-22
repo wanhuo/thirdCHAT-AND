@@ -264,8 +264,12 @@ public class MainActivity extends FragmentActivity {
 	private class NewMessageBroadcastReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			//主页面收到消息后，主要为了提示未读，实际消息内容需要到chat页面查看
+			String from = intent.getStringExtra("from");
+			//2014-10-22 修复在某些机器上，在聊天页面对方发消息过来时不立即显示内容的bug 
+			if(ChatActivity.activityInstance != null && from.equals(ChatActivity.activityInstance.getToChatUsername()))
+				return;
 			
+			//主页面收到消息后，主要为了提示未读，实际消息内容需要到chat页面查看
 			// 消息id
 			String msgId = intent.getStringExtra("msgid");
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象

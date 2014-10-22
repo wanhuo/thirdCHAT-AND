@@ -1300,7 +1300,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 */
 	private void addUserToBlacklist(String username) {
 		try {
-			EMContactManager.getInstance().addUserToBlackList(username, true);
+			EMContactManager.getInstance().addUserToBlackList(username, false);
 			Toast.makeText(getApplicationContext(), "移入黑名单成功", 0).show();
 		} catch (EaseMobException e) {
 			e.printStackTrace();
