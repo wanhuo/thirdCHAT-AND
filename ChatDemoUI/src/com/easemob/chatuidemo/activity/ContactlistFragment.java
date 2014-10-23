@@ -66,6 +66,7 @@ public class ContactlistFragment extends Fragment {
 	private boolean hidden;
 	private Sidebar sidebar;
 	private InputMethodManager inputMethodManager;
+	private List<String> blackList;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,6 +80,8 @@ public class ContactlistFragment extends Fragment {
 		listView = (ListView) getView().findViewById(R.id.list);
 		sidebar = (Sidebar) getView().findViewById(R.id.sidebar);
 		sidebar.setListView(listView);
+		//黑名单列表
+		blackList = EMContactManager.getInstance().getBlackListUsernames();
 		contactList = new ArrayList<User>();
 		// 获取设置contactlist
 		getContactList();
@@ -233,6 +236,7 @@ public class ContactlistFragment extends Fragment {
 						public void run() {
 							pd.dismiss();
 							Toast.makeText(getActivity(), "移入黑名单成功", 0).show();
+							refresh();
 						}
 					});
 				} catch (EaseMobException e) {
@@ -265,13 +269,18 @@ public class ContactlistFragment extends Fragment {
 		}
 	}
 
+	/**
+	 * 获取联系人列表，并过滤掉黑名单和排序
+	 */
 	private void getContactList() {
 		contactList.clear();
+		//获取本地好友列表
 		Map<String, User> users = DemoApplication.getInstance().getContactList();
 		Iterator<Entry<String, User>> iterator = users.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, User> entry = iterator.next();
-			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME) && !entry.getKey().equals(Constant.GROUP_USERNAME))
+			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME) && !entry.getKey().equals(Constant.GROUP_USERNAME)
+					&& !blackList.contains(entry.getKey()))
 				contactList.add(entry.getValue());
 		}
 		// 排序
