@@ -36,6 +36,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.easemob.EMConnectionListener;
+import com.easemob.EMError;
 import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
@@ -500,41 +502,53 @@ public class MainActivity extends FragmentActivity {
 	 * 连接监听listener
 	 * 
 	 */
-	private class MyConnectionListener implements ConnectionListener {
+	private class MyConnectionListener implements EMConnectionListener {
 
 		@Override
 		public void onConnected() {
-			chatHistoryFragment.errorItem.setVisibility(View.GONE);
+		    runOnUiThread(new Runnable(){
+
+                @Override
+                public void run() {
+                    chatHistoryFragment.errorItem.setVisibility(View.GONE);
+                }
+		        
+		    });
 		}
 
-		@Override
-		public void onDisConnected(String errorString) {
-			if (errorString != null && errorString.contains("conflict")) {
-				// 显示帐号在其他设备登陆dialog
-				showConflictDialog();
-			} else {
-				chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
-				if(NetUtils.hasNetwork(MainActivity.this))
-					chatHistoryFragment.errorText.setText("连接不到聊天服务器");
-				else
-					chatHistoryFragment.errorText.setText("当前网络不可用，请检查网络设置");
-					
-			}
-		}
+        @Override
+        public void onDisconnected(final int error) {
+            runOnUiThread(new Runnable(){
 
-		@Override
-		public void onReConnected() {
-			chatHistoryFragment.errorItem.setVisibility(View.GONE);
-		}
+                @Override
+                public void run() {
+                    if (error == EMError.CONNECTION_CONFLICT) {
+                        // 显示帐号在其他设备登陆dialog
+                        showConflictDialog();
+                    } else {
+                        chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
+                        if(NetUtils.hasNetwork(MainActivity.this))
+                            chatHistoryFragment.errorText.setText("连接不到聊天服务器");
+                        else
+                            chatHistoryFragment.errorText.setText("当前网络不可用，请检查网络设置");
+                            
+                    }
+                }
+                
+            });
+        }
 
-		@Override
-		public void onReConnecting() {
-		}
+        @Override
+        public void onConnecting() {
+            runOnUiThread(new Runnable(){
 
-		@Override
-		public void onConnecting(String progress) {
-		}
-
+                @Override
+                public void run() {
+                    chatHistoryFragment.errorText.setText("正在连接服务器....");
+                }
+                
+            });
+        }
 	}
 
 	/**
