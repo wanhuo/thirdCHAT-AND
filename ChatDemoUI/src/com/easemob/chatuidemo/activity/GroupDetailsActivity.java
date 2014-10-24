@@ -349,36 +349,32 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 			final Button button = (Button) convertView.findViewById(R.id.button_avatar);
 			// 最后一个item，减人按钮
 			if (position == getCount() - 1) {
-				//匿名群组屏蔽加减人功能
-				if(!group.isAnonymous()){
-					button.setText("");
-					// 设置成删除按钮
-					button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_minus_btn, 0, 0);
-					// 如果不是创建者或者没有相应权限，不提供加减人按钮
-					if (!group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
-						// if current user is not group admin, hide add/remove btn
+				button.setText("");
+				// 设置成删除按钮
+				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_minus_btn, 0, 0);
+				// 如果不是创建者或者没有相应权限，不提供加减人按钮
+				if (!group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
+					// if current user is not group admin, hide add/remove btn
+					convertView.setVisibility(View.INVISIBLE);
+				} else { // 显示删除按钮
+					if (isInDeleteMode) {
+						// 正处于删除模式下，隐藏删除按钮
 						convertView.setVisibility(View.INVISIBLE);
-					} else { // 显示删除按钮
-						if (isInDeleteMode) {
-							// 正处于删除模式下，隐藏删除按钮
-							convertView.setVisibility(View.INVISIBLE);
-						} else {
-							// 正常模式
-							convertView.setVisibility(View.VISIBLE);
-							convertView.findViewById(R.id.badge_delete).setVisibility(View.INVISIBLE);
-						}
-						button.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								isInDeleteMode = true;
-								notifyDataSetChanged();
-							}
-						});
+					} else {
+						// 正常模式
+						convertView.setVisibility(View.VISIBLE);
+						convertView.findViewById(R.id.badge_delete).setVisibility(View.INVISIBLE);
 					}
-				}else{
-					getNormalView(position, convertView, button);
+					button.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							isInDeleteMode = true;
+							notifyDataSetChanged();
+						}
+					});
 				}
 			} else if (position == getCount() - 2) { // 添加群组成员按钮
+				// 匿名群组屏蔽加人功能
 				if (!group.isAnonymous()) {
 					button.setText("");
 					button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_add_btn, 0, 0);
@@ -510,8 +506,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		@Override
 		public int getCount() {
 			if (group.isAnonymous())
-				//匿名
-				return super.getCount();
+				// 匿名
+				return super.getCount() + 1;
 
 			return super.getCount() + 2;
 		}
@@ -521,6 +517,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		new Thread(new Runnable() {
 			public void run() {
 				try {
+					//获取群详情
 					EMGroup returnGroup = EMGroupManager.getInstance().getGroupFromServer(groupId);
 					// 更新本地数据
 					EMGroupManager.getInstance().createOrUpdateLocalGroup(returnGroup);

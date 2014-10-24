@@ -85,6 +85,7 @@ public class DemoApplication extends Application {
 
 		// 获取到EMChatOptions对象
 		EMChatOptions options = EMChatManager.getInstance().getChatOptions();
+		options.setUseRoster(true);
 		// 默认添加好友时，是不需要验证的，改成需要验证
 		options.setAcceptInvitationAlways(false);
 		// 设置收到消息是否有新消息通知(声音和震动)，默认为true
@@ -271,6 +272,10 @@ public class DemoApplication extends Application {
 		return processName;
 	}
 
+	/**
+	 * 监听重复登陆事件
+	 *
+	 */
 	class MyConnectionListener implements ConnectionListener {
 		@Override
 		public void onReConnecting() {
