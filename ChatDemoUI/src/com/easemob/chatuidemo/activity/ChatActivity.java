@@ -57,7 +57,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -180,6 +179,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private final int pagesize = 20;
 	private boolean haveMoreData = true;
 	private Button btnMore;
+	public String playMsgId;
+	
 
 	private Handler micImageHandler = new Handler() {
 		@Override
@@ -890,7 +891,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		// add message body
 		NormalFileMessageBody body = new NormalFileMessageBody(new File(filePath));
 		message.addBody(body);
-
 		conversation.addMessage(message);
 		listView.setAdapter(adapter);
 		adapter.refresh();

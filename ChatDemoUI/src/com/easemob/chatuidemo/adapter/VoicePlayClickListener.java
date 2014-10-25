@@ -32,6 +32,7 @@ import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.activity.ChatActivity;
 
 public class VoicePlayClickListener implements View.OnClickListener {
 
@@ -43,13 +44,11 @@ public class VoicePlayClickListener implements View.OnClickListener {
 	MediaPlayer mediaPlayer = null;
 	ImageView iv_read_status;
 	Activity activity;
-	private String username;
 	private ChatType chatType;
 	private BaseAdapter adapter;
 
 	public static boolean isPlaying = false;
 	public static VoicePlayClickListener currentPlayListener = null;
-	static EMMessage currentMessage = null;
 
 
 	/**
@@ -70,7 +69,6 @@ public class VoicePlayClickListener implements View.OnClickListener {
 		this.adapter=adapter;
 		voiceIconView = v;
 		this.activity = activity;
-		this.username = username;
 		this.chatType = message.getChatType();
 	}
 
@@ -87,12 +85,15 @@ public class VoicePlayClickListener implements View.OnClickListener {
 			mediaPlayer.release();
 		}
 		isPlaying = false;
+		((ChatActivity)activity).playMsgId=null;
+		adapter.notifyDataSetChanged();
 	}
 
 	public void playVoice(String filePath) {
 		if (!(new File(filePath).exists())) {
 			return;
 		}
+		((ChatActivity)activity).playMsgId=message.getMsgId();
 		AudioManager audioManager = (AudioManager)activity.getSystemService(Context.AUDIO_SERVICE);
 
 		mediaPlayer = new MediaPlayer();
@@ -123,7 +124,6 @@ public class VoicePlayClickListener implements View.OnClickListener {
 			});
 			isPlaying = true;
 			currentPlayListener = this;
-			currentMessage = message;
 			mediaPlayer.start();
 			showAnimation();
 			try {
@@ -157,23 +157,21 @@ public class VoicePlayClickListener implements View.OnClickListener {
 		voiceAnimation = (AnimationDrawable) voiceIconView.getDrawable();
 		voiceAnimation.start();
 	}
-
 	@Override
 	public void onClick(View v) {
-
 		if (isPlaying) {
-			currentPlayListener.stopPlayVoice();
-			if (currentMessage != null && currentMessage.hashCode() == message.hashCode()) {
-				currentMessage = null;
+			if(((ChatActivity)activity).playMsgId !=null&&((ChatActivity)activity).playMsgId .equals(message.getMsgId()))
+			{
+				currentPlayListener.stopPlayVoice();
 				return;
 			}
+			currentPlayListener.stopPlayVoice();
 		}
 
 		if (message.direct == EMMessage.Direct.SEND) {
 			// for sent msg, we will try to play the voice file directly
 			playVoice(voiceBody.getLocalUrl());
 		} else {
-			
 			if(message.status==EMMessage.Status.SUCCESS)
 			{
 				File file = new File(voiceBody.getLocalUrl());
@@ -185,8 +183,6 @@ public class VoicePlayClickListener implements View.OnClickListener {
 			}else if(message.status==EMMessage.Status.INPROGRESS)
 			{
 				Toast.makeText(activity, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
-				 
-				
 			}else if(message.status==EMMessage.Status.FAIL)
 			{
 				Toast.makeText(activity, "正在下载语音，稍后点击", Toast.LENGTH_SHORT).show();
@@ -211,11 +207,4 @@ public class VoicePlayClickListener implements View.OnClickListener {
  
 		}
 	}
-
-	interface OnVoiceStopListener {
-		void onStop();
-
-		void onStart();
-	}
-
 }

@@ -15,7 +15,6 @@ package com.easemob.chatuidemo.activity;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -39,9 +38,7 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
-import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.utils.PreferenceUtils;
 import com.easemob.chatuidemo.widget.ExpandGridView;
 import com.easemob.util.EMLog;
 import com.easemob.util.NetUtils;

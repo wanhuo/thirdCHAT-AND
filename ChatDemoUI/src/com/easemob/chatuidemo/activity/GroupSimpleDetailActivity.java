@@ -106,7 +106,10 @@ public class GroupSimpleDetailActivity extends BaseActivity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
-							Toast.makeText(GroupSimpleDetailActivity.this, "加入群聊成功", 0).show();
+							if(group.isMembersOnly())
+								Toast.makeText(GroupSimpleDetailActivity.this, "发送请求成功，等待群主同意", 0).show();
+							else
+								Toast.makeText(GroupSimpleDetailActivity.this, "加入群聊成功", 0).show();
 							btn_add_group.setEnabled(false);
 						}
 					});

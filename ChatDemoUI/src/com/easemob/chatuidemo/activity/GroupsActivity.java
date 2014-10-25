@@ -51,7 +51,6 @@ public class GroupsActivity extends BaseActivity {
 		instance = this;
 		inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		grouplist =	EMGroupManager.getInstance().getAllGroups();
-		groupListView = (ListView)findViewById(R.id.fragment_container);
 		groupListView = (ListView)findViewById(R.id.list);
 		groupAdapter = new GroupAdapter(this, 1, grouplist);
 		groupListView.setAdapter(groupAdapter);
