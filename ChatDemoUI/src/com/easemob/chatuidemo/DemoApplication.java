@@ -87,7 +87,9 @@ public class DemoApplication extends Application {
 		EMChatOptions options = EMChatManager.getInstance().getChatOptions();
 		// 默认添加好友时，是不需要验证的，改成需要验证
 		options.setAcceptInvitationAlways(false);
-		// 设置收到消息是否有新消息通知，默认为true
+		// 默认环信是不维护好友关系列表的，如果app依赖环信的好友关系，把这个属性设置为true
+		options.setUseRoster(true);
+		// 设置收到消息是否有新消息通知(声音和震动提示)，默认为true
 		options.setNotifyBySoundAndVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgNotification());
 		// 设置收到消息是否有声音提示，默认为true
 		options.setNoticeBySound(PreferenceUtils.getInstance(applicationContext).getSettingMsgSound());

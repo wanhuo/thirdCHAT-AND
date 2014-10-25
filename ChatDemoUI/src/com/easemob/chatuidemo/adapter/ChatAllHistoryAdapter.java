@@ -13,6 +13,7 @@
  */
 package com.easemob.chatuidemo.adapter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,12 +22,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
-import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContact;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroup;
@@ -46,9 +47,15 @@ import com.easemob.util.DateUtils;
 public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 
 	private LayoutInflater inflater;
+	private List<EMConversation> conversationList;
+	private List<EMConversation> copyConversationList;
+	private ConversationFilter conversationFilter;
 
 	public ChatAllHistoryAdapter(Context context, int textViewResourceId, List<EMConversation> objects) {
 		super(context, textViewResourceId, objects);
+		this.conversationList = objects;
+		copyConversationList = new ArrayList<EMConversation>();
+		copyConversationList.addAll(objects);
 		inflater = LayoutInflater.from(context);
 	}
 
@@ -204,5 +211,83 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 
 	String getStrng(Context context, int resId) {
 		return context.getResources().getString(resId);
+	}
+	
+	
+
+	@Override
+	public Filter getFilter() {
+		if (conversationFilter == null) {
+			conversationFilter = new ConversationFilter(conversationList);
+		}
+		return conversationFilter;
+	}
+	
+	private class ConversationFilter extends Filter {
+		List<EMConversation> mOriginalValues = null;
+
+		public ConversationFilter(List<EMConversation> mList) {
+			mOriginalValues = mList;
+		}
+
+		@Override
+		protected FilterResults performFiltering(CharSequence prefix) {
+			FilterResults results = new FilterResults();
+
+			if (mOriginalValues == null) {
+				mOriginalValues = new ArrayList<EMConversation>();
+			}
+			if (prefix == null || prefix.length() == 0) {
+				results.values = copyConversationList;
+				results.count = copyConversationList.size();
+			} else {
+				String prefixString = prefix.toString();
+				final int count = mOriginalValues.size();
+				final ArrayList<EMConversation> newValues = new ArrayList<EMConversation>();
+
+				for (int i = 0; i < count; i++) {
+					final EMConversation value = mOriginalValues.get(i);
+					String username = value.getUserName();
+					
+					EMGroup group = EMGroupManager.getInstance().getGroup(username);
+					if(group != null){
+						username = group.getGroupName();
+					}
+
+					// First match against the whole ,non-splitted value
+					if (username.startsWith(prefixString)) {
+						newValues.add(value);
+					} else{
+						  final String[] words = username.split(" ");
+	                        final int wordCount = words.length;
+
+	                        // Start at index 0, in case valueText starts with space(s)
+	                        for (int k = 0; k < wordCount; k++) {
+	                            if (words[k].startsWith(prefixString)) {
+	                                newValues.add(value);
+	                                break;
+	                            }
+	                        }
+					}
+				}
+
+				results.values = newValues;
+				results.count = newValues.size();
+			}
+			return results;
+		}
+
+		@Override
+		protected void publishResults(CharSequence constraint, FilterResults results) {
+			conversationList.clear();
+			conversationList.addAll((List<EMConversation>) results.values);
+			if (results.count > 0) {
+				notifyDataSetChanged();
+			} else {
+				notifyDataSetInvalidated();
+			}
+
+		}
+
 	}
 }

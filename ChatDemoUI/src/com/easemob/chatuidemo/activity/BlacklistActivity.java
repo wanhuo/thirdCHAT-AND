@@ -3,27 +3,23 @@ package com.easemob.chatuidemo.activity;
 import java.util.Collections;
 import java.util.List;
 
-import com.easemob.chat.EMContactManager;
-import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.adapter.ContactAdapter;
-import com.easemob.chatuidemo.db.InviteMessgeDao;
-import com.easemob.chatuidemo.domain.User;
-import com.easemob.exceptions.EaseMobException;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+
+import com.easemob.chat.EMContactManager;
+import com.easemob.chatuidemo.R;
+import com.easemob.exceptions.EaseMobException;
 
 /**
  * 黑名单列表页面
@@ -40,13 +36,8 @@ public class BlacklistActivity extends Activity {
 
 		listView = (ListView) findViewById(R.id.list);
 
-		List<String> blacklist = null;
-		try {
-			// 获取黑名单
-			blacklist = EMContactManager.getInstance().getBlackListUsernames();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// 从本地获取黑名单
+		 List<String> blacklist = EMContactManager.getInstance().getBlackListUsernames();
 
 		// 显示黑名单列表
 		if (blacklist != null) {
