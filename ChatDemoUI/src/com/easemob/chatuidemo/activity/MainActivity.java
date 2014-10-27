@@ -38,7 +38,6 @@ import android.widget.Toast;
 
 import com.easemob.EMConnectionListener;
 import com.easemob.EMError;
-import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactListener;
