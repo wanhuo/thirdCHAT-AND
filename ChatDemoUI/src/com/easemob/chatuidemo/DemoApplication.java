@@ -27,6 +27,8 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.easemob.EMConnectionListener;
+import com.easemob.EMError;
 import com.easemob.chat.ConnectionListener;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
@@ -273,18 +275,10 @@ public class DemoApplication extends Application {
 		return processName;
 	}
 
-	class MyConnectionListener implements ConnectionListener {
+	class MyConnectionListener implements EMConnectionListener {
 		@Override
-		public void onReConnecting() {
-		}
-
-		@Override
-		public void onReConnected() {
-		}
-
-		@Override
-		public void onDisConnected(String errorString) {
-			if (errorString != null && errorString.contains("conflict")) {
+		public void onDisconnected(int error) {
+			if (error == EMError.CONNECTION_CONFLICT) {
 				Intent intent = new Intent(applicationContext, MainActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				intent.putExtra("conflict", true);
@@ -294,7 +288,7 @@ public class DemoApplication extends Application {
 		}
 
 		@Override
-		public void onConnecting(String progress) {
+		public void onConnecting() {
 
 		}
 
