@@ -14,11 +14,11 @@
 
 package com.easemob.chatuidemo.activity;
 
+import android.support.v4.app.FragmentActivity;
+
 import com.easemob.chat.EMChatManager;
 
-import android.app.Activity;
-
-public class BaseActivity extends Activity{
+public class BaseActivity extends FragmentActivity{
 	@Override
 	protected void onResume() {
 		super.onResume();

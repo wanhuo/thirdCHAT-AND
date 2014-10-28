@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -128,7 +129,7 @@
                 android:layout_weight="1"
                 >
 
-                <com.easemob.chatuidemo.widget.PasteEditText
+                <com.easemob.chatuidemo.widget.emojicon.EmojiconEditText
                     android:id="@+id/et_sendmessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -141,8 +142,8 @@
                     android:paddingTop="3dp"
                     android:paddingRight="1dp"
                     android:paddingBottom="3dp"
-                    android:textSize="18sp" >
-                </com.easemob.chatuidemo.widget.PasteEditText>
+                    emojicon:emojiconSize="24sp"
+                    android:textSize="18sp" />
 
                 <ImageView
                     android:id="@+id/iv_emoticons_normal"
@@ -195,7 +196,7 @@
             android:id="@+id/more"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#EFEFF4"
+            android:background="#ffffff"
             android:orientation="vertical"
             android:visibility="gone" >
 
@@ -206,12 +207,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:orientation="vertical"
-                android:visibility="gone" >
+                android:visibility="visible" >
 
-                <android.support.v4.view.ViewPager
+                
+                <!-- <android.support.v4.view.ViewPager
                     android:id="@+id/vPager"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content" /> -->
             </LinearLayout>
 
             <!-- 图片，表情，名片等按钮 -->

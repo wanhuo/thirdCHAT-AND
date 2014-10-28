@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/delete_emojicon"
+       android:layout_width="36dip"
+        android:layout_height="36dip"
+        android:layout_gravity="center"
+        android:scaleType="centerInside"
+        android:src="@drawable/delete_expression" />
+
+</FrameLayout>

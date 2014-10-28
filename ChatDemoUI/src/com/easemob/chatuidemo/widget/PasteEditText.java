@@ -53,7 +53,6 @@ public class PasteEditText extends EditText{
     }
     
     @SuppressLint("NewApi")
-	@SuppressWarnings("deprecation")
 	@Override
     public boolean onTextContextMenuItem(int id) {
         if(id == android.R.id.paste){

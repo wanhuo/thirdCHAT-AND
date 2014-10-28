@@ -27,7 +27,7 @@
             android:background="@drawable/mini_avatar_shadow"
             android:scaleType="fitXY" />
 
-        <TextView
+        <com.easemob.chatuidemo.widget.emojicon.EmojiconTextView
              android:maxWidth="225.0dip"
             android:id="@+id/tv_chatcontent"
             android:layout_width="wrap_content"

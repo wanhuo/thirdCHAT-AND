@@ -16,8 +16,6 @@ package com.easemob.chatuidemo.activity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.BroadcastReceiver;
@@ -37,7 +35,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.MediaStore;
-import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -52,8 +49,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -79,15 +74,13 @@ import com.easemob.chat.VideoMessageBody;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.adapter.ExpressionAdapter;
-import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
+import com.easemob.chatuidemo.activity.EmojiconFragment.OnEmojiconClickedListener;
 import com.easemob.chatuidemo.adapter.MessageAdapter;
 import com.easemob.chatuidemo.adapter.VoicePlayClickListener;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.ImageUtils;
-import com.easemob.chatuidemo.utils.SmileUtils;
-import com.easemob.chatuidemo.widget.ExpandGridView;
-import com.easemob.chatuidemo.widget.PasteEditText;
+import com.easemob.chatuidemo.widget.emojicon.Emojicon;
+import com.easemob.chatuidemo.widget.emojicon.EmojiconEditText;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
@@ -97,7 +90,7 @@ import com.easemob.util.VoiceRecorder;
  * 聊天页面
  * 
  */
-public class ChatActivity extends BaseActivity implements OnClickListener {
+public class ChatActivity extends BaseActivity implements OnClickListener, OnEmojiconClickedListener {
 
 	private static final int REQUEST_CODE_EMPTY_HISTORY = 2;
 	public static final int REQUEST_CODE_CONTEXT_MENU = 3;
@@ -139,13 +132,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private ImageView micImage;
 	private TextView recordingHint;
 	private ListView listView;
-	private PasteEditText mEditTextContent;
+	private EmojiconEditText mEditTextContent;
 	private View buttonSetModeKeyboard;
 	private View buttonSetModeVoice;
 	private View buttonSend;
 	private View buttonPressToSpeak;
-	private ViewPager expressionViewpager;
-	private LinearLayout expressionContainer;
+	// private ViewPager expressionViewpager;
+	private LinearLayout emojiIconContainer;
 	private LinearLayout btnContainer;
 	private ImageView locationImgview;
 	private View more;
@@ -176,7 +169,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private boolean haveMoreData = true;
 	private Button btnMore;
 	public String playMsgId;
-	
 
 	private Handler micImageHandler = new Handler() {
 		@Override
@@ -203,14 +195,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		micImage = (ImageView) findViewById(R.id.mic_image);
 		recordingHint = (TextView) findViewById(R.id.recording_hint);
 		listView = (ListView) findViewById(R.id.list);
-		mEditTextContent = (PasteEditText) findViewById(R.id.et_sendmessage);
+		mEditTextContent = (EmojiconEditText) findViewById(R.id.et_sendmessage);
 		buttonSetModeKeyboard = findViewById(R.id.btn_set_mode_keyboard);
 		edittext_layout = (RelativeLayout) findViewById(R.id.edittext_layout);
 		buttonSetModeVoice = findViewById(R.id.btn_set_mode_voice);
 		buttonSend = findViewById(R.id.btn_send);
 		buttonPressToSpeak = findViewById(R.id.btn_press_to_speak);
-		expressionViewpager = (ViewPager) findViewById(R.id.vPager);
-		expressionContainer = (LinearLayout) findViewById(R.id.ll_face_container);
+		// expressionViewpager = (ViewPager) findViewById(R.id.vPager);
+		emojiIconContainer = (LinearLayout) findViewById(R.id.ll_face_container);
 		btnContainer = (LinearLayout) findViewById(R.id.ll_btn_container);
 		locationImgview = (ImageView) findViewById(R.id.btn_location);
 		iv_emoticons_normal = (ImageView) findViewById(R.id.iv_emoticons_normal);
@@ -231,15 +223,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				getResources().getDrawable(R.drawable.record_animate_10), getResources().getDrawable(R.drawable.record_animate_11),
 				getResources().getDrawable(R.drawable.record_animate_12), getResources().getDrawable(R.drawable.record_animate_13),
 				getResources().getDrawable(R.drawable.record_animate_14), };
-		// 表情list
-		reslist = getExpressionRes(35);
-		// 初始化表情viewpager
-		List<View> views = new ArrayList<View>();
-		View gv1 = getGridChildView(1);
-		View gv2 = getGridChildView(2);
-		views.add(gv1);
-		views.add(gv2);
-		expressionViewpager.setAdapter(new ExpressionPagerAdapter(views));
+
+		//加入表情页
+		emojiconFragment = new EmojiconFragment();
+		getSupportFragmentManager().beginTransaction().add(R.id.ll_face_container, emojiconFragment).commit();
+
 		edittext_layout.requestFocus();
 		voiceRecorder = new VoiceRecorder(micImageHandler);
 		buttonPressToSpeak.setOnTouchListener(new PressToSpeakListen());
@@ -263,7 +251,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				more.setVisibility(View.GONE);
 				iv_emoticons_normal.setVisibility(View.VISIBLE);
 				iv_emoticons_checked.setVisibility(View.INVISIBLE);
-				expressionContainer.setVisibility(View.GONE);
+				emojiIconContainer.setVisibility(View.GONE);
 				btnContainer.setVisibility(View.GONE);
 			}
 		});
@@ -341,7 +329,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				more.setVisibility(View.GONE);
 				iv_emoticons_normal.setVisibility(View.VISIBLE);
 				iv_emoticons_checked.setVisibility(View.INVISIBLE);
-				expressionContainer.setVisibility(View.GONE);
+				emojiIconContainer.setVisibility(View.GONE);
 				btnContainer.setVisibility(View.GONE);
 				return false;
 			}
@@ -362,7 +350,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		IntentFilter deliveryAckMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getDeliveryAckMessageBroadcastAction());
 		deliveryAckMessageIntentFilter.setPriority(5);
 		registerReceiver(deliveryAckMessageReceiver, deliveryAckMessageIntentFilter);
-		
+
 		// 监听当前会话的群聊解散被T事件
 		groupListener = new GroupListener();
 		EMGroupManager.getInstance().addGroupChangeListener(groupListener);
@@ -421,15 +409,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			switch (resultCode) {
 			case RESULT_CODE_COPY: // 复制消息
 				EMMessage copyMsg = ((EMMessage) adapter.getItem(data.getIntExtra("position", -1)));
-				if (copyMsg.getType() == EMMessage.Type.IMAGE) {
-					ImageMessageBody imageBody = (ImageMessageBody) copyMsg.getBody();
-					// 加上一个特定前缀，粘贴时知道这是要粘贴一个图片
-					clipboard.setText(COPY_IMAGE + imageBody.getLocalUrl());
-				} else {
-					// clipboard.setText(SmileUtils.getSmiledText(ChatActivity.this,
-					// ((TextMessageBody) copyMsg.getBody()).getMessage()));
-					clipboard.setText(((TextMessageBody) copyMsg.getBody()).getMessage());
-				}
+				// clipboard.setText(SmileUtils.getSmiledText(ChatActivity.this,
+				// ((TextMessageBody) copyMsg.getBody()).getMessage()));
+				clipboard.setText(((TextMessageBody) copyMsg.getBody()).getMessage());
 				break;
 			case RESULT_CODE_DELETE: // 删除消息
 				EMMessage deleteMsg = (EMMessage) adapter.getItem(data.getIntExtra("position", -1));
@@ -578,13 +560,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			iv_emoticons_normal.setVisibility(View.INVISIBLE);
 			iv_emoticons_checked.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.GONE);
-			expressionContainer.setVisibility(View.VISIBLE);
+			emojiIconContainer.setVisibility(View.VISIBLE);
 			hideKeyboard();
 		} else if (id == R.id.iv_emoticons_checked) { // 点击隐藏表情框
 			iv_emoticons_normal.setVisibility(View.VISIBLE);
 			iv_emoticons_checked.setVisibility(View.INVISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
-			expressionContainer.setVisibility(View.GONE);
+			emojiIconContainer.setVisibility(View.GONE);
 			more.setVisibility(View.GONE);
 
 		} else if (id == R.id.btn_video) {
@@ -593,13 +575,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
 		} else if (id == R.id.btn_file) { // 点击文件图标
 			selectFileFromLocal();
-		} else if (id == R.id.btn_voice_call) { //点击语音电话图标
-			if(!EMChatManager.getInstance().isConnected())
+		} else if (id == R.id.btn_voice_call) { // 点击语音电话图标
+			if (!EMChatManager.getInstance().isConnected())
 				Toast.makeText(this, "尚未连接至服务器，请稍后重试", 0).show();
 			else
-				startActivity(new Intent(ChatActivity.this, VoiceCallActivity.class).
-						putExtra("username", toChatUsername).
-						putExtra("isComingCall", false));
+				startActivity(new Intent(ChatActivity.this, VoiceCallActivity.class).putExtra("username", toChatUsername).putExtra(
+						"isComingCall", false));
 		}
 	}
 
@@ -731,7 +712,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		message.setReceipt(to);
 		ImageMessageBody body = new ImageMessageBody(new File(filePath));
 		// 默认超过100k的图片会压缩后发给对方，可以设置成发送原图
-//		 body.setSendOriginalImage(true);
+		// body.setSendOriginalImage(true);
 		message.addBody(body);
 		conversation.addMessage(message);
 
@@ -910,7 +891,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		iv_emoticons_normal.setVisibility(View.VISIBLE);
 		iv_emoticons_checked.setVisibility(View.INVISIBLE);
 		btnContainer.setVisibility(View.VISIBLE);
-		expressionContainer.setVisibility(View.GONE);
+		emojiIconContainer.setVisibility(View.GONE);
 
 	}
 
@@ -979,10 +960,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			hideKeyboard();
 			more.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
-			expressionContainer.setVisibility(View.GONE);
+			emojiIconContainer.setVisibility(View.GONE);
 		} else {
-			if (expressionContainer.getVisibility() == View.VISIBLE) {
-				expressionContainer.setVisibility(View.GONE);
+			if (emojiIconContainer.getVisibility() == View.VISIBLE) {
+				emojiIconContainer.setVisibility(View.GONE);
 				btnContainer.setVisibility(View.VISIBLE);
 				iv_emoticons_normal.setVisibility(View.VISIBLE);
 				iv_emoticons_checked.setVisibility(View.INVISIBLE);
@@ -1058,7 +1039,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			adapter.notifyDataSetChanged();
 		}
 	};
-	
+
 	/**
 	 * 消息送达BroadcastReceiver
 	 */
@@ -1080,6 +1061,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 	};
 	private PowerManager.WakeLock wakeLock;
+	private EmojiconFragment emojiconFragment;
 
 	/**
 	 * 按住说话listener
@@ -1108,7 +1090,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					v.setPressed(false);
 					if (wakeLock.isHeld())
 						wakeLock.release();
-					if(voiceRecorder != null)
+					if (voiceRecorder != null)
 						voiceRecorder.discardRecording();
 					recordingContainer.setVisibility(View.INVISIBLE);
 					Toast.makeText(ChatActivity.this, R.string.recoding_fail, Toast.LENGTH_SHORT).show();
@@ -1154,87 +1136,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				return true;
 			default:
 				recordingContainer.setVisibility(View.INVISIBLE);
-				if(voiceRecorder != null)
+				if (voiceRecorder != null)
 					voiceRecorder.discardRecording();
 				return false;
 			}
 		}
-	}
-
-	/**
-	 * 获取表情的gridview的子view
-	 * 
-	 * @param i
-	 * @return
-	 */
-	private View getGridChildView(int i) {
-		View view = View.inflate(this, R.layout.expression_gridview, null);
-		ExpandGridView gv = (ExpandGridView) view.findViewById(R.id.gridview);
-		List<String> list = new ArrayList<String>();
-		if (i == 1) {
-			List<String> list1 = reslist.subList(0, 20);
-			list.addAll(list1);
-		} else if (i == 2) {
-			list.addAll(reslist.subList(20, reslist.size()));
-		}
-		list.add("delete_expression");
-		final ExpressionAdapter expressionAdapter = new ExpressionAdapter(this, 1, list);
-		gv.setAdapter(expressionAdapter);
-		gv.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				String filename = expressionAdapter.getItem(position);
-				try {
-					// 文字输入框可见时，才可输入表情
-					// 按住说话可见，不让输入表情
-					if (buttonSetModeKeyboard.getVisibility() != View.VISIBLE) {
-
-						if (filename != "delete_expression") { // 不是删除键，显示表情
-							// 这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
-							Class clz = Class.forName("com.easemob.chatuidemo.utils.SmileUtils");
-							Field field = clz.getField(filename);
-							mEditTextContent.append(SmileUtils.getSmiledText(ChatActivity.this, (String) field.get(null)));
-						} else { // 删除文字或者表情
-							if (!TextUtils.isEmpty(mEditTextContent.getText())) {
-
-								int selectionStart = mEditTextContent.getSelectionStart();// 获取光标的位置
-								if (selectionStart > 0) {
-									String body = mEditTextContent.getText().toString();
-									String tempStr = body.substring(0, selectionStart);
-									int i = tempStr.lastIndexOf("[");// 获取最后一个表情的位置
-									if (i != -1) {
-										CharSequence cs = tempStr.substring(i, selectionStart);
-										if (SmileUtils.containsKey(cs.toString()))
-											mEditTextContent.getEditableText().delete(i, selectionStart);
-										else
-											mEditTextContent.getEditableText().delete(selectionStart - 1, selectionStart);
-									} else {
-										mEditTextContent.getEditableText().delete(selectionStart - 1, selectionStart);
-									}
-								}
-							}
-
-						}
-					}
-				} catch (Exception e) {
-				}
-
-			}
-		});
-		return view;
-	}
-
-	public List<String> getExpressionRes(int getSum) {
-		List<String> reslist = new ArrayList<String>();
-		for (int x = 1; x <= getSum; x++) {
-			String filename = "ee_" + x;
-
-			reslist.add(filename);
-
-		}
-		return reslist;
-
 	}
 
 	@Override
@@ -1272,7 +1178,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 停止语音播放
 			VoicePlayClickListener.currentPlayListener.stopPlayVoice();
 		}
-		
+
 		try {
 			// 停止录音
 			if (voiceRecorder.isRecording()) {
@@ -1434,8 +1340,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	}
 
-	public String getToChatUsername(){
+	public String getToChatUsername() {
 		return toChatUsername;
 	}
-	
+
+	@Override
+	public void onEmojiconClicked(Emojicon emojicon) {
+		// 输入表情
+		emojiconFragment.inputEmojicon(mEditTextContent, emojicon);
+	}
+
+	@Override
+	public void onEmojiconDeleteClicked() {
+		emojiconFragment.deleteEmojicon(mEditTextContent);
+	}
+
 }
