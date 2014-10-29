@@ -76,46 +76,49 @@ public class DemoApplication extends Application {
             return;
         }
 
-		applicationContext = this;
-		instance = this;
-		// 初始化环信SDK,一定要先调用init()
-		EMChat.getInstance().init(applicationContext);
-		EMChat.getInstance().setDebugMode(true);
-		Log.d("EMChat Demo", "initialize EMChat SDK");
-		// debugmode设为true后，就能看到sdk打印的log了
-
-		// 获取到EMChatOptions对象
-		EMChatOptions options = EMChatManager.getInstance().getChatOptions();
+        // set app context
+        applicationContext = this;
+        instance = this;
+        
+		// 创建options
+		EMChatOptions options = new EMChatOptions();
 		// 默认添加好友时，是不需要验证的，改成需要验证
-		options.setAcceptInvitationAlways(false);
-		// 默认环信是不维护好友关系列表的，如果app依赖环信的好友关系，把这个属性设置为true
-		options.setUseRoster(true);
-		// 设置收到消息是否有新消息通知(声音和震动提示)，默认为true
-		options.setNotifyBySoundAndVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgNotification());
-		// 设置收到消息是否有声音提示，默认为true
-		options.setNoticeBySound(PreferenceUtils.getInstance(applicationContext).getSettingMsgSound());
-		// 设置收到消息是否震动 默认为true
-		options.setNoticedByVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgVibrate());
-		// 设置语音消息播放是否设置为扬声器播放 默认为true
-		options.setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker());
-		// 设置notification消息点击时，跳转的intent为自定义的intent
-		options.setOnNotificationClickListener(new OnNotificationClickListener() {
+		options.setAcceptInvitationAlways(false)
+		        // 默认环信是不维护好友关系列表的，如果app依赖环信的好友关系，把这个属性设置为true
+		       .setUseRoster(true)
+		        // 设置收到消息是否有新消息通知(声音和震动提示)，默认为true
+		       .setNotifyBySoundAndVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgNotification())
+		        // 设置收到消息是否有声音提示，默认为 true
+		       .setNoticeBySound(PreferenceUtils.getInstance(applicationContext).getSettingMsgSound())
+		        // 设置收到消息是否震动 默认为true
+		       .setNoticedByVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgVibrate())
+		        // 设置语音消息播放是否设置为扬声器播放 默认为true
+		       .setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker())
+		        // 设置notification消息点击时，跳转的intent为自定义的intent
+		       .setOnNotificationClickListener(new OnNotificationClickListener() {
 
-			@Override
-			public Intent onNotificationClick(EMMessage message) {
-				Intent intent = new Intent(applicationContext, ChatActivity.class);
-				ChatType chatType = message.getChatType();
-				if (chatType == ChatType.Chat) { // 单聊信息
-					intent.putExtra("userId", message.getFrom());
-					intent.putExtra("chatType", ChatActivity.CHATTYPE_SINGLE);
-				} else { // 群聊信息
-							// message.getTo()为群聊id
-					intent.putExtra("groupId", message.getTo());
-					intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
-				}
-				return intent;
-			}
-		});
+		            @Override
+		            public Intent onNotificationClick(EMMessage message) {
+		                Intent intent = new Intent(applicationContext, ChatActivity.class);
+		                ChatType chatType = message.getChatType();
+		                if (chatType == ChatType.Chat) { // 单聊信息
+		                    intent.putExtra("userId", message.getFrom());
+		                    intent.putExtra("chatType", ChatActivity.CHATTYPE_SINGLE);
+		                } else { // 群聊信息
+		                            // message.getTo()为群聊id
+		                    intent.putExtra("groupId", message.getTo());
+		                    intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
+		                }
+		                return intent;
+		            }
+		        });
+
+		// debugmode设为true后，就能看到sdk打印的log了
+		options.setDebugMode(true);
+		
+		EMChat.getInstance().init(applicationContext, options);
+		Log.d("EMChat Demo", "initialize EMChat SDK");
+		
 		// 设置一个connectionlistener监听账户重复登陆
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 //		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
