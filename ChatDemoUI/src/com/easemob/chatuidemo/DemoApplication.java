@@ -94,6 +94,8 @@ public class DemoApplication extends Application {
 		       .setNoticedByVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgVibrate())
 		        // 设置语音消息播放是否设置为扬声器播放 默认为true
 		       .setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker())
+		        // 设置是否自动记载所有的回话列表，默认会自动加入，不过每个回话默认最多加载20信息
+		       .setAutoConversatonsLoaded(true)
 		        // 设置notification消息点击时，跳转的intent为自定义的intent
 		       .setOnNotificationClickListener(new OnNotificationClickListener() {
 
