@@ -74,7 +74,7 @@ public class MainActivity extends FragmentActivity {
 
 	private Button[] mTabs;
 	private ContactlistFragment contactListFragment;
-//	private ChatHistoryFragment chatHistoryFragment;
+	// private ChatHistoryFragment chatHistoryFragment;
 	private ChatAllHistoryFragment chatHistoryFragment;
 	private SettingsFragment settingFragment;
 	private Fragment[] fragments;
@@ -93,17 +93,16 @@ public class MainActivity extends FragmentActivity {
 		initView();
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
-		//这个fragment只显示好友和群组的聊天记录
-//		chatHistoryFragment = new ChatHistoryFragment();
-		//显示所有人消息记录的fragment
+		// 这个fragment只显示好友和群组的聊天记录
+		// chatHistoryFragment = new ChatHistoryFragment();
+		// 显示所有人消息记录的fragment
 		chatHistoryFragment = new ChatAllHistoryFragment();
 		contactListFragment = new ContactlistFragment();
 		settingFragment = new SettingsFragment();
 		fragments = new Fragment[] { chatHistoryFragment, contactListFragment, settingFragment };
 		// 添加显示第一个fragment
 		getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, chatHistoryFragment)
-				.add(R.id.fragment_container, contactListFragment).hide(contactListFragment).show(chatHistoryFragment)
-				.commit();
+				.add(R.id.fragment_container, contactListFragment).hide(contactListFragment).show(chatHistoryFragment).commit();
 
 		// 注册一个接收消息的BroadcastReceiver
 		msgReceiver = new NewMessageBroadcastReceiver();
@@ -112,16 +111,16 @@ public class MainActivity extends FragmentActivity {
 		registerReceiver(msgReceiver, intentFilter);
 
 		// 注册一个ack回执消息的BroadcastReceiver
-		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance()
-				.getAckMessageBroadcastAction());
+		IntentFilter ackMessageIntentFilter = new IntentFilter(EMChatManager.getInstance().getAckMessageBroadcastAction());
 		ackMessageIntentFilter.setPriority(3);
 		registerReceiver(ackMessageReceiver, ackMessageIntentFilter);
 
 		// 注册一个离线消息的BroadcastReceiver
-//		IntentFilter offlineMessageIntentFilter = new IntentFilter(EMChatManager.getInstance()
-//				.getOfflineMessageBroadcastAction());
-//		registerReceiver(offlineMessageReceiver, offlineMessageIntentFilter);
-		
+		// IntentFilter offlineMessageIntentFilter = new
+		// IntentFilter(EMChatManager.getInstance()
+		// .getOfflineMessageBroadcastAction());
+		// registerReceiver(offlineMessageReceiver, offlineMessageIntentFilter);
+
 		// setContactListener监听联系人的变化等
 		EMContactManager.getInstance().setContactListener(new MyContactListener());
 		// 注册一个监听连接状态的listener
@@ -190,10 +189,10 @@ public class MainActivity extends FragmentActivity {
 			unregisterReceiver(ackMessageReceiver);
 		} catch (Exception e) {
 		}
-//		try {
-//			unregisterReceiver(offlineMessageReceiver);
-//		} catch (Exception e) {
-//		}
+		// try {
+		// unregisterReceiver(offlineMessageReceiver);
+		// } catch (Exception e) {
+		// }
 
 		if (conflictBuilder != null) {
 			conflictBuilder.create().dismiss();
@@ -241,8 +240,7 @@ public class MainActivity extends FragmentActivity {
 	public int getUnreadAddressCountTotal() {
 		int unreadAddressCountTotal = 0;
 		if (DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME) != null)
-			unreadAddressCountTotal = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME)
-					.getUnreadMsgCount();
+			unreadAddressCountTotal = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME).getUnreadMsgCount();
 		return unreadAddressCountTotal;
 	}
 
@@ -265,17 +263,22 @@ public class MainActivity extends FragmentActivity {
 	private class NewMessageBroadcastReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			// 主页面收到消息后，主要为了提示未读，实际消息内容需要到chat页面查看
+
 			String from = intent.getStringExtra("from");
-			//2014-10-22 修复在某些机器上，在聊天页面对方发消息过来时不立即显示内容的bug 
-			if(ChatActivity.activityInstance != null && from.equals(ChatActivity.activityInstance.getToChatUsername()))
-				return;
-			
-			//主页面收到消息后，主要为了提示未读，实际消息内容需要到chat页面查看
 			// 消息id
 			String msgId = intent.getStringExtra("msgid");
-			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
-			// EMMessage message =
-			// EMChatManager.getInstance().getMessage(msgId);
+			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+			// 2014-10-22 修复在某些机器上，在聊天页面对方发消息过来时不立即显示内容的bug
+			if (ChatActivity.activityInstance != null){
+				if(message.getChatType() == ChatType.GroupChat){
+					if(message.getTo().equals(ChatActivity.activityInstance.getToChatUsername()))
+						return;
+				}else {
+					if(from.equals(ChatActivity.activityInstance.getToChatUsername()))
+						return;
+				}
+			}
 
 			// 刷新bottom bar消息未读数
 			updateUnreadLabel();
@@ -312,30 +315,30 @@ public class MainActivity extends FragmentActivity {
 	};
 
 	/**
-	 * 离线消息BroadcastReceiver
-	 * sdk 登录后，服务器会推送离线消息到client，这个receiver，是通知UI 有哪些人发来了离线消息
-	 * UI 可以做相应的操作，比如下载用户信息
+	 * 离线消息BroadcastReceiver sdk 登录后，服务器会推送离线消息到client，这个receiver，是通知UI
+	 * 有哪些人发来了离线消息 UI 可以做相应的操作，比如下载用户信息
 	 */
-//	private BroadcastReceiver offlineMessageReceiver = new BroadcastReceiver() {
-//
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			String[] users = intent.getStringArrayExtra("fromuser");
-//			String[] groups = intent.getStringArrayExtra("fromgroup");
-//			if (users != null) {
-//				for (String user : users) {
-//					System.out.println("收到user离线消息：" + user);
-//				}
-//			}
-//			if (groups != null) {
-//				for (String group : groups) {
-//					System.out.println("收到group离线消息：" + group);
-//				}
-//			}
-//			abortBroadcast();
-//		}
-//	};
-	
+	// private BroadcastReceiver offlineMessageReceiver = new
+	// BroadcastReceiver() {
+	//
+	// @Override
+	// public void onReceive(Context context, Intent intent) {
+	// String[] users = intent.getStringArrayExtra("fromuser");
+	// String[] groups = intent.getStringArrayExtra("fromgroup");
+	// if (users != null) {
+	// for (String user : users) {
+	// System.out.println("收到user离线消息：" + user);
+	// }
+	// }
+	// if (groups != null) {
+	// for (String group : groups) {
+	// System.out.println("收到group离线消息：" + group);
+	// }
+	// }
+	// abortBroadcast();
+	// }
+	// };
+
 	private InviteMessgeDao inviteMessgeDao;
 	private UserDao userDao;
 
@@ -365,7 +368,6 @@ public class MainActivity extends FragmentActivity {
 
 		}
 
-		
 		@Override
 		public void onContactDeleted(final List<String> usernameList) {
 			// 被删除
@@ -377,9 +379,9 @@ public class MainActivity extends FragmentActivity {
 			}
 			runOnUiThread(new Runnable() {
 				public void run() {
-					//如果正在与此用户的聊天页面
+					// 如果正在与此用户的聊天页面
 					if (ChatActivity.activityInstance != null && usernameList.contains(ChatActivity.activityInstance.getToChatUsername())) {
-						Toast.makeText(MainActivity.this, ChatActivity.activityInstance.getToChatUsername()+"已把你从他好友列表里移除", 1).show();
+						Toast.makeText(MainActivity.this, ChatActivity.activityInstance.getToChatUsername() + "已把你从他好友列表里移除", 1).show();
 						ChatActivity.activityInstance.finish();
 					}
 					updateUnreadLabel();
@@ -397,7 +399,7 @@ public class MainActivity extends FragmentActivity {
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
 			for (InviteMessage inviteMessage : msgs) {
 				if (inviteMessage.getGroupId() == null && inviteMessage.getFrom().equals(username)) {
-				    inviteMessgeDao.deleteMessage(username);
+					inviteMessgeDao.deleteMessage(username);
 				}
 			}
 			// 自己封装的javabean
@@ -454,8 +456,10 @@ public class MainActivity extends FragmentActivity {
 		if (currentTabIndex == 1)
 			contactListFragment.refresh();
 	}
+
 	/**
 	 * 保存邀请等msg
+	 * 
 	 * @param msg
 	 */
 	private void saveInviteMsg(InviteMessage msg) {
@@ -465,10 +469,10 @@ public class MainActivity extends FragmentActivity {
 		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 		user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
 	}
-	
-	
+
 	/**
 	 * set head
+	 * 
 	 * @param username
 	 * @return
 	 */
@@ -486,8 +490,7 @@ public class MainActivity extends FragmentActivity {
 		} else if (Character.isDigit(headerName.charAt(0))) {
 			user.setHeader("#");
 		} else {
-			user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(
-					0, 1).toUpperCase());
+			user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1).toUpperCase());
 			char header = user.getHeader().toLowerCase().charAt(0);
 			if (header < 'a' || header > 'z') {
 				user.setHeader("#");
@@ -495,7 +498,6 @@ public class MainActivity extends FragmentActivity {
 		}
 		return user;
 	}
-
 
 	/**
 	 * 连接监听listener
@@ -505,49 +507,49 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onConnected() {
-		    runOnUiThread(new Runnable(){
+			runOnUiThread(new Runnable() {
 
-                @Override
-                public void run() {
-                    chatHistoryFragment.errorItem.setVisibility(View.GONE);
-                }
-		        
-		    });
+				@Override
+				public void run() {
+					chatHistoryFragment.errorItem.setVisibility(View.GONE);
+				}
+
+			});
 		}
 
-        @Override
-        public void onDisconnected(final int error) {
-            runOnUiThread(new Runnable(){
+		@Override
+		public void onDisconnected(final int error) {
+			runOnUiThread(new Runnable() {
 
-                @Override
-                public void run() {
-                    if (error == EMError.CONNECTION_CONFLICT) {
-                        // 显示帐号在其他设备登陆dialog
-                        showConflictDialog();
-                    } else {
-                        chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
-                        if(NetUtils.hasNetwork(MainActivity.this))
-                            chatHistoryFragment.errorText.setText("连接不到聊天服务器");
-                        else
-                            chatHistoryFragment.errorText.setText("当前网络不可用，请检查网络设置");
-                            
-                    }
-                }
-                
-            });
-        }
+				@Override
+				public void run() {
+					if (error == EMError.CONNECTION_CONFLICT) {
+						// 显示帐号在其他设备登陆dialog
+						showConflictDialog();
+					} else {
+						chatHistoryFragment.errorItem.setVisibility(View.VISIBLE);
+						if (NetUtils.hasNetwork(MainActivity.this))
+							chatHistoryFragment.errorText.setText("连接不到聊天服务器");
+						else
+							chatHistoryFragment.errorText.setText("当前网络不可用，请检查网络设置");
 
-        @Override
-        public void onConnecting() {
-            runOnUiThread(new Runnable(){
+					}
+				}
 
-                @Override
-                public void run() {
-                    chatHistoryFragment.errorText.setText("正在连接服务器....");
-                }
-                
-            });
-        }
+			});
+		}
+
+		@Override
+		public void onConnecting() {
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					chatHistoryFragment.errorText.setText("正在连接服务器....");
+				}
+
+			});
+		}
 	}
 
 	/**
@@ -558,15 +560,15 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onInvitationReceived(String groupId, String groupName, String inviter, String reason) {
 			boolean hasGroup = false;
-			for(EMGroup group : EMGroupManager.getInstance().getAllGroups()){
-				if(group.getGroupId().equals(groupId)){
+			for (EMGroup group : EMGroupManager.getInstance().getAllGroups()) {
+				if (group.getGroupId().equals(groupId)) {
 					hasGroup = true;
 					break;
 				}
 			}
-			if(!hasGroup)
+			if (!hasGroup)
 				return;
-			
+
 			// 被邀请
 			EMMessage msg = EMMessage.createReceiveMessage(Type.TXT);
 			msg.setChatType(ChatType.GroupChat);
@@ -658,7 +660,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onApplicationAccept(String groupId, String groupName, String accepter) {
-			//加群申请被同意
+			// 加群申请被同意
 			EMMessage msg = EMMessage.createReceiveMessage(Type.TXT);
 			msg.setChatType(ChatType.GroupChat);
 			msg.setFrom(accepter);
@@ -669,7 +671,7 @@ public class MainActivity extends FragmentActivity {
 			EMChatManager.getInstance().saveMessage(msg);
 			// 提醒新消息
 			EMNotifier.getInstance(getApplicationContext()).notifyOnNewMsg();
-			
+
 			runOnUiThread(new Runnable() {
 				public void run() {
 					updateUnreadLabel();
@@ -685,7 +687,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onApplicationDeclined(String groupId, String groupName, String decliner, String reason) {
-			//加群申请被拒绝，demo未实现
+			// 加群申请被拒绝，demo未实现
 		}
 
 	}
@@ -747,11 +749,11 @@ public class MainActivity extends FragmentActivity {
 		}
 
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		if(getIntent().getBooleanExtra("conflict", false) && !isConflictDialogShow)
+		if (getIntent().getBooleanExtra("conflict", false) && !isConflictDialogShow)
 			showConflictDialog();
 	}
 }

@@ -37,6 +37,7 @@
             android:layout_toLeftOf="@id/iv_userhead"
             android:autoLink="web"
             emojicon:emojiconSize="24sp"
+            android:textSize="15sp" 
             android:background="@drawable/chatto_bg"
             android:gravity="left|center"
             android:lineSpacingExtra="2dp"
