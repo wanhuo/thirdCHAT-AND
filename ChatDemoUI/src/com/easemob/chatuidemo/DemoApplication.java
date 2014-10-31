@@ -32,6 +32,7 @@ import com.easemob.EMError;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
+import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.OnNotificationClickListener;
@@ -96,6 +97,7 @@ public class DemoApplication extends Application {
 		       .setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker())
 		        // 设置是否自动记载所有的回话列表，默认会自动加入，不过每个回话默认最多加载20信息
 		       .setAutoConversatonsLoaded(true)
+		       .setRequireDeliveryAck(true)
 		        // 设置notification消息点击时，跳转的intent为自定义的intent
 		       .setOnNotificationClickListener(new OnNotificationClickListener() {
 
@@ -145,7 +147,8 @@ public class DemoApplication extends Application {
 //
 //
 //		});
-		
+
+		//EMGroupManager.getInstance().getAllGroups();
 		//注册一个语言电话的广播接收者
 		IntentFilter callFilter = new IntentFilter(EMChatManager.getInstance().getIncomingVoiceCallBroadcastAction());
 		registerReceiver(new VoiceCallReceiver(), callFilter);
