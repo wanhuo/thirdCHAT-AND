@@ -1124,8 +1124,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 						if (length > 0) {
 							sendVoice(voiceRecorder.getVoiceFilePath(), voiceRecorder.getVoiceFileName(toChatUsername),
 									Integer.toString(length), false);
-						} else {
-							Toast.makeText(getApplicationContext(), "录音时间太短", 0).show();
+						}else if(length==-1){
+							Toast.makeText(getApplicationContext(), "无录音权限", Toast.LENGTH_SHORT).show();
+						}else {
+							Toast.makeText(getApplicationContext(), "录音时间太短", Toast.LENGTH_SHORT).show();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
