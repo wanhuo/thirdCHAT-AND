@@ -14,7 +14,6 @@
 
 package com.easemob.chatuidemo.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
@@ -28,6 +27,7 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupInfo;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemolib.activity.BaseActivity;
 import com.easemob.exceptions.EaseMobException;
 
 public class GroupSimpleDetailActivity extends BaseActivity {

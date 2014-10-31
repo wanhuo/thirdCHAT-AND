@@ -33,9 +33,9 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
-import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.utils.SmileUtils;
+import com.easemob.chatuidemolib.Constant;
+import com.easemob.chatuidemolib.util.SmileUtils;
 import com.easemob.util.DateUtils;
 
 /**

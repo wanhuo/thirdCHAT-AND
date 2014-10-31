@@ -28,8 +28,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.chat.EMContactManager;
-import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemolib.Constant;
+import com.easemob.chatuidemolib.activity.AlertDialog;
+import com.easemob.chatuidemolib.activity.BaseActivity;
 
 public class AddContactActivity extends BaseActivity{
 	private EditText editText;
@@ -84,12 +86,12 @@ public class AddContactActivity extends BaseActivity{
 	 * @param view
 	 */
 	public void addContact(View view){
-		if(DemoApplication.getInstance().getUserName().equals(nameText.getText().toString())){
+		if(Constant.getUserName().equals(nameText.getText().toString())){
 			startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "不能添加自己"));
 			return;
 		}
 		
-		if(DemoApplication.getInstance().getContactList().containsKey(nameText.getText().toString())){
+		if(Constant.getContactList().containsKey(nameText.getText().toString())){
 			startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "此用户已是你的好友"));
 			return;
 		}

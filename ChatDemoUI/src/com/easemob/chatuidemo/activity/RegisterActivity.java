@@ -13,7 +13,6 @@
  */
 package com.easemob.chatuidemo.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,12 +20,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.easemob.chat.EMChatConfig;
 import com.easemob.chat.EMChatManager;
-import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
-import com.easemob.exceptions.EMNetworkUnconnectedException;
-import com.easemob.exceptions.EaseMobException;
+import com.easemob.chatuidemolib.Constant;
+import com.easemob.chatuidemolib.activity.BaseActivity;
 
 /**
  * 注册页
@@ -86,7 +83,7 @@ public class RegisterActivity extends BaseActivity {
 								if (!RegisterActivity.this.isFinishing())
 									pd.dismiss();
 								// 保存用户名
-								DemoApplication.getInstance().setUserName(username);
+								Constant.setUserName(username);
 								Toast.makeText(getApplicationContext(), "注册成功", 0).show();
 								finish();
 							}

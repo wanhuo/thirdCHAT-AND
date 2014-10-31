@@ -27,6 +27,9 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemolib.activity.AlertDialog;
+import com.easemob.chatuidemolib.activity.BaseActivity;
+import com.easemob.chatuidemolib.activity.GroupPickContactsActivity;
 
 public class NewGroupActivity extends BaseActivity {
 	private EditText groupNameEditText;

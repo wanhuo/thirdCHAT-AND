@@ -15,7 +15,6 @@ package com.easemob.chatuidemo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,8 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.utils.PreferenceUtils;
+import com.easemob.chatuidemolib.fragment.EMTitleBaseFragment;
+import com.easemob.chatuidemolib.util.PreferenceUtils;
 
 /**
  * 设置界面
@@ -39,7 +39,7 @@ import com.easemob.chatuidemo.utils.PreferenceUtils;
  * @author Administrator
  * 
  */
-public class SettingsFragment extends Fragment implements OnClickListener {
+public class SettingsFragment extends EMTitleBaseFragment implements OnClickListener {
 
 	/**
 	 * 设置新消息通知布局
@@ -110,13 +110,16 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 	 */
 	private LinearLayout llDiagnose;
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View createView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_conversation_settings, container, false);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		//设置标题
+		mTitleHeaderBar.getTitleTextView().setText("设置");
+		
 		rl_switch_notification = (RelativeLayout) getView().findViewById(R.id.rl_switch_notification);
 		rl_switch_sound = (RelativeLayout) getView().findViewById(R.id.rl_switch_sound);
 		rl_switch_vibrate = (RelativeLayout) getView().findViewById(R.id.rl_switch_vibrate);

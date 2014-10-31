@@ -15,17 +15,16 @@ package com.easemob.chatuidemo.activity;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.NewFriendsMsgAdapter;
-import com.easemob.chatuidemo.db.InviteMessgeDao;
-import com.easemob.chatuidemo.domain.InviteMessage;
+import com.easemob.chatuidemolib.Constant;
+import com.easemob.chatuidemolib.activity.BaseActivity;
+import com.easemob.chatuidemolib.db.InviteMessgeDao;
+import com.easemob.chatuidemolib.domain.InviteMessage;
 
 /**
  * 申请与通知
@@ -45,7 +44,7 @@ public class NewFriendsMsgActivity extends BaseActivity {
 		//设置adapter
 		NewFriendsMsgAdapter adapter = new NewFriendsMsgAdapter(this, 1, msgs); 
 		listView.setAdapter(adapter);
-		DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME).setUnreadMsgCount(0);
+		Constant.getContactList().get(Constant.NEW_FRIENDS_USERNAME).setUnreadMsgCount(0);
 		
 	}
 

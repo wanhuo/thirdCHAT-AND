@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.domain.VideoEntity;
 import com.easemob.chatuidemo.task.AsyncImageLoader;
+import com.easemob.chatuidemolib.domain.VideoEntity;
 import com.easemob.util.DensityUtil;
 
 public class ChooseVideoAdapter extends BaseAdapter {

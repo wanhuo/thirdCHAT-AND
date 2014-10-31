@@ -5,21 +5,6 @@
     android:background="@color/common_bg"
     android:orientation="vertical" >
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_top_bar"
-        android:background="@color/top_bar_normal_bg"
-        android:gravity="center_vertical" >
-
-        <TextView
-            android:id="@+id/message_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="设置"
-            android:textColor="#fff"
-            android:textSize="18sp" />
-    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"

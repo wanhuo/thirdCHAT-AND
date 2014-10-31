@@ -13,7 +13,6 @@
  */
 package com.easemob.chatuidemo.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -21,6 +20,8 @@ import android.view.View;
 
 import com.easemob.chat.EMMessage;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemolib.activity.BaseActivity;
+import com.easemob.chatuidemolib.activity.ChatActivity;
 
 public class ContextMenu extends BaseActivity {
 

@@ -22,7 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.widget.emojicon.Emojicon;
+import com.easemob.chatuidemolib.view.emojicon.Emojicon;
 
 public class EmojiAdapter extends ArrayAdapter<Emojicon> {
     public EmojiAdapter(Context context, List<Emojicon> data) {

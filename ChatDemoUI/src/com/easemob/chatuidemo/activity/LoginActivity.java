@@ -34,12 +34,14 @@ import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMGroupManager;
-import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.db.UserDao;
-import com.easemob.chatuidemo.domain.User;
-import com.easemob.chatuidemo.utils.CommonUtils;
+import com.easemob.chatuidemolib.Constant;
+import com.easemob.chatuidemolib.activity.AlertDialog;
+import com.easemob.chatuidemolib.activity.BaseActivity;
+import com.easemob.chatuidemolib.db.UserDao;
+import com.easemob.chatuidemolib.domain.User;
+import com.easemob.chatuidemolib.util.CommonUtils;
 import com.easemob.util.EMLog;
 import com.easemob.util.HanziToPinyin;
 
@@ -62,7 +64,7 @@ public class LoginActivity extends BaseActivity {
 		usernameEditText = (EditText) findViewById(R.id.username);
 		passwordEditText = (EditText) findViewById(R.id.password);
 		// 如果用户名密码都有，直接进入主页面
-		if (DemoApplication.getInstance().getUserName() != null && DemoApplication.getInstance().getPassword() != null) {
+		if (Constant.getUserName() != null && Constant.getPassword() != null) {
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
 		}
@@ -96,7 +98,7 @@ public class LoginActivity extends BaseActivity {
 			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
 			return;
 		}
-		Intent intent = new Intent(LoginActivity.this, com.easemob.chatuidemo.activity.AlertDialog.class);
+		Intent intent = new Intent(LoginActivity.this, AlertDialog.class);
 		intent.putExtra("editTextShow", true);
 		intent.putExtra("titleIsCancel", true);
 		intent.putExtra("msg", "请设置当前用户的昵称\n为了ios离线推送不是userid而是nick，详情见注释");
@@ -136,8 +138,8 @@ public class LoginActivity extends BaseActivity {
 								return;
 							}
 							// 登陆成功，保存用户名密码
-							DemoApplication.getInstance().setUserName(username);
-							DemoApplication.getInstance().setPassword(password);
+							Constant.setUserName(username);
+							Constant.setPassword(password);
 							runOnUiThread(new Runnable() {
 								public void run() {
 									pd.setMessage("正在获取好友和群聊列表...");
@@ -168,7 +170,7 @@ public class LoginActivity extends BaseActivity {
 								userlist.put(Constant.GROUP_USERNAME, groupUser);
 
 								// 存入内存
-								DemoApplication.getInstance().setContactList(userlist);
+								Constant.setContactList(userlist);
 								// 存入db
 								UserDao dao = new UserDao(LoginActivity.this);
 								List<User> users = new ArrayList<User>(userlist.values());
@@ -229,8 +231,8 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (DemoApplication.getInstance().getUserName() != null) {
-			usernameEditText.setText(DemoApplication.getInstance().getUserName());
+		if (Constant.getUserName() != null) {
+			usernameEditText.setText(Constant.getUserName());
 		}
 	}
 

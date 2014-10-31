@@ -15,8 +15,6 @@ package com.easemob.chatuidemo.adapter;
 
 import java.util.List;
 
-import javax.crypto.spec.IvParameterSpec;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -35,10 +33,9 @@ import android.widget.Toast;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.db.InviteMessgeDao;
-import com.easemob.chatuidemo.domain.InviteMessage;
-import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
-import com.easemob.exceptions.EaseMobException;
+import com.easemob.chatuidemolib.db.InviteMessgeDao;
+import com.easemob.chatuidemolib.domain.InviteMessage;
+import com.easemob.chatuidemolib.domain.InviteMessage.InviteMesageStatus;
 
 public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 

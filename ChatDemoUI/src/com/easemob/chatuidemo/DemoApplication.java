@@ -22,9 +22,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.easemob.EMConnectionListener;
@@ -35,13 +33,13 @@ import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.OnNotificationClickListener;
-import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.MainActivity;
-import com.easemob.chatuidemo.db.DbOpenHelper;
-import com.easemob.chatuidemo.db.UserDao;
-import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.receiver.VoiceCallReceiver;
-import com.easemob.chatuidemo.utils.PreferenceUtils;
+import com.easemob.chatuidemolib.Constant;
+import com.easemob.chatuidemolib.activity.ChatActivity;
+import com.easemob.chatuidemolib.db.DbOpenHelper;
+import com.easemob.chatuidemolib.domain.User;
+import com.easemob.chatuidemolib.util.PreferenceUtils;
 
 public class DemoApplication extends Application {
 
@@ -77,6 +75,7 @@ public class DemoApplication extends Application {
         }
 
 		applicationContext = this;
+		Constant.applicationContext = this;
 		instance = this;
 		// 初始化环信SDK,一定要先调用init()
 		EMChat.getInstance().init(applicationContext);
@@ -155,87 +154,6 @@ public class DemoApplication extends Application {
 	// List<String> list = new ArrayList<String>();
 	// list.add("1406713081205");
 	// options.setReceiveNotNoifyGroup(list);
-	/**
-	 * 获取内存中好友user list
-	 *
-	 * @return
-	 */
-	public Map<String, User> getContactList() {
-		if (getUserName() != null && contactList == null) {
-			UserDao dao = new UserDao(applicationContext);
-			// 获取本地好友user list到内存,方便以后获取好友list
-			contactList = dao.getContactList();
-		}
-		return contactList;
-	}
-
-	/**
-	 * 设置好友user list到内存中
-	 *
-	 * @param contactList
-	 */
-	public void setContactList(Map<String, User> contactList) {
-		this.contactList = contactList;
-	}
-
-	public void setStrangerList(Map<String, User> List) {
-
-	}
-
-	/**
-	 * 获取当前登陆用户名
-	 *
-	 * @return
-	 */
-	public String getUserName() {
-		if (userName == null) {
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-			userName = preferences.getString(PREF_USERNAME, null);
-		}
-		return userName;
-	}
-
-	/**
-	 * 获取密码
-	 *
-	 * @return
-	 */
-	public String getPassword() {
-		if (password == null) {
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-			password = preferences.getString(PREF_PWD, null);
-		}
-		return password;
-	}
-
-	/**
-	 * 设置用户名
-	 *
-	 * @param user
-	 */
-	public void setUserName(String username) {
-		if (username != null) {
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-			SharedPreferences.Editor editor = preferences.edit();
-			if (editor.putString(PREF_USERNAME, username).commit()) {
-				userName = username;
-			}
-		}
-	}
-
-	/**
-	 * 设置密码 下面的实例代码 只是demo，实际的应用中需要加password 加密后存入 preference 环信sdk
-	 * 内部的自动登录需要的密码，已经加密存储了
-	 *
-	 * @param pwd
-	 */
-	public void setPassword(String pwd) {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-		SharedPreferences.Editor editor = preferences.edit();
-		if (editor.putString(PREF_PWD, pwd).commit()) {
-			password = pwd;
-		}
-	}
 
 	/**
 	 * 退出登录,清空数据
@@ -245,8 +163,8 @@ public class DemoApplication extends Application {
 		EMChatManager.getInstance().logout();
 		DbOpenHelper.getInstance(applicationContext).closeDB();
 		// reset password to null
-		setPassword(null);
-		setContactList(null);
+		Constant.setPassword(null);
+		Constant.setContactList(null);
 
 	}
 

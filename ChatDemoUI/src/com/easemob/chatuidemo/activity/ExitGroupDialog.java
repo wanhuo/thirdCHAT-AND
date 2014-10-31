@@ -13,7 +13,6 @@
  */
 package com.easemob.chatuidemo.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemolib.activity.BaseActivity;
 
 public class ExitGroupDialog extends BaseActivity{
     private TextView text;

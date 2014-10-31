@@ -16,7 +16,6 @@ package com.easemob.chatuidemo.activity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -53,12 +52,12 @@ import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
-import com.easemob.chat.GroupChangeListener;
-import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ChatHistoryAdapter;
-import com.easemob.chatuidemo.db.InviteMessgeDao;
-import com.easemob.chatuidemo.domain.User;
+import com.easemob.chatuidemolib.Constant;
+import com.easemob.chatuidemolib.activity.ChatActivity;
+import com.easemob.chatuidemolib.db.InviteMessgeDao;
+import com.easemob.chatuidemolib.domain.User;
 
 /**
  * 聊天记录Fragment
@@ -78,7 +77,7 @@ public class ChatHistoryFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_conversation_history, container, false);
+		return inflater.inflate(R.layout.em_fragment_conversation_history, container, false);
 	}
 
 	@Override
@@ -88,7 +87,7 @@ public class ChatHistoryFragment extends Fragment {
 		errorItem = (RelativeLayout) getView().findViewById(R.id.rl_error_item);
 		errorText = (TextView) errorItem.findViewById(R.id.tv_connect_errormsg);
 		// contact list
-		contactList = DemoApplication.getInstance().getContactList();
+		contactList = Constant.getContactList();
 		listView = (ListView) getView().findViewById(R.id.list);
 		adapter = new ChatHistoryAdapter(getActivity(), 1, loadUsersWithRecentChat());
 		// 设置adapter
@@ -98,7 +97,7 @@ public class ChatHistoryFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				EMContact emContact = adapter.getItem(position);
-				if (adapter.getItem(position).getUsername().equals(DemoApplication.getInstance().getUserName()))
+				if (adapter.getItem(position).getUsername().equals(Constant.getUserName()))
 					Toast.makeText(getActivity(), "不能和自己聊天", 0).show();
 				else {
 					// 进入聊天页面

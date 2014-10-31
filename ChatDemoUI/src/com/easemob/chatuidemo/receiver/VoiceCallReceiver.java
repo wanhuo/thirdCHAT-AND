@@ -14,12 +14,12 @@
 
 package com.easemob.chatuidemo.receiver;
 
-import com.easemob.chat.EMChatManager;
-import com.easemob.chatuidemo.activity.VoiceCallActivity;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import com.easemob.chat.EMChatManager;
+import com.easemob.chatuidemolib.activity.VoiceCallActivity;
 
 public class VoiceCallReceiver extends BroadcastReceiver{
 
