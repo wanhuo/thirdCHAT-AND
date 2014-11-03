@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import android.content.Context;
-import android.content.Intent;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -41,7 +40,6 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMCallStateChangeListener;
 import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMChatService;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chatuidemo.Constant;
@@ -50,7 +48,7 @@ import com.easemob.exceptions.EMServiceNotReadyException;
 
 /**
  * 语音通话页面
- *
+ * 
  */
 public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	private LinearLayout comingBtnContainer;
@@ -126,26 +124,26 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 		if (!isInComingCall) {// 拨打电话
 			soundPool = new SoundPool(1, AudioManager.STREAM_RING, 0);
 			outgoing = soundPool.load(this, R.raw.outgoing, 1);
-			
-				comingBtnContainer.setVisibility(View.INVISIBLE);
-				hangupBtn.setVisibility(View.VISIBLE);
-				callStateTextView.setText("正在呼叫...");
-				handler.postDelayed(new Runnable() {
-					public void run() {
-						streamID = playMakeCallSounds();
-					}
-				}, 300);
-				try {
-					// 拨打语音电话
-					EMChatManager.getInstance().makeVoiceCall(username);
-				} catch (EMServiceNotReadyException e) {
-					e.printStackTrace();
-					runOnUiThread(new Runnable() {
-						public void run() {
-							Toast.makeText(VoiceCallActivity.this, "尚未连接至服务器", 0);
-						}
-					});
+
+			comingBtnContainer.setVisibility(View.INVISIBLE);
+			hangupBtn.setVisibility(View.VISIBLE);
+			callStateTextView.setText("正在呼叫...");
+			handler.postDelayed(new Runnable() {
+				public void run() {
+					streamID = playMakeCallSounds();
 				}
+			}, 300);
+			try {
+				// 拨打语音电话
+				EMChatManager.getInstance().makeVoiceCall(username);
+			} catch (EMServiceNotReadyException e) {
+				e.printStackTrace();
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(VoiceCallActivity.this, "尚未连接至服务器", 0);
+					}
+				});
+			}
 		} else { // 有电话进来
 			voiceContronlLayout.setVisibility(View.INVISIBLE);
 			Uri ringUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
@@ -257,10 +255,10 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 										callStateTextView.setText("对方已经挂断...");
 									}
 								} else {
-									if(isInComingCall){
+									if (isInComingCall) {
 										callingState = CallingState.UNANSWERED;
 										callStateTextView.setText("未接听");
-									}else{
+									} else {
 										callingState = CallingState.CANCED;
 										callStateTextView.setText("已取消");
 									}
@@ -411,15 +409,14 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	// 打开扬声器
 	public void openSpeakerOn() {
 		try {
+			audioManager.setMode(AudioManager.MODE_IN_CALL);
 			AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 			if (!audioManager.isSpeakerphoneOn())
 				audioManager.setSpeakerphoneOn(true);
-			audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-			// audioManager.setMode(AudioManager.MODE_IN_CALL);
-			// audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
-			// audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL ),
-			// AudioManager.STREAM_VOICE_CALL);
+			// audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+			audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
+					AudioManager.STREAM_VOICE_CALL);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -429,12 +426,15 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	public void closeSpeakerOn() {
 
 		try {
+			audioManager.setMode(AudioManager.MODE_IN_CALL);
 			AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 			if (audioManager != null) {
+				int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
 				if (audioManager.isSpeakerphoneOn())
 					audioManager.setSpeakerphoneOn(false);
-				audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-				// audioManager.setMode(AudioManager.MODE_IN_CALL);
+				// audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+				audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, curVolume, AudioManager.STREAM_VOICE_CALL);
+
 			}
 
 		} catch (Exception e) {

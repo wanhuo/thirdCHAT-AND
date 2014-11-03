@@ -91,6 +91,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		initView();
+		
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
 		// 这个fragment只显示好友和群组的聊天记录
@@ -395,7 +396,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onContactInvited(String username, String reason) {
-			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所以客户端不要重复提醒
+			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所以客户端不需要重复提醒
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
 			for (InviteMessage inviteMessage : msgs) {
 				if (inviteMessage.getGroupId() == null && inviteMessage.getFrom().equals(username)) {

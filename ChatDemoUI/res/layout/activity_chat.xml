@@ -142,7 +142,7 @@
                     android:paddingTop="3dp"
                     android:paddingRight="1dp"
                     android:paddingBottom="3dp"
-                    emojicon:emojiconSize="24sp"
+                    emojicon:emojiconSize="25sp"
                     android:textSize="18sp" />
 
                 <ImageView
