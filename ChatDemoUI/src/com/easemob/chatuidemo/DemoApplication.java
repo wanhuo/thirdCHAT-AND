@@ -27,6 +27,7 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.easemob.EMCallBack;
 import com.easemob.EMConnectionListener;
 import com.easemob.EMError;
 import com.easemob.chat.EMChat;
@@ -95,8 +96,6 @@ public class DemoApplication extends Application {
 		       .setNoticedByVibrate(PreferenceUtils.getInstance(applicationContext).getSettingMsgVibrate())
 		        // 设置语音消息播放是否设置为扬声器播放 默认为true
 		       .setUseSpeaker(PreferenceUtils.getInstance(applicationContext).getSettingMsgSpeaker())
-		        // 设置是否自动记载所有的回话列表，默认会自动加入，不过每个回话默认最多加载20信息
-		       .setAutoConversatonsLoaded(true)
 		       .setRequireDeliveryAck(true)
 		        // 设置notification消息点击时，跳转的intent为自定义的intent
 		       .setOnNotificationClickListener(new OnNotificationClickListener() {
@@ -123,8 +122,8 @@ public class DemoApplication extends Application {
 		EMChat.getInstance().init(applicationContext, options);
 		Log.d("EMChat Demo", "initialize EMChat SDK");
 		
-		// 设置一个connectionlistener监听账户重复登陆
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
+
 //		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
 //		options.setNotifyText(new OnMessageNotifyListener() {
 //
@@ -148,12 +147,9 @@ public class DemoApplication extends Application {
 //
 //		});
 
-		//EMGroupManager.getInstance().getAllGroups();
 		//注册一个语言电话的广播接收者
 		IntentFilter callFilter = new IntentFilter(EMChatManager.getInstance().getIncomingVoiceCallBroadcastAction());
-		registerReceiver(new VoiceCallReceiver(), callFilter);
-		
-		
+		registerReceiver(new VoiceCallReceiver(), callFilter);		
 	}
 
 	public static DemoApplication getInstance() {
