@@ -122,6 +122,7 @@ public class DemoApplication extends Application {
 		EMChat.getInstance().init(applicationContext, options);
 		Log.d("EMChat Demo", "initialize EMChat SDK");
 		
+		// 设置一个connectionlistener监听账户重复登陆
 		EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 
 //		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
@@ -147,7 +148,7 @@ public class DemoApplication extends Application {
 //
 //		});
 
-		//注册一个语言电话的广播接收者
+		//注册一个语音通话的广播接收者
 		IntentFilter callFilter = new IntentFilter(EMChatManager.getInstance().getIncomingVoiceCallBroadcastAction());
 		registerReceiver(new VoiceCallReceiver(), callFilter);		
 	}
@@ -156,9 +157,6 @@ public class DemoApplication extends Application {
 		return instance;
 	}
 
-	// List<String> list = new ArrayList<String>();
-	// list.add("1406713081205");
-	// options.setReceiveNotNoifyGroup(list);
 	/**
 	 * 获取内存中好友user list
 	 *
