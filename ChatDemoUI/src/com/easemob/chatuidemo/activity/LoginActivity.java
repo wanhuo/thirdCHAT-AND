@@ -63,8 +63,31 @@ public class LoginActivity extends BaseActivity {
 		passwordEditText = (EditText) findViewById(R.id.password);
 		// 如果用户名密码都有，直接进入主页面
 		if (DemoApplication.getInstance().getUserName() != null && DemoApplication.getInstance().getPassword() != null) {
-			startActivity(new Intent(this, MainActivity.class));
-			finish();
+		    usernameEditText.setVisibility(View.INVISIBLE);
+		    passwordEditText.setVisibility(View.INVISIBLE);
+		    
+		    new Thread(){
+		        @Override
+		        public void run(){
+		            
+		            EMGroupManager.getInstance().loadAllGroups();
+		            EMChatManager.getInstance().loadAllConversations();
+
+		            LoginActivity.this.runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
+                        }
+		                
+		            });
+		            
+		        }
+		    }.start();
+			
+			return;
 		}
 		// 如果用户名改变，清空密码
 		usernameEditText.addTextChangedListener(new TextWatcher() {

@@ -539,18 +539,6 @@ public class MainActivity extends FragmentActivity {
 
 			});
 		}
-
-		@Override
-		public void onConnecting() {
-			runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					chatHistoryFragment.errorText.setText("正在连接服务器....");
-				}
-
-			});
-		}
 	}
 
 	/**
