@@ -125,7 +125,7 @@ public class LoginActivity extends BaseActivity {
 		intent.putExtra("titleIsCancel", true);
 		intent.putExtra("msg", "请设置当前用户的昵称\n为了ios离线推送不是userid而是nick，详情见注释");
 		startActivityForResult(intent, REQUEST_CODE_SETNICK);
-
+		
 	}
 
 	@Override
@@ -151,6 +151,7 @@ public class LoginActivity extends BaseActivity {
 					});
 					pd.setMessage("正在登陆...");
 					pd.show();
+					
 					// 调用sdk登陆方法登陆聊天服务器
 					EMChatManager.getInstance().login(username, password, new EMCallBack() {
 
@@ -227,6 +228,7 @@ public class LoginActivity extends BaseActivity {
 
 						@Override
 						public void onError(int code, final String message) {
+							
 							if (!progressShow) {
 								return;
 							}

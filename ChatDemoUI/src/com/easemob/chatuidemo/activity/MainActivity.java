@@ -60,7 +60,6 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
-import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.HanziToPinyin;
 import com.easemob.util.NetUtils;
 
@@ -130,6 +129,7 @@ public class MainActivity extends FragmentActivity {
 		EMGroupManager.getInstance().addGroupChangeListener(new MyGroupChangeListener());
 		// 通知sdk，UI 已经初始化完毕，注册了相应的receiver和listener, 可以接受broadcast了
 		EMChat.getInstance().setAppInited();
+		
 	}
 
 	/**
@@ -468,7 +468,8 @@ public class MainActivity extends FragmentActivity {
 		inviteMessgeDao.saveMessage(msg);
 		// 未读数加1
 		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
-		user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
+		if(user.getUnreadMsgCount() == 0)
+			user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
 	}
 
 	/**
@@ -692,6 +693,8 @@ public class MainActivity extends FragmentActivity {
 
 	}
 
+	
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
