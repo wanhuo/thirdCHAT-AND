@@ -69,7 +69,8 @@ public class LoginActivity extends BaseActivity {
 		    new Thread(){
 		        @Override
 		        public void run(){
-		            
+		            //** 免登陆情况 加载所有本地群和回话
+		            //** manually load all local groups and conversations in case we are auto login
 		            EMGroupManager.getInstance().loadAllGroups();
 		            EMChatManager.getInstance().loadAllConversations();
 
@@ -167,6 +168,11 @@ public class LoginActivity extends BaseActivity {
 								}
 							});
 							try {
+							    //** 第一次登录或者之前logout后，加载所有本地群和回话
+			                    //** manually load all local groups and conversations in case we are auto login
+							    EMGroupManager.getInstance().loadAllGroups();
+							    EMChatManager.getInstance().loadAllConversations();
+
 								// demo中简单的处理成每次登陆都去获取好友username，开发者自己根据情况而定
 								List<String> usernames = EMContactManager.getInstance().getContactUserNames();
 								EMLog.d("roster", "contacts size: " + usernames.size());
@@ -233,6 +239,7 @@ public class LoginActivity extends BaseActivity {
 							});
 						}
 					});
+					
 				}
 
 			}
