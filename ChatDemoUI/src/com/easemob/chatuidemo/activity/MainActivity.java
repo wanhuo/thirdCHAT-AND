@@ -90,7 +90,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		initView();
-		
+
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
 		// 这个fragment只显示好友和群组的聊天记录
@@ -129,7 +129,7 @@ public class MainActivity extends FragmentActivity {
 		EMGroupManager.getInstance().addGroupChangeListener(new MyGroupChangeListener());
 		// 通知sdk，UI 已经初始化完毕，注册了相应的receiver和listener, 可以接受broadcast了
 		EMChat.getInstance().setAppInited();
-		
+
 	}
 
 	/**
@@ -271,12 +271,12 @@ public class MainActivity extends FragmentActivity {
 			String msgId = intent.getStringExtra("msgid");
 			EMMessage message = EMChatManager.getInstance().getMessage(msgId);
 			// 2014-10-22 修复在某些机器上，在聊天页面对方发消息过来时不立即显示内容的bug
-			if (ChatActivity.activityInstance != null){
-				if(message.getChatType() == ChatType.GroupChat){
-					if(message.getTo().equals(ChatActivity.activityInstance.getToChatUsername()))
+			if (ChatActivity.activityInstance != null) {
+				if (message.getChatType() == ChatType.GroupChat) {
+					if (message.getTo().equals(ChatActivity.activityInstance.getToChatUsername()))
 						return;
-				}else {
-					if(from.equals(ChatActivity.activityInstance.getToChatUsername()))
+				} else {
+					if (from.equals(ChatActivity.activityInstance.getToChatUsername()))
 						return;
 				}
 			}
@@ -303,11 +303,22 @@ public class MainActivity extends FragmentActivity {
 		public void onReceive(Context context, Intent intent) {
 			String msgid = intent.getStringExtra("msgid");
 			String from = intent.getStringExtra("from");
+
 			EMConversation conversation = EMChatManager.getInstance().getConversation(from);
 			if (conversation != null) {
 				// 把message设为已读
 				EMMessage msg = conversation.getMessage(msgid);
+
 				if (msg != null) {
+
+					// 2014-11-5 修复在某些机器上，在聊天页面对方发送已读回执时不立即显示已读的bug
+					if (ChatActivity.activityInstance != null) {
+						if (msg.getChatType() == ChatType.Chat) {
+							if (from.equals(ChatActivity.activityInstance.getToChatUsername()))
+								return;
+						}
+					}
+
 					msg.isAcked = true;
 				}
 			}
@@ -468,7 +479,7 @@ public class MainActivity extends FragmentActivity {
 		inviteMessgeDao.saveMessage(msg);
 		// 未读数加1
 		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
-		if(user.getUnreadMsgCount() == 0)
+		if (user.getUnreadMsgCount() == 0)
 			user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
 	}
 
@@ -693,8 +704,6 @@ public class MainActivity extends FragmentActivity {
 
 	}
 
-	
-	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
