@@ -53,18 +53,16 @@ public class LoginActivity extends BaseActivity {
 	private EditText passwordEditText;
 
 	private boolean progressShow;
+	private boolean autoLogin = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_login);
 
-		usernameEditText = (EditText) findViewById(R.id.username);
-		passwordEditText = (EditText) findViewById(R.id.password);
 		// 如果用户名密码都有，直接进入主页面
 		if (DemoApplication.getInstance().getUserName() != null && DemoApplication.getInstance().getPassword() != null) {
-		    usernameEditText.setVisibility(View.INVISIBLE);
-		    passwordEditText.setVisibility(View.INVISIBLE);
+		    autoLogin = true;
+		    setContentView(R.layout.main_init_view);
 		    
 		    new Thread(){
 		        @Override
@@ -90,6 +88,11 @@ public class LoginActivity extends BaseActivity {
 			
 			return;
 		}
+		setContentView(R.layout.activity_login);
+
+        usernameEditText = (EditText) findViewById(R.id.username);
+        passwordEditText = (EditText) findViewById(R.id.password);
+        
 		// 如果用户名改变，清空密码
 		usernameEditText.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -261,6 +264,10 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if(autoLogin){
+		    return;    
+		}
+		
 		if (DemoApplication.getInstance().getUserName() != null) {
 			usernameEditText.setText(DemoApplication.getInstance().getUserName());
 		}
