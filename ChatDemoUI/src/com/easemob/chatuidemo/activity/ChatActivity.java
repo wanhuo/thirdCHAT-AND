@@ -58,6 +58,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMConversation;
@@ -1124,7 +1125,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 						if (length > 0) {
 							sendVoice(voiceRecorder.getVoiceFilePath(), voiceRecorder.getVoiceFileName(toChatUsername),
 									Integer.toString(length), false);
-						}else if(length==-1){
+						}else if(length==EMError.INVALID_FILE){
 							Toast.makeText(getApplicationContext(), "无录音权限", Toast.LENGTH_SHORT).show();
 						}else {
 							Toast.makeText(getApplicationContext(), "录音时间太短", Toast.LENGTH_SHORT).show();
