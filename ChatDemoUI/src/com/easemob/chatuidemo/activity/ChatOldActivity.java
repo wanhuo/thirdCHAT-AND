@@ -1033,8 +1033,6 @@ public class ChatOldActivity extends BaseActivity implements OnClickListener {
 			// 通知adapter有新消息，更新ui
 			adapter.refresh();
 			listView.setSelection(listView.getCount() - 1);
-			// 记得把广播给终结掉
-			abortBroadcast();
 		}
 	}
 
@@ -1054,7 +1052,6 @@ public class ChatOldActivity extends BaseActivity implements OnClickListener {
 					msg.isAcked = true;
 				}
 			}
-			abortBroadcast();
 			adapter.notifyDataSetChanged();
 		}
 	};
@@ -1075,7 +1072,6 @@ public class ChatOldActivity extends BaseActivity implements OnClickListener {
 					msg.isDelivered = true;
 				}
 			}
-			abortBroadcast();
 			adapter.notifyDataSetChanged();
 		}
 	};

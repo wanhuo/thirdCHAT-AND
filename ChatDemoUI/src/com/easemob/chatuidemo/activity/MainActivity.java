@@ -289,8 +289,6 @@ public class MainActivity extends FragmentActivity {
 					chatHistoryFragment.refresh();
 				}
 			}
-			// 注销广播，否则在ChatActivity中会收到这个广播
-			abortBroadcast();
 		}
 	}
 
@@ -322,7 +320,6 @@ public class MainActivity extends FragmentActivity {
 					msg.isAcked = true;
 				}
 			}
-			abortBroadcast();
 		}
 	};
 
@@ -347,7 +344,6 @@ public class MainActivity extends FragmentActivity {
 	// System.out.println("收到group离线消息：" + group);
 	// }
 	// }
-	// abortBroadcast();
 	// }
 	// };
 

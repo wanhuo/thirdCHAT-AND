@@ -1015,8 +1015,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 			// 通知adapter有新消息，更新ui
 			adapter.refresh();
 			listView.setSelection(listView.getCount() - 1);
-			// 记得把广播给终结掉
-			abortBroadcast();
 		}
 	}
 
@@ -1036,7 +1034,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 					msg.isAcked = true;
 				}
 			}
-			abortBroadcast();
 			adapter.notifyDataSetChanged();
 		}
 	};
@@ -1057,7 +1054,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 					msg.isDelivered = true;
 				}
 			}
-			abortBroadcast();
 			adapter.notifyDataSetChanged();
 		}
 	};
