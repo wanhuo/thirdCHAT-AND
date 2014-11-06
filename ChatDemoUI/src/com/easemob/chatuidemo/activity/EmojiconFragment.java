@@ -60,6 +60,7 @@ public class EmojiconFragment extends Fragment {
 		emojisAdapter = new ExpressionPagerAdapter(getEmojiGridViews());
 		// 设置viewpager adapter
 		emojisViewpager.setAdapter(emojisAdapter);
+		emojisViewpager.setOffscreenPageLimit(3);
 		CirclePageIndicator indicator = (CirclePageIndicator) getView().findViewById(R.id.indicator);
 		indicator.setViewPager(emojisViewpager);
 		indicator.setSnap(true);

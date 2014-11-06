@@ -60,6 +60,7 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.HanziToPinyin;
 import com.easemob.util.NetUtils;
 
@@ -405,6 +406,7 @@ public class MainActivity extends FragmentActivity {
 		public void onContactInvited(String username, String reason) {
 			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所以客户端不需要重复提醒
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
+			
 			for (InviteMessage inviteMessage : msgs) {
 				if (inviteMessage.getGroupId() == null && inviteMessage.getFrom().equals(username)) {
 					inviteMessgeDao.deleteMessage(username);
@@ -443,7 +445,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onContactRefused(String username) {
 			// 参考同意，被邀请实现此功能,demo未实现
-
+			Log.d(username, username + "拒绝了你的好友请求");
 		}
 
 	}

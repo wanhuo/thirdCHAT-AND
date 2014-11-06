@@ -409,14 +409,14 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	// 打开扬声器
 	public void openSpeakerOn() {
 		try {
-			audioManager.setMode(AudioManager.MODE_IN_CALL);
+//			audioManager.setMode(AudioManager.MODE_IN_CALL);
 			AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 			if (!audioManager.isSpeakerphoneOn())
 				audioManager.setSpeakerphoneOn(true);
-			// audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-			audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
-					AudioManager.STREAM_VOICE_CALL);
+			 audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+//			audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
+//					AudioManager.STREAM_VOICE_CALL);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -426,14 +426,13 @@ public class VoiceCallActivity extends BaseActivity implements OnClickListener {
 	public void closeSpeakerOn() {
 
 		try {
-			audioManager.setMode(AudioManager.MODE_IN_CALL);
 			AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 			if (audioManager != null) {
-				int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
+//				int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
 				if (audioManager.isSpeakerphoneOn())
 					audioManager.setSpeakerphoneOn(false);
-				// audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-				audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, curVolume, AudioManager.STREAM_VOICE_CALL);
+				 audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+//				audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, curVolume, AudioManager.STREAM_VOICE_CALL);
 
 			}
 
