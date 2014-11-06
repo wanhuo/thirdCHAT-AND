@@ -225,7 +225,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 				getResources().getDrawable(R.drawable.record_animate_12), getResources().getDrawable(R.drawable.record_animate_13),
 				getResources().getDrawable(R.drawable.record_animate_14), };
 
-		//加入表情页
+		// 加入表情页
 		emojiconFragment = new EmojiconFragment();
 		getSupportFragmentManager().beginTransaction().add(R.id.ll_face_container, emojiconFragment).commit();
 
@@ -1015,6 +1015,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 			// 通知adapter有新消息，更新ui
 			adapter.refresh();
 			listView.setSelection(listView.getCount() - 1);
+
+			// 记得把广播给终结掉
+			abortBroadcast();
 		}
 	}
 
@@ -1035,6 +1038,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 				}
 			}
 			adapter.notifyDataSetChanged();
+			
+			abortBroadcast();
 		}
 	};
 
@@ -1054,6 +1059,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 					msg.isDelivered = true;
 				}
 			}
+			abortBroadcast();
 			adapter.notifyDataSetChanged();
 		}
 	};
@@ -1121,9 +1127,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 						if (length > 0) {
 							sendVoice(voiceRecorder.getVoiceFilePath(), voiceRecorder.getVoiceFileName(toChatUsername),
 									Integer.toString(length), false);
-						}else if(length==EMError.INVALID_FILE){
+						} else if (length == EMError.INVALID_FILE) {
 							Toast.makeText(getApplicationContext(), "无录音权限", Toast.LENGTH_SHORT).show();
-						}else {
+						} else {
 							Toast.makeText(getApplicationContext(), "录音时间太短", Toast.LENGTH_SHORT).show();
 						}
 					} catch (Exception e) {

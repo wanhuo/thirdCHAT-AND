@@ -290,6 +290,9 @@ public class MainActivity extends FragmentActivity {
 					chatHistoryFragment.refresh();
 				}
 			}
+
+			// 注销广播接收者，否则在ChatActivity中会收到这个广播
+			abortBroadcast();
 		}
 	}
 
@@ -321,6 +324,7 @@ public class MainActivity extends FragmentActivity {
 					msg.isAcked = true;
 				}
 			}
+			abortBroadcast();
 		}
 	};
 
@@ -406,7 +410,7 @@ public class MainActivity extends FragmentActivity {
 		public void onContactInvited(String username, String reason) {
 			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所以客户端不需要重复提醒
 			List<InviteMessage> msgs = inviteMessgeDao.getMessagesList();
-			
+
 			for (InviteMessage inviteMessage : msgs) {
 				if (inviteMessage.getGroupId() == null && inviteMessage.getFrom().equals(username)) {
 					inviteMessgeDao.deleteMessage(username);
