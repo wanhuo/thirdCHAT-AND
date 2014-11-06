@@ -153,9 +153,6 @@ public class DemoApplication extends Application {
 		return instance;
 	}
 
-	// List<String> list = new ArrayList<String>();
-	// list.add("1406713081205");
-	// options.setReceiveNotNoifyGroup(list);
 	/**
 	 * 获取内存中好友user list
 	 *

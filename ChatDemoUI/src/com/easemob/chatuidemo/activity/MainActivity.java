@@ -282,6 +282,9 @@ public class MainActivity extends FragmentActivity {
 				}
 			}
 
+			// 注销广播接收者，否则在ChatActivity中会收到这个广播
+			abortBroadcast();
+
 			// 刷新bottom bar消息未读数
 			updateUnreadLabel();
 			if (currentTabIndex == 0) {
@@ -291,8 +294,6 @@ public class MainActivity extends FragmentActivity {
 				}
 			}
 
-			// 注销广播接收者，否则在ChatActivity中会收到这个广播
-			abortBroadcast();
 		}
 	}
 
@@ -303,6 +304,8 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			abortBroadcast();
+			
 			String msgid = intent.getStringExtra("msgid");
 			String from = intent.getStringExtra("from");
 
@@ -324,7 +327,7 @@ public class MainActivity extends FragmentActivity {
 					msg.isAcked = true;
 				}
 			}
-			abortBroadcast();
+			
 		}
 	};
 

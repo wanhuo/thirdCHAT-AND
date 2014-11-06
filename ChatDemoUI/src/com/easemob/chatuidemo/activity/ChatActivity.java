@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -998,6 +999,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 	private class NewMessageBroadcastReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			// 记得把广播给终结掉
+			abortBroadcast();
+			
 			String username = intent.getStringExtra("from");
 			String msgid = intent.getStringExtra("msgid");
 			// 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
@@ -1016,8 +1020,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 			adapter.refresh();
 			listView.setSelection(listView.getCount() - 1);
 
-			// 记得把广播给终结掉
-			abortBroadcast();
 		}
 	}
 
@@ -1027,6 +1029,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 	private BroadcastReceiver ackMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			abortBroadcast();
+			
 			String msgid = intent.getStringExtra("msgid");
 			String from = intent.getStringExtra("from");
 			EMConversation conversation = EMChatManager.getInstance().getConversation(from);
@@ -1039,7 +1043,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 			}
 			adapter.notifyDataSetChanged();
 			
-			abortBroadcast();
 		}
 	};
 
@@ -1049,6 +1052,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 	private BroadcastReceiver deliveryAckMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			abortBroadcast();
+			
 			String msgid = intent.getStringExtra("msgid");
 			String from = intent.getStringExtra("from");
 			EMConversation conversation = EMChatManager.getInstance().getConversation(from);
@@ -1059,7 +1064,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnEmo
 					msg.isDelivered = true;
 				}
 			}
-			abortBroadcast();
+			
 			adapter.notifyDataSetChanged();
 		}
 	};
