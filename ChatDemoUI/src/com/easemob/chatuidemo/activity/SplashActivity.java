@@ -58,9 +58,10 @@ public class SplashActivity extends BaseActivity {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						startActivity(new Intent(SplashActivity.this, MainActivity.class));
-						finish();
 					}
+					//进入主页面
+					startActivity(new Intent(SplashActivity.this, MainActivity.class));
+					finish();
 				}else {
 					try {
 						Thread.sleep(sleepTime);
