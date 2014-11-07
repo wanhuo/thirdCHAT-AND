@@ -61,38 +61,16 @@ public class LoginActivity extends BaseActivity {
 
 		// 如果用户名密码都有，直接进入主页面
 		if (DemoApplication.getInstance().getUserName() != null && DemoApplication.getInstance().getPassword() != null) {
-		    autoLogin = true;
-		    setContentView(R.layout.main_init_view);
-		    
-		    new Thread(){
-		        @Override
-		        public void run(){
-		            //** 免登陆情况 加载所有本地群和回话
-		            //** manually load all local groups and conversations in case we are auto login
-		            EMGroupManager.getInstance().loadAllGroups();
-		            EMChatManager.getInstance().loadAllConversations();
+			autoLogin = true;
+			startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
-		            LoginActivity.this.runOnUiThread(new Runnable(){
-
-                        @Override
-                        public void run() {
-                            // TODO Auto-generated method stub
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                        }
-		                
-		            });
-		            
-		        }
-		    }.start();
-			
 			return;
 		}
 		setContentView(R.layout.activity_login);
 
-        usernameEditText = (EditText) findViewById(R.id.username);
-        passwordEditText = (EditText) findViewById(R.id.password);
-        
+		usernameEditText = (EditText) findViewById(R.id.username);
+		passwordEditText = (EditText) findViewById(R.id.password);
+
 		// 如果用户名改变，清空密码
 		usernameEditText.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -128,7 +106,7 @@ public class LoginActivity extends BaseActivity {
 		intent.putExtra("titleIsCancel", true);
 		intent.putExtra("msg", "请设置当前用户的昵称\n为了ios离线推送不是userid而是nick，详情见注释");
 		startActivityForResult(intent, REQUEST_CODE_SETNICK);
-		
+
 	}
 
 	@Override
@@ -154,7 +132,7 @@ public class LoginActivity extends BaseActivity {
 					});
 					pd.setMessage("正在登陆...");
 					pd.show();
-					
+
 					// 调用sdk登陆方法登陆聊天服务器
 					EMChatManager.getInstance().login(username, password, new EMCallBack() {
 
@@ -172,10 +150,11 @@ public class LoginActivity extends BaseActivity {
 								}
 							});
 							try {
-							    //** 第一次登录或者之前logout后，加载所有本地群和回话
-			                    //** manually load all local groups and conversations in case we are auto login
-							    EMGroupManager.getInstance().loadAllGroups();
-							    EMChatManager.getInstance().loadAllConversations();
+								// ** 第一次登录或者之前logout后，加载所有本地群和回话
+								// ** manually load all local groups and
+								// conversations in case we are auto login
+								EMGroupManager.getInstance().loadAllGroups();
+								EMChatManager.getInstance().loadAllConversations();
 
 								// demo中简单的处理成每次登陆都去获取好友username，开发者自己根据情况而定
 								List<String> usernames = EMContactManager.getInstance().getContactUserNames();
@@ -231,7 +210,7 @@ public class LoginActivity extends BaseActivity {
 
 						@Override
 						public void onError(int code, final String message) {
-							
+
 							if (!progressShow) {
 								return;
 							}
@@ -244,7 +223,7 @@ public class LoginActivity extends BaseActivity {
 							});
 						}
 					});
-					
+
 				}
 
 			}
@@ -264,10 +243,10 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if(autoLogin){
-		    return;    
+		if (autoLogin) {
+			return;
 		}
-		
+
 		if (DemoApplication.getInstance().getUserName() != null) {
 			usernameEditText.setText(DemoApplication.getInstance().getUserName());
 		}
