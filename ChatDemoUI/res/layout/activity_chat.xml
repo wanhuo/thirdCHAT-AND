@@ -129,7 +129,7 @@
                 android:layout_weight="1"
                 >
 
-                <com.easemob.chatuidemo.widget.emojicon.EmojiconEditText
+                <com.easemob.chatuidemo.widget.PasteEditText
                     android:id="@+id/et_sendmessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -210,10 +210,10 @@
                 android:visibility="visible" >
 
                 
-                <!-- <android.support.v4.view.ViewPager
+                <android.support.v4.view.ViewPager
                     android:id="@+id/vPager"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" /> -->
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <!-- 图片，表情，名片等按钮 -->
