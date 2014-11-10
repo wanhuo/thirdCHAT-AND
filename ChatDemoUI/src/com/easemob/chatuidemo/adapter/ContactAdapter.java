@@ -163,7 +163,9 @@ public class ContactAdapter extends ArrayAdapter<User>  implements SectionIndexe
 	
 	@Override
 	public User getItem(int position) {
-		return position == 0 ? new User() : super.getItem(position - 1);
+		User user = new User();
+		user.setHeader(getContext().getString(R.string.search_header));
+		return position == 0 ? user : super.getItem(position - 1);
 	}
 	
 	@Override

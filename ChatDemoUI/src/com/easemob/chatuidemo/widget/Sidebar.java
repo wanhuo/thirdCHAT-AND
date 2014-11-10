@@ -47,7 +47,7 @@ public class Sidebar extends View{
 		init();
 	}
 
-	private String[] sections = new String[]{"#","A","B","C","D","E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+	private String[] sections = new String[]{"搜","#","A","B","C","D","E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
 	private void init(){
 		paint = new Paint(Paint.ANTI_ALIAS_FLAG);
