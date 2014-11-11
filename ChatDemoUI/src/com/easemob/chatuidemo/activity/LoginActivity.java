@@ -140,15 +140,8 @@ public class LoginActivity extends BaseActivity {
 
 						@Override
 						public void onSuccess() {
-							runOnUiThread(new Runnable() {
-								public void run() {
-									long costTime = System.currentTimeMillis() - start;
-									Map<String, String> params = new HashMap<String, String>();
-									params.put("status", "success");
-									MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
-//									MobclickAgent.onEventDuration(LoginActivity.this, "login1", costTime);	
-								}
-							});
+							//umeng自定义事件，开发者可以把这个删掉
+							loginSuccess2Umeng(start);
 							
 							if (!progressShow) {
 								return;
@@ -222,16 +215,7 @@ public class LoginActivity extends BaseActivity {
 
 						@Override
 						public void onError(final int code, final String message) {
-							runOnUiThread(new Runnable() {
-								public void run() {
-									long costTime = System.currentTimeMillis() - start;
-									Map<String, String> params = new HashMap<String, String>();
-									params.put("status", "failure");
-									params.put("error_code", code + "");
-									params.put("error_description", message);
-									MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
-								}
-							});
+							loginFailure2Umeng(start,code,message);
 
 							if (!progressShow) {
 								return;
@@ -298,5 +282,31 @@ public class LoginActivity extends BaseActivity {
 				user.setHeader("#");
 			}
 		}
+	}
+	
+	private void loginSuccess2Umeng(final long start) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				long costTime = System.currentTimeMillis() - start;
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("status", "success");
+				MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
+				MobclickAgent.onEventDuration(LoginActivity.this, "login1", (int) costTime);
+			}
+		});
+	}
+	private void loginFailure2Umeng(final long start, final int code, final String message) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				long costTime = System.currentTimeMillis() - start;
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("status", "failure");
+				params.put("error_code", code + "");
+				params.put("error_description", message);
+				MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
+				MobclickAgent.onEventDuration(LoginActivity.this, "login1", (int) costTime);
+				
+			}
+		});
 	}
 }
