@@ -60,7 +60,7 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
-import com.easemob.exceptions.EaseMobException;
+import com.easemob.util.EMLog;
 import com.easemob.util.HanziToPinyin;
 import com.easemob.util.NetUtils;
 
@@ -91,7 +91,10 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		initView();
-
+		if (getIntent().getBooleanExtra("conflict", false) && !isConflictDialogShow)
+			showConflictDialog();
+		
+		
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
 		// 这个fragment只显示好友和群组的聊天记录
@@ -625,7 +628,7 @@ public class MainActivity extends FragmentActivity {
 							GroupsActivity.instance.onResume();
 						}
 					} catch (Exception e) {
-						Log.e("###", "refresh exception " + e.getMessage());
+						EMLog.e(TAG, "refresh exception " + e.getMessage());
 					}
 
 				}
@@ -749,7 +752,7 @@ public class MainActivity extends FragmentActivity {
 				conflictBuilder.create().show();
 				isConflict = true;
 			} catch (Exception e) {
-				Log.e("###", "---------color conflictBuilder error" + e.getMessage());
+				EMLog.e(TAG, "---------color conflictBuilder error" + e.getMessage());
 			}
 
 		}
