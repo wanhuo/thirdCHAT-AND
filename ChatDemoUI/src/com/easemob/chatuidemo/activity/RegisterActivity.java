@@ -13,7 +13,6 @@
  */
 package com.easemob.chatuidemo.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,11 +20,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.easemob.chat.EMChatConfig;
+import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chatuidemo.DemoApplication;
 import com.easemob.chatuidemo.R;
-import com.easemob.exceptions.EMNetworkUnconnectedException;
 import com.easemob.exceptions.EaseMobException;
 
 /**
@@ -91,26 +89,20 @@ public class RegisterActivity extends BaseActivity {
 								finish();
 							}
 						});
-					} catch (final Exception e) {
+					} catch (final EaseMobException e) {
 						runOnUiThread(new Runnable() {
 							public void run() {
 								if (!RegisterActivity.this.isFinishing())
 									pd.dismiss();
-								if (e != null && e.getMessage() != null) {
-									String errorMsg = e.getMessage();
-									if (errorMsg.indexOf("EMNetworkUnconnectedException") != -1) {
-										Toast.makeText(getApplicationContext(), "网络异常，请检查网络！", 0).show();
-									} else if (errorMsg.indexOf("conflict") != -1) {
-										Toast.makeText(getApplicationContext(), "用户已存在！", 0).show();
-									}/* else if (errorMsg.indexOf("not support the capital letters") != -1) {
-										Toast.makeText(getApplicationContext(), "用户名不支持大写字母！", 0).show();
-									} */else {
-										Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), 1).show();
-									}
-
-								} else {
-									Toast.makeText(getApplicationContext(), "注册失败: 未知异常", 1).show();
-
+								int errorCode=e.getErrorCode();
+								if(errorCode==EMError.NONETWORK_ERROR){
+									Toast.makeText(getApplicationContext(), "网络异常，请检查网络！", Toast.LENGTH_SHORT).show();
+								}else if(errorCode==EMError.USER_ALREADY_EXISTS){
+									Toast.makeText(getApplicationContext(), "用户已存在！", Toast.LENGTH_SHORT).show();
+								}else if(errorCode==EMError.UNAUTHORIZED){
+									Toast.makeText(getApplicationContext(), "注册失败，无权限！", Toast.LENGTH_SHORT).show();
+								}else{
+									Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 								}
 							}
 						});
