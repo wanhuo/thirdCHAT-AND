@@ -26,8 +26,8 @@ public class SplashActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle arg0) {
-		super.onCreate(arg0);
 		setContentView(R.layout.activity_splash);
+		super.onCreate(arg0);
 
 		rootLayout = (LinearLayout) findViewById(R.id.splash_root);
 		versionText = (TextView) findViewById(R.id.tv_version);
@@ -45,8 +45,9 @@ public class SplashActivity extends BaseActivity {
 		new Thread(new Runnable() {
 			public void run() {
 				if (DemoApplication.getInstance().getUserName() != null && DemoApplication.getInstance().getPassword() != null) {
-					// ** 免登陆情况 加载所有本地群和回话
-					// ** manually load all local groups and conversations in case we are auto login
+					// ** 免登陆情况 加载所有本地群和会话
+					//不是必须的，不加sdk也会自动异步去加载(不会重复加载)；
+					//加上的话保证进了主页面会话和群组都已经load完毕
 					long start = System.currentTimeMillis();
 					EMGroupManager.getInstance().loadAllGroups();
 					EMChatManager.getInstance().loadAllConversations();

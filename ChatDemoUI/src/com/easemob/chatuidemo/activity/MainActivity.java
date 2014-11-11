@@ -63,6 +63,7 @@ import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.util.EMLog;
 import com.easemob.util.HanziToPinyin;
 import com.easemob.util.NetUtils;
+import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends FragmentActivity {
 
@@ -94,6 +95,8 @@ public class MainActivity extends FragmentActivity {
 		if (getIntent().getBooleanExtra("conflict", false) && !isConflictDialogShow)
 			showConflictDialog();
 		
+		MobclickAgent.setDebugMode( true );
+		MobclickAgent.updateOnlineConfig(this);
 		
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);

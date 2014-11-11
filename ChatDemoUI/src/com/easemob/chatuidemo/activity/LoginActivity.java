@@ -42,6 +42,7 @@ import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.util.EMLog;
 import com.easemob.util.HanziToPinyin;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 登陆页面
@@ -133,11 +134,22 @@ public class LoginActivity extends BaseActivity {
 					pd.setMessage("正在登陆...");
 					pd.show();
 
+					final long start = System.currentTimeMillis();
 					// 调用sdk登陆方法登陆聊天服务器
 					EMChatManager.getInstance().login(username, password, new EMCallBack() {
 
 						@Override
 						public void onSuccess() {
+							runOnUiThread(new Runnable() {
+								public void run() {
+									long costTime = System.currentTimeMillis() - start;
+									Map<String, String> params = new HashMap<String, String>();
+									params.put("status", "success");
+									MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
+//									MobclickAgent.onEventDuration(LoginActivity.this, "login1", costTime);	
+								}
+							});
+							
 							if (!progressShow) {
 								return;
 							}
@@ -210,6 +222,11 @@ public class LoginActivity extends BaseActivity {
 
 						@Override
 						public void onError(int code, final String message) {
+
+							long costTime = System.currentTimeMillis() - start;
+							Map<String, String> params = new HashMap<String, String>();
+							params.put("status", "failure");
+							MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
 
 							if (!progressShow) {
 								return;

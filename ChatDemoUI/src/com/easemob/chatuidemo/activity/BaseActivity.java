@@ -17,6 +17,7 @@ package com.easemob.chatuidemo.activity;
 import android.support.v4.app.FragmentActivity;
 
 import com.easemob.chat.EMChatManager;
+import com.umeng.analytics.MobclickAgent;
 
 public class BaseActivity extends FragmentActivity{
 	@Override
@@ -24,5 +25,12 @@ public class BaseActivity extends FragmentActivity{
 		super.onResume();
 		//onresume时，取消notification显示
 		EMChatManager.getInstance().activityResumed();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		MobclickAgent.onPause(this);
 	}
 }
