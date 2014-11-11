@@ -375,7 +375,7 @@ public class MainActivity extends FragmentActivity {
 			Map<String, User> toAddUsers = new HashMap<String, User>();
 			for (String username : usernameList) {
 				User user = setUserHead(username);
-				// 暂时有个bug，添加好友时可能会回调added方法两次
+				// 添加好友时可能会回调added方法两次
 				if (!localUsers.containsKey(username)) {
 					userDao.saveContact(user);
 				}
@@ -405,12 +405,14 @@ public class MainActivity extends FragmentActivity {
 						ChatActivity.activityInstance.finish();
 					}
 					updateUnreadLabel();
+					// 刷新ui
+					if (currentTabIndex == 1)
+						contactListFragment.refresh();
+					else if(currentTabIndex == 0)
+						chatHistoryFragment.refresh();
 				}
 			});
-			// 刷新ui
-			if (currentTabIndex == 1)
-				contactListFragment.refresh();
-
+		
 		}
 
 		@Override
