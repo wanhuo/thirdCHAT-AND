@@ -221,12 +221,17 @@ public class LoginActivity extends BaseActivity {
 						}
 
 						@Override
-						public void onError(int code, final String message) {
-
-							long costTime = System.currentTimeMillis() - start;
-							Map<String, String> params = new HashMap<String, String>();
-							params.put("status", "failure");
-							MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
+						public void onError(final int code, final String message) {
+							runOnUiThread(new Runnable() {
+								public void run() {
+									long costTime = System.currentTimeMillis() - start;
+									Map<String, String> params = new HashMap<String, String>();
+									params.put("status", "failure");
+									params.put("error_code", code + "");
+									params.put("error_description", message);
+									MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
+								}
+							});
 
 							if (!progressShow) {
 								return;
