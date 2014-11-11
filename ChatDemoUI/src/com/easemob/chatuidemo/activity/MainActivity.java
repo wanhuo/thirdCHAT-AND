@@ -63,6 +63,7 @@ import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.HanziToPinyin;
 import com.easemob.util.NetUtils;
+import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends FragmentActivity {
 
@@ -91,7 +92,10 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		initView();
-
+		
+		MobclickAgent.setDebugMode( true );
+		MobclickAgent.updateOnlineConfig(this);
+		
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
 		// 这个fragment只显示好友和群组的聊天记录

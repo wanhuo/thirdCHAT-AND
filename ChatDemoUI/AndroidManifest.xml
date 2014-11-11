@@ -234,6 +234,12 @@
             android:enabled="true"
             android:process=":remote" />
         
+         <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="53912a3156240b01a7075ed1" >
+        </meta-data>
+        
+        
     </application>
 
 </manifest>
