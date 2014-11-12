@@ -25,12 +25,15 @@ public class BaseActivity extends FragmentActivity{
 		super.onResume();
 		//onresume时，取消notification显示
 		EMChatManager.getInstance().activityResumed();
+		//umeng
 		MobclickAgent.onResume(this);
 	}
+	
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
+		//umeng
 		MobclickAgent.onPause(this);
 	}
 }
