@@ -109,6 +109,25 @@
                     android:typeface="serif" />
             </RelativeLayout>
             
+             <RelativeLayout 
+                android:id="@+id/rl_blacklist"
+                android:layout_width="match_parent"
+                android:layout_height="50dip"
+                android:background="@drawable/btn_bottom_selector"
+                android:layout_marginTop="6dp"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="20dip"
+                    android:gravity="center_vertical|left"
+                    android:text="黑名单列表"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:typeface="serif" />
+            </RelativeLayout>
+            
             <RelativeLayout
                     android:id="@+id/rl_switch_block_groupmsg"
                     android:layout_width="match_parent"

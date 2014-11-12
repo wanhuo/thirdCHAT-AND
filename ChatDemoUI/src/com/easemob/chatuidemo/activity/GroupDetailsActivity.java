@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -39,6 +40,7 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.widget.ExpandGridView;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 import com.easemob.util.NetUtils;
 
@@ -47,7 +49,10 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	private static final int REQUEST_CODE_ADD_USER = 0;
 	private static final int REQUEST_CODE_EXIT = 1;
 	private static final int REQUEST_CODE_EXIT_DELETE = 2;
-	private static final int REQUEST_CODE_CLEAR_ALL_HISTORY=3;
+	private static final int REQUEST_CODE_CLEAR_ALL_HISTORY = 3;
+	private static final int REQUEST_CODE_ADD_TO_BALCKLIST = 4;
+	
+	String longClickUsername = null;
 	
 	private ExpandGridView userGridview;
 	private String groupId;
@@ -74,6 +79,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	
 	//清空所有聊天记录
 	private RelativeLayout clearAllHistory;
+	private RelativeLayout blacklistLayout;
 	
 
 	@Override
@@ -86,6 +92,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		loadingPB = (ProgressBar) findViewById(R.id.progressBar);
 		exitBtn = (Button) findViewById(R.id.btn_exit_grp);
 		deleteBtn = (Button) findViewById(R.id.btn_exitdel_grp);
+		blacklistLayout = (RelativeLayout) findViewById(R.id.rl_blacklist);
 		
 		rl_switch_block_groupmsg = (RelativeLayout)findViewById(R.id.rl_switch_block_groupmsg);
 		
@@ -150,6 +157,16 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 			}
 		});
 		
+		blacklistLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(GroupDetailsActivity.this, GroupBlacklistActivity.class).
+						putExtra("groupId", groupId));
+				
+				
+			}
+		});
 		
 	}
 
@@ -184,10 +201,30 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				progressDialog.setMessage("正在清空群消息...");
 				
 				clearGroupHistory();
-				
-				
 				break;
-
+			case REQUEST_CODE_ADD_TO_BALCKLIST:
+				progressDialog.setMessage("正在移入至黑名单");
+				new Thread(new Runnable() {
+					public void run() {
+						try {
+							EMGroupManager.getInstance().blockUser(groupId, longClickUsername);
+							runOnUiThread(new Runnable() {
+								public void run() {
+									adapter.notifyDataSetChanged();
+									progressDialog.dismiss();
+								}
+							});
+						} catch (EaseMobException e) {
+							runOnUiThread(new Runnable() {
+								public void run() {
+									Toast.makeText(getApplicationContext(), "移除失败", 0).show();
+								}
+							});
+						}
+					}
+				}).start();
+							
+			break;
 			default:
 				break;
 			}
@@ -484,6 +521,19 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 
 							}
 						}).start();
+					}
+				});
+				
+				button.setOnLongClickListener(new OnLongClickListener() {
+					
+					@Override
+					public boolean onLongClick(View v) {
+						Intent intent = new Intent(GroupDetailsActivity.this, AlertDialog.class);
+						intent.putExtra("msg", "确认将此成员加入至此群黑名单?");
+						intent.putExtra("cancel", true);
+						startActivityForResult(intent, REQUEST_CODE_ADD_TO_BALCKLIST);
+						longClickUsername = username;
+						return false;
 					}
 				});
 			}
