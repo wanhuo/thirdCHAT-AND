@@ -92,11 +92,12 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		initView();
-		if (getIntent().getBooleanExtra("conflict", false) && !isConflictDialogShow)
-			showConflictDialog();
 		
 		MobclickAgent.setDebugMode( true );
 		MobclickAgent.updateOnlineConfig(this);
+		
+		if (getIntent().getBooleanExtra("conflict", false) && !isConflictDialogShow)
+			showConflictDialog();
 		
 		inviteMessgeDao = new InviteMessgeDao(this);
 		userDao = new UserDao(this);
