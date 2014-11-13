@@ -1235,6 +1235,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if(group != null)
+			((TextView) findViewById(R.id.name)).setText(group.getGroupName());
 		adapter.refresh();
 	}
 

@@ -185,9 +185,16 @@
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide" >
         </activity>
+        <!-- 群组黑名单用户列表 -->
         <activity
             android:name=".activity.GroupBlacklistActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide" >
+        </activity>
+        <activity
+            android:name=".activity.EditActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible"
             android:theme="@style/horizontal_slide" >
         </activity>
         <activity

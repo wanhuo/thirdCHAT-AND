@@ -129,4 +129,5 @@ public class GroupBlacklistActivity extends BaseActivity {
 		}
 
 	}
+	
 }

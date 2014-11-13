@@ -15,6 +15,7 @@
 package com.easemob.chatuidemo.activity;
 
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
 
 import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
@@ -35,5 +36,13 @@ public class BaseActivity extends FragmentActivity{
 		super.onStart();
 		//umeng
 		MobclickAgent.onPause(this);
+	}
+	
+	/**
+	 * 返回
+	 * @param view
+	 */
+	public void back(View view){
+		finish();
 	}
 }
