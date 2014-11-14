@@ -234,12 +234,14 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 								public void run() {
 									adapter.notifyDataSetChanged();
 									progressDialog.dismiss();
+									Toast.makeText(getApplicationContext(), "移入黑名单成功", 0).show();
 								}
 							});
 						} catch (EaseMobException e) {
 							runOnUiThread(new Runnable() {
 								public void run() {
-									Toast.makeText(getApplicationContext(), "移除失败", 0).show();
+									progressDialog.dismiss();
+									Toast.makeText(getApplicationContext(), "移入黑名单失败,请检查网络或稍后重试", 0).show();
 								}
 							});
 						}
