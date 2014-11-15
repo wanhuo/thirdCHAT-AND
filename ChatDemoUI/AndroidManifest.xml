@@ -29,7 +29,7 @@
     <permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
 
     <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
-
+ 
     <application
         android:name="DemoApplication"
         android:allowBackup="true"

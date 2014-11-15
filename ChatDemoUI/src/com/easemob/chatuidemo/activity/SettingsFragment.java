@@ -13,6 +13,7 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chatuidemo.DemoApplication;
@@ -181,16 +183,6 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 	}
 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -263,11 +255,8 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 				PreferenceUtils.getInstance(getActivity()).setSettingMsgVibrate(true);
 			}
 			break;
-		case R.id.btn_logout:
-			DemoApplication.getInstance().logout();
-			// 重新显示登陆页面
-			((MainActivity) getActivity()).finish();
-			startActivity(new Intent(getActivity(), LoginActivity.class));
+		case R.id.btn_logout: //退出登陆
+			logout();
 			break;
 		case R.id.ll_black_list:
 			startActivity(new Intent(getActivity(), BlacklistActivity.class));
@@ -279,6 +268,38 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 			break;
 		}
 
+	}
+
+	void logout() {
+		final ProgressDialog pd = new ProgressDialog(getActivity());
+		pd.setMessage("正在退出登陆..");
+		pd.setCanceledOnTouchOutside(false);
+		pd.show();
+		DemoApplication.getInstance().logout(new EMCallBack() {
+			
+			@Override
+			public void onSuccess() {
+				getActivity().runOnUiThread(new Runnable() {
+					public void run() {
+						pd.dismiss();
+						// 重新显示登陆页面
+						((MainActivity) getActivity()).finish();
+						startActivity(new Intent(getActivity(), LoginActivity.class));
+						
+					}
+				});
+			}
+			
+			@Override
+			public void onProgress(int progress, String status) {
+				
+			}
+			
+			@Override
+			public void onError(int code, String message) {
+				
+			}
+		});
 	}
 
 }

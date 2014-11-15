@@ -33,7 +33,6 @@ import com.easemob.EMError;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
-import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.OnNotificationClickListener;
@@ -77,7 +76,7 @@ public class DemoApplication extends Application {
             // 则此application::onCreate 是被service 调用的，直接返回
             return;
         }
-
+        
         applicationContext = this;
         instance = this;
         // 初始化环信SDK,一定要先调用init()
@@ -146,7 +145,8 @@ public class DemoApplication extends Application {
 
 		//注册一个语言电话的广播接收者
 		IntentFilter callFilter = new IntentFilter(EMChatManager.getInstance().getIncomingVoiceCallBroadcastAction());
-		registerReceiver(new VoiceCallReceiver(), callFilter);		
+		registerReceiver(new VoiceCallReceiver(), callFilter);	
+		
 	}
 
 	public static DemoApplication getInstance() {
@@ -238,13 +238,31 @@ public class DemoApplication extends Application {
 	/**
 	 * 退出登录,清空数据
 	 */
-	public void logout() {
+	public void logout(final EMCallBack emCallBack) {
 		// 先调用sdk logout，在清理app中自己的数据
-		EMChatManager.getInstance().logout();
-		DbOpenHelper.getInstance(applicationContext).closeDB();
-		// reset password to null
-		setPassword(null);
-		setContactList(null);
+		EMChatManager.getInstance().logout(new EMCallBack() {
+			
+			@Override
+			public void onSuccess() {
+				DbOpenHelper.getInstance(applicationContext).closeDB();
+				// reset password to null
+				setPassword(null);
+				setContactList(null);
+				if(emCallBack != null)
+					emCallBack.onSuccess();
+			}
+			
+			@Override
+			public void onProgress(int progress, String status) {
+				if(emCallBack != null)
+					emCallBack.onProgress(progress, status);
+			}
+			
+			@Override
+			public void onError(int code, String message) {
+				
+			}
+		});
 
 	}
 

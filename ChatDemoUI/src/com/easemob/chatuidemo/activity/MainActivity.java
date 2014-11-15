@@ -735,7 +735,7 @@ public class MainActivity extends FragmentActivity {
 	 */
 	private void showConflictDialog() {
 		isConflictDialogShow = true;
-		DemoApplication.getInstance().logout();
+		DemoApplication.getInstance().logout(null);
 
 		if (!MainActivity.this.isFinishing()) {
 			// clear up global variables
