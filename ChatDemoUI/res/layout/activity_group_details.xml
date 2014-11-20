@@ -53,19 +53,6 @@
             android:background="@android:color/transparent"
             android:orientation="vertical" >
 
-            <!--
-                 <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/btn_style_one"
-                android:onClick="groupChat"
-                android:text="@string/enter_group_chat"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-            -->
 
             <com.easemob.chatuidemo.widget.ExpandGridView
                 android:id="@+id/gridview"
@@ -243,81 +230,6 @@
                 android:textSize="18sp"
                 android:visibility="gone" />
 
-            <!--
-                 <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="13dp"
-                android:background="@drawable/preference_first_item"
-                android:clickable="true"
-                android:gravity="center_vertical" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:padding="8dp"
-                    android:text="@string/receive_group_message"
-                    android:textColor="#333"
-                    android:textSize="17sp" />
-
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:button="@drawable/checkbox_bg_selector" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/preference_last_item"
-                android:clickable="true"
-                android:gravity="center_vertical" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:padding="8dp"
-                    android:text="@string/message_notification"
-                    android:textColor="#333"
-                    android:textSize="17sp" />
-
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:button="@drawable/checkbox_bg_selector" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="13dp"
-                android:background="@drawable/preference_last_item"
-                android:clickable="true"
-                android:gravity="center_vertical" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:padding="8dp"
-                    android:text="@string/save_to_contacts"
-                    android:textColor="#333"
-                    android:textSize="17sp" />
-
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:button="@drawable/checkbox_bg_selector" />
-            </RelativeLayout>
-            -->
         </LinearLayout>
     </ScrollView>
 

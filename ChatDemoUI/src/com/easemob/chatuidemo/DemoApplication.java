@@ -124,37 +124,38 @@ public class DemoApplication extends Application {
         EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 
 		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
-		options.setNotifyText(new OnMessageNotifyListener() {
-
-			@Override
-			public String onNewMessageNotify(EMMessage message) {
-				// 设置状态栏的消息提示，可以根据message的类型做相应提示
-			    String ticker = CommonUtils.getMessageDigest(message, applicationContext);
-			    if(message.getType() == Type.TXT)
-		            ticker = ticker.replaceAll("\\[.{2,3}\\]", "[表情]");
-				return message.getFrom() + ": " + ticker;
-			}
-
-			@Override
-			public String onLatestMessageNotify(EMMessage message, int fromUsersNum, int messageNum) {
-				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
-			}
-
-			@Override
-			public String onSetNotificationTitle(EMMessage message) {
-				//修改标题,这里使用默认
-				return null;
-			}
-
-            @Override
-            public int onSetSmallIcon(EMMessage message) {
-                //设置小图标
-                return 0;
-//                return R.drawable.default_face;
-            }
-
-
-		});
+//		options.setNotifyText(new OnMessageNotifyListener() {
+//
+//			@Override
+//			public String onNewMessageNotify(EMMessage message) {
+//				// 设置状态栏的消息提示，可以根据message的类型做相应提示
+//			    String ticker = CommonUtils.getMessageDigest(message, applicationContext);
+//			    if(message.getType() == Type.TXT)
+//		            ticker = ticker.replaceAll("\\[.{2,3}\\]", "[表情]");
+//				return message.getFrom() + ": " + ticker;
+//			}
+//
+//			@Override
+//			public String onLatestMessageNotify(EMMessage message, int fromUsersNum, int messageNum) {
+//			    return null;
+////				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
+//			}
+//
+//			@Override
+//			public String onSetNotificationTitle(EMMessage message) {
+//				//修改标题,这里使用默认
+//				return null;
+//			}
+//
+//            @Override
+//            public int onSetSmallIcon(EMMessage message) {
+//                //设置小图标
+//                return 0;
+////                return R.drawable.default_face;
+//            }
+//
+//
+//		});
 
 		//注册一个语言电话的广播接收者
 		IntentFilter callFilter = new IntentFilter(EMChatManager.getInstance().getIncomingVoiceCallBroadcastAction());
@@ -165,7 +166,7 @@ public class DemoApplication extends Application {
 	public static DemoApplication getInstance() {
 		return instance;
 	}
-
+ 
 	/**
 	 * 获取内存中好友user list
 	 *
