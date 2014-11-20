@@ -191,11 +191,12 @@ public class LoginActivity extends BaseActivity {
 								List<User> users = new ArrayList<User>(userlist.values());
 								dao.saveContactList(users);
 
-								// 获取群聊列表(群聊里只有groupid和groupname的简单信息),sdk会把群组存入到内存和db中
+								// 获取群聊列表(群聊里只有groupid和groupname等简单信息，不包含members),sdk会把群组存入到内存和db中
 								EMGroupManager.getInstance().getGroupsFromServer();
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
+							//更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
 							boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(DemoApplication.currentUserNick);
 							if (!updatenick) {
 								EMLog.e("LoginActivity", "update current user nick fail");

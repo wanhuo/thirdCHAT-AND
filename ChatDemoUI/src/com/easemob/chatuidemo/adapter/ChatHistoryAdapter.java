@@ -35,6 +35,7 @@ import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.util.DateUtils;
 
@@ -99,7 +100,7 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		if (conversation.getMsgCount() != 0) {
 			// 把最后一条消息的内容作为item的message内容
 			EMMessage lastMessage = conversation.getLastMessage();
-			holder.message.setText(SmileUtils.getSmiledText(getContext(), getMessageDigest(lastMessage, (this.getContext()))),
+			holder.message.setText(SmileUtils.getSmiledText(getContext(), CommonUtils.getMessageDigest(lastMessage, (this.getContext()))),
 					BufferType.SPANNABLE);
 
 			holder.time.setText(DateUtils.getTimestampString(new Date(lastMessage.getMsgTime())));
@@ -113,57 +114,7 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		return convertView;
 	}
 
-	/**
-	 * 根据消息内容和消息类型获取消息内容提示
-	 * 
-	 * @param message
-	 * @param context
-	 * @return
-	 */
-	private String getMessageDigest(EMMessage message, Context context) {
-		String digest = "";
-		switch (message.getType()) {
-		case LOCATION: // 位置消息
-			if (message.direct == EMMessage.Direct.RECEIVE) {
-				//从sdk中提到了ui中，使用更简单不犯错的获取string方法
-//				digest = EasyUtils.getAppResourceString(context, "location_recv");
-				digest = getStrng(context, R.string.location_recv);
-				digest = String.format(digest, message.getFrom());
-				return digest;
-			} else {
-//				digest = EasyUtils.getAppResourceString(context, "location_prefix");
-				digest = getStrng(context, R.string.location_prefix);
-			}
-			break;
-		case IMAGE: // 图片消息
-			ImageMessageBody imageBody = (ImageMessageBody) message.getBody();
-			digest = getStrng(context, R.string.picture) + imageBody.getFileName();
-			break;
-		case VOICE:// 语音消息
-			digest = getStrng(context, R.string.voice);
-			break;
-		case VIDEO: // 视频消息
-			digest = getStrng(context, R.string.video);
-			break;
-		case TXT: // 文本消息
-			if(!message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
-				TextMessageBody txtBody = (TextMessageBody) message.getBody();
-				digest = txtBody.getMessage();
-			}else{
-				TextMessageBody txtBody = (TextMessageBody) message.getBody();
-				digest = getStrng(context, R.string.voice_call) + txtBody.getMessage();
-			}
-			break;
-		case FILE: //普通文件消息
-			digest = getStrng(context, R.string.file);
-			break;
-		default:
-			System.err.println("error, unknow type");
-			return "";
-		}
-
-		return digest;
-	}
+	
 
 	private static class ViewHolder {
 		/** 和谁的聊天记录 */
@@ -184,7 +135,5 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		
 	}
 	
-	String getStrng(Context context, int resId){
-		return context.getResources().getString(resId);
-	}
+	
 }

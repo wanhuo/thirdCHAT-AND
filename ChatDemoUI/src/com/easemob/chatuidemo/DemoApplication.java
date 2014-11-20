@@ -35,6 +35,8 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.EMMessage.Type;
+import com.easemob.chat.OnMessageNotifyListener;
 import com.easemob.chat.OnNotificationClickListener;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.MainActivity;
@@ -42,6 +44,7 @@ import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.receiver.VoiceCallReceiver;
+import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.PreferenceUtils;
 
 public class DemoApplication extends Application {
@@ -120,28 +123,38 @@ public class DemoApplication extends Application {
         // 设置一个connectionlistener监听账户重复登陆
         EMChatManager.getInstance().addConnectionListener(new MyConnectionListener());
 
-//		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
-//		options.setNotifyText(new OnMessageNotifyListener() {
-//
-//			@Override
-//			public String onNewMessageNotify(EMMessage message) {
-//				// 可以根据message的类型提示不同文字(可参考微信或qq)，demo简单的覆盖了原来的提示
-//				return "你的好基友" + message.getFrom() + "发来了一条消息哦";
-//			}
-//
-//			@Override
-//			public String onLatestMessageNotify(EMMessage message, int fromUsersNum, int messageNum) {
-//				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
-//			}
-//
-//			@Override
-//			public String onSetNotificationTitle(EMMessage message) {
-//				//修改标题
-//				return "环信notification";
-//			}
-//
-//
-//		});
+		// 取消注释，app在后台，有新消息来时，状态栏的消息提示换成自己写的
+		options.setNotifyText(new OnMessageNotifyListener() {
+
+			@Override
+			public String onNewMessageNotify(EMMessage message) {
+				// 设置状态栏的消息提示，可以根据message的类型做相应提示
+			    String ticker = CommonUtils.getMessageDigest(message, applicationContext);
+			    if(message.getType() == Type.TXT)
+		            ticker = ticker.replaceAll("\\[.{2,3}\\]", "[表情]");
+				return message.getFrom() + ": " + ticker;
+			}
+
+			@Override
+			public String onLatestMessageNotify(EMMessage message, int fromUsersNum, int messageNum) {
+				return fromUsersNum + "个基友，发来了" + messageNum + "条消息";
+			}
+
+			@Override
+			public String onSetNotificationTitle(EMMessage message) {
+				//修改标题,这里使用默认
+				return null;
+			}
+
+            @Override
+            public int onSetSmallIcon(EMMessage message) {
+                //设置小图标
+                return 0;
+//                return R.drawable.default_face;
+            }
+
+
+		});
 
 		//注册一个语言电话的广播接收者
 		IntentFilter callFilter = new IntentFilter(EMChatManager.getInstance().getIncomingVoiceCallBroadcastAction());

@@ -325,7 +325,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 		conversation = EMChatManager.getInstance().getConversation(toChatUsername);
 		// 把此会话的未读数置为0
-		conversation.resetUnsetMsgCount();
+		conversation.resetUnreadMsgCount();
 		adapter = new MessageAdapter(this, toChatUsername, chatType);
 		// 显示消息
 		listView.setAdapter(adapter);
@@ -490,15 +490,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					Toast.makeText(this, "无法获取到您的位置信息！", 0).show();
 				}
 				// 重发消息
-			} else if (requestCode == REQUEST_CODE_TEXT) {
-				resendMessage();
-			} else if (requestCode == REQUEST_CODE_VOICE) {
-				resendMessage();
-			} else if (requestCode == REQUEST_CODE_PICTURE) {
-				resendMessage();
-			} else if (requestCode == REQUEST_CODE_LOCATION) {
-				resendMessage();
-			} else if (requestCode == REQUEST_CODE_VIDEO || requestCode == REQUEST_CODE_FILE) {
+			} else if (requestCode == REQUEST_CODE_TEXT || requestCode == REQUEST_CODE_VOICE
+			        || requestCode == REQUEST_CODE_PICTURE || requestCode == REQUEST_CODE_LOCATION
+			        || requestCode == REQUEST_CODE_VIDEO || requestCode == REQUEST_CODE_FILE) {
 				resendMessage();
 			} else if (requestCode == REQUEST_CODE_COPY_AND_PASTE) {
 				// 粘贴
@@ -995,6 +989,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			}
 			if (!username.equals(toChatUsername)) {
 				// 消息不是发给当前会话，return
+			    notifyNewMessage(message);
 				return;
 			}
 			// conversation =

@@ -65,7 +65,7 @@ import com.easemob.util.HanziToPinyin;
 import com.easemob.util.NetUtils;
 import com.umeng.analytics.MobclickAgent;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends BaseActivity {
 
 	protected static final String TAG = "MainActivity";
 	// 未读消息textview
@@ -288,9 +288,11 @@ public class MainActivity extends FragmentActivity {
 						return;
 				}
 			}
-
+			
 			// 注销广播接收者，否则在ChatActivity中会收到这个广播
 			abortBroadcast();
+			
+			notifyNewMessage(message);
 
 			// 刷新bottom bar消息未读数
 			updateUnreadLabel();
